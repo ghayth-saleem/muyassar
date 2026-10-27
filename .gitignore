@@ -1,5 +1,26 @@
+# Secrets and keys
 .env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+credentials*.json
+.claude/settings.local.json
+
+# ChromaDB index (rebuilt from kb/chunks by muyassar/retrieval.py)
 data/
+chroma/
+
+# Downloaded models (normally in the Hugging Face cache, outside the repo)
+models/
+*.safetensors
+*.bin
+*.pt
+*.onnx
+*.gguf
+
+# Python
 __pycache__/
 *.pyc
-.claude/settings.local.json
+.venv/
