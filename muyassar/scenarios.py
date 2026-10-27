@@ -109,8 +109,9 @@ def run(scenario_id: str, on_step=None, run_id: str | None = None, voice: dict |
     """Play the scenario. on_step(run) is called after every step, for live progress.
 
     voice: a transcript from muyassar.voice ({"text", "duration", "model"}). It
-    replaces the content of the event marked "voice_input" and that delivery is
-    marked source: voice. Only the text travels; the audio was never kept."""
+    replaces the content of the event marked "voice_input", fills the event
+    with a "voice_template", and those deliveries are marked source: voice.
+    Only the text travels; the audio was never kept."""
     scenario = load(scenario_id)
     run = {
         "run_id": run_id or uuid.uuid4().hex[:8],
@@ -128,6 +129,9 @@ def run(scenario_id: str, on_step=None, run_id: str | None = None, voice: dict |
             delivery = {"at": event["at"], "label": event["label"], "content": _content(event)}
             if voice and event.get("voice_input"):
                 delivery.update(content=voice["text"], source="voice", label="طلب صوتي (نص مفرّغ من التسجيل)")
+            elif voice and event.get("voice_template"):
+                # an event about what the assistant heard quotes the real transcript, not the sample one
+                delivery.update(content=event["voice_template"].format(transcript=voice["text"]), source="voice")
             elif event.get("simulated"):
                 delivery["simulated"] = True
             inboxes.setdefault(event["to"], []).append(delivery)

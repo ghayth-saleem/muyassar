@@ -32,6 +32,7 @@ ALIASES = [
     ("hcd_card_2025", ["تعليمات إصدار البطاقة التعريفية", "تعليمات البطاقة التعريفية", "البطاقة التعريفية"]),
     ("disability_2017", ["حقوق الأشخاص ذوي الإعاقة", "قانون الإعاقة"]),
     ("etl_2015", ["المعاملات الإلكترونية"]),
+    ("civil_status_2001", ["الأحوال المدنية", "الاحوال المدنية"]),
     ("pdpl_2023", ["حماية البيانات الشخصية", "حماية البيانات"]),
     ("ai_ethics_2022", ["أخلاقيات الذكاء الاصطناعي", "الميثاق"]),
 ]
@@ -63,7 +64,8 @@ def doc_for(text_after: str, text_before: str = "") -> str | None:
     """The law named right after the mention ("المادة 5 من قانون ..."), else the
     one named just before it on the same line ("قانون ...، المادة 5"). Never
     crosses a line break, so a list item does not borrow the next line's law."""
-    after = text_after.split("\n", 1)[0][:80]
+    # stop at the end of the sentence too: "وفق المادة 6. ونصوص GDPR..." is not GDPR's article 6
+    after = re.split(r"\n|\.\s|؛", text_after, maxsplit=1)[0][:80]
     for doc_id, names in ALIASES:
         if any(n in after for n in names):
             return doc_id

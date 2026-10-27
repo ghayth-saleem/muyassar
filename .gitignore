@@ -24,3 +24,10 @@ models/
 __pycache__/
 *.pyc
 .venv/
+
+# Audio: the voice assistant never stores recordings, and neither does the repo
+*.ogg
+*.m4a
+*.wav
+*.webm
+*.mp3

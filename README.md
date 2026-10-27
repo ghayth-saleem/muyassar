@@ -6,13 +6,14 @@ Muyassar is a multi-agent assistant for Jordanian government services, built for
 
 ## Knowledge base
 
-15 documents, 311 chunks, in three layers. Every chunk carries `doc_name`, `article`, `entity`, `date` and `url` (enforced by a hook on `kb/`).
+16 documents, 375 chunks, in three layers. Every chunk carries `doc_name`, `article`, `entity`, `date` and `url` (enforced by a hook on `kb/`).
 
 | Layer | Document | Units | Text source |
 |---|---|---|---|
 | Law | Personal Data Protection Law No. 24 of 2023 | 25 articles | secondary (jordan-lawyer.com), checked against MoDEE's official English translation |
 | Law | Rights of Persons with Disabilities Law No. 20 of 2017 | 52 articles | official PDF (portal.jordan.gov.jo) |
 | Law | Electronic Transactions Law No. 15 of 2015 | 29 articles | secondary, checked article by article against MoDEE's PDF |
+| Law | Civil Status Law No. 9 of 2001, as amended | 62 articles | secondary (jordan-lawyer.com, amendments to 2023), checked against the CSPD consolidated PDF (to 2015); arts 4, 30, 32 differ |
 | Policy | Jordan AI Strategy and Implementation Plan 2023–2027 | 18 sections | official PDF (MoDEE) |
 | Policy | National AI Code of Ethics 2022 | 16 sections | official PDF (MoDEE) |
 | Policy | Digital Transformation Strategic Direction 2021–2025 | 14 sections | official PDF in English, Arabic translation ours |
@@ -36,14 +37,14 @@ Hybrid BM25 (custom Arabic normalisation and light stemming) plus dense `intfloa
 
 ## Benchmark
 
-81 questions (`eval/questions.jsonl`), mostly in Jordanian dialect, each with the expected document and article. Every run is appended to `eval/results.jsonl`.
+84 questions (`eval/questions.jsonl`), mostly in Jordanian dialect, each with the expected document and article. Every run is appended to `eval/results.jsonl`.
 
 | Mode | recall@5 | recall@1 |
 |---|---|---|
-| hybrid + reranker | **0.988** (80/81) | **0.864** (70/81) |
+| hybrid + reranker | **0.976** (82/84) | **0.857** (72/84) |
 | hybrid (76 questions, before the global layer) | 0.908 | 0.658 |
 
-Most recall@1 misses are a neighbouring article or the same rule in another document (for example the EU AI Act's right to explanation ranking above the Jordanian ethics charter). The questions were written by the KB owner and still need review by the team.
+Adding the Civil Status Law pushed q32 (ETL art. 6) out of the top 5 and took rank 1 on q67 with its art. 14, which states the same rule as the birth-registration guide the question expects. Most recall@1 misses are a neighbouring article or the same rule in another document (for example the EU AI Act's right to explanation ranking above the Jordanian ethics charter). The questions were written by the KB owner and still need review by the team.
 
 ## Agents and scenarios
 
@@ -71,7 +72,7 @@ Three failure scenarios in `scenarios/*.json`, each an ordered list of events wi
 
 `muyassar/voice.py` transcribes Arabic speech locally with faster-whisper `large-v3-turbo` (int8). On the scenarios page, the health-data scenario has a record button (MediaRecorder) and an audio upload; `POST /api/voice` returns the transcript and a `voice_id`, and running the scenario with it replaces the father's request with what was heard. The audio is decoded in memory and never written or logged; only the text is kept, and every step that acted on it records `input_source: voice`.
 
-It runs on the CPU by default. On a 4 GB RTX 3050 the retrieval models already hold 3.2–3.8 GB, and next to them Whisper took 17–22 s for a 13.9 s clip; on the CPU it took 14.6 s, alone on the GPU 1.3 s (`large-v3`: 2.8 s). `MUYASSAR_WHISPER_DEVICE=cuda` uses the GPU where there is room. The model downloads into `models/whisper/` (git-ignored) on first use.
+It runs on the CPU by default. On a 4 GB RTX 3050 the retrieval models already hold 3.2–3.8 GB, and next to them Whisper took 17–22 s for a 13.9 s clip; on the CPU it took 14.6 s, alone on the GPU 1.3 s (`large-v3`: 2.8 s). A real 12.1 s recording in Jordanian dialect took 9.0 s on the CPU once the model was loaded (18 s on the first request). `MUYASSAR_WHISPER_DEVICE=cuda` uses the GPU where there is room. The model downloads into `models/whisper/` (git-ignored) on first use.
 
 ## ITU-T Y.3172 mapping
 
