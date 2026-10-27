@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ميسّر · السيناريوهات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<style>
+/* Same tokens and shape system as index.html: surfaces 14px, inputs 12px, pressables are pills. */
+:root {
+  --bg: #f2f4f3; --surface: #fbfcfb; --sunk: #e9eeec;
+  --ink: #10201b; --muted: #4a5a55; --line: #d5ddd9;
+  --accent: #0a7b4b; --accent-ink: #f4fbf7; --accent-soft: #dcefe5;
+  --warn: #8a5200; --warn-soft: #f6e8cf;
+  --danger: #a3262a; --danger-soft: #f7dfdf;
+  --shadow: 0 1px 0 rgb(16 32 27 / .04), 0 12px 32px -12px rgb(16 32 27 / .18);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --r: 14px; --r-input: 12px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1311; --surface: #131d1a; --sunk: #0f1815;
+    --ink: #e4ece8; --muted: #9db0a9; --line: #24332e;
+    --accent: #3dcb8a; --accent-ink: #06140e; --accent-soft: #133325;
+    --warn: #e8b25a; --warn-soft: #33260f;
+    --danger: #f08a8a; --danger-soft: #3a1617;
+    --shadow: 0 1px 0 rgb(0 0 0 / .3), 0 16px 40px -16px rgb(0 0 0 / .6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1311; --surface: #131d1a; --sunk: #0f1815;
+  --ink: #e4ece8; --muted: #9db0a9; --line: #24332e;
+  --accent: #3dcb8a; --accent-ink: #06140e; --accent-soft: #133325;
+  --warn: #e8b25a; --warn-soft: #33260f;
+  --danger: #f08a8a; --danger-soft: #3a1617;
+  --shadow: 0 1px 0 rgb(0 0 0 / .3), 0 16px 40px -16px rgb(0 0 0 / .6);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; direction: rtl; background: var(--bg); color: var(--ink);
+  font: 400 17px/1.85 "IBM Plex Sans Arabic", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1180px; margin-inline: auto; padding-inline: 24px; }
+h1, h2, h3 { font-family: "Readex Pro", "IBM Plex Sans Arabic", sans-serif; line-height: 1.3; margin: 0; }
+.ltr { direction: ltr; unicode-bidi: isolate; font-family: "IBM Plex Mono", monospace; font-size: .86em; }
+a { color: inherit; }
+button, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+header { height: 68px; display: flex; align-items: center; justify-content: space-between; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.mark {
+  width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+  border: 2px solid var(--accent); color: var(--accent); font: 700 17px/1 "Readex Pro", sans-serif;
+}
+.brand b { font: 700 22px/1 "Readex Pro", sans-serif; }
+nav { display: flex; align-items: center; gap: 4px; }
+nav a { text-decoration: none; color: var(--muted); padding: 6px 12px; border-radius: 999px; font-size: 15px; }
+nav a:hover { color: var(--ink); background: var(--sunk); }
+nav a[aria-current] { color: var(--ink); background: var(--sunk); }
+.icon-btn {
+  width: 38px; height: 38px; border-radius: 999px; border: 1px solid var(--line);
+  background: var(--surface); display: grid; place-items: center; cursor: pointer;
+  transition: transform 140ms var(--ease-out);
+}
+.icon-btn:active { transform: scale(0.95); }
+
+.intro { padding-block: 32px 28px; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end; }
+.intro h1 { font-size: clamp(30px, 3.6vw, 44px); font-weight: 700; }
+.intro p { color: var(--muted); max-width: 62ch; margin: 12px 0 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; justify-content: end; }
+
+/* Scenario picker */
+.picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 28px; }
+.pick {
+  text-align: start; cursor: pointer; border: 1px solid var(--line); background: var(--surface);
+  border-radius: var(--r); padding: 16px 18px; line-height: 1.6;
+  transition: transform 160ms var(--ease-out), border-color 160ms ease;
+}
+.pick:active { transform: scale(0.98); }
+.pick small { display: block; color: var(--muted); font-size: 14px; }
+.pick b { display: block; font: 600 18px/1.5 "Readex Pro", sans-serif; margin-top: 2px; }
+.pick .st { margin-top: 10px; }
+.pick[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+/* The case */
+.case { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 24px 28px; margin-bottom: 28px; }
+.case-q { font: 600 20px/1.6 "Readex Pro", sans-serif; margin: 6px 0 12px; }
+.case p { margin: 0; color: var(--muted); max-width: 80ch; }
+.case-foot { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--line); }
+.expected { font-size: 15px; color: var(--muted); }
+.expected strong { color: var(--ink); }
+.run-btn {
+  display: inline-flex; align-items: center; gap: 10px; border: 0; cursor: pointer;
+  background: var(--accent); color: var(--accent-ink); font-weight: 600; font-size: 16px;
+  padding: 10px 22px; border-radius: 999px; white-space: nowrap;
+  transition: transform 160ms var(--ease-out), opacity 160ms ease;
+}
+.run-btn:active { transform: scale(0.97); }
+.run-btn[disabled] { opacity: .6; cursor: progress; }
+.eyebrow { color: var(--muted); font-size: 14px; }
+
+/* Tags */
+.tag { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.tag.ok { background: var(--accent-soft); color: var(--accent); }
+.tag.warn { background: var(--warn-soft); color: var(--warn); }
+.tag.bad { background: var(--danger-soft); color: var(--danger); }
+.tag.plain { background: var(--sunk); color: var(--muted); }
+
+/* Timeline + detail */
+.board { display: grid; grid-template-columns: 5fr 6fr; gap: 32px; align-items: start; padding-bottom: 72px; }
+.timeline { list-style: none; margin: 0; padding: 0; position: relative; }
+.timeline::before { /* the line, on the reading-start side */
+  content: ""; position: absolute; inset-block: 12px; inset-inline-start: 19px; width: 2px; background: var(--line);
+}
+.ev { position: relative; padding-inline-start: 56px; padding-bottom: 14px; }
+.dot {
+  position: absolute; inset-inline-start: 0; inset-block-start: 10px; width: 40px; height: 40px; border-radius: 50%;
+  display: grid; place-items: center; background: var(--surface); border: 2px solid var(--line); color: var(--muted); font-size: 19px;
+}
+.ev.bad .dot { border-color: var(--danger); color: var(--danger); }
+.ev.warn .dot { border-color: var(--warn); color: var(--warn); }
+.ev.final .dot, .ev.human .dot { border-color: var(--accent); color: var(--accent); }
+.card {
+  width: 100%; text-align: start; cursor: pointer; display: block;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; line-height: 1.7;
+  transition: transform 160ms var(--ease-out), border-color 160ms ease;
+}
+.card:active { transform: scale(0.99); }
+@media (hover: hover) and (pointer: fine) { .card:hover { border-color: var(--muted); } }
+.ev.bad .card { border-color: var(--danger); }
+.card[aria-current="true"] { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.card-top { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; font-size: 14px; color: var(--muted); }
+.card-top strong { color: var(--ink); font: 600 16px/1.5 "Readex Pro", sans-serif; }
+.card .got { font-size: 14px; color: var(--muted); margin-top: 2px; }
+.card .dec { font-weight: 600; margin-top: 6px; }
+.card .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.conf { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-top: 8px; }
+.conf .bar { flex: 1; max-width: 140px; height: 5px; border-radius: 3px; background: var(--sunk); overflow: hidden; }
+.conf .bar i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+.ev.pending .card { cursor: default; border-style: dashed; }
+.pulse { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-inline-end: 6px; vertical-align: middle; }
+@media (prefers-reduced-motion: no-preference) {
+  .pulse { animation: pulse 1s ease-in-out infinite alternate; }
+  @keyframes pulse { to { opacity: .25; } }
+  .ev.new { animation: reveal 320ms var(--ease-out) both; }
+  @keyframes reveal { from { opacity: 0; transform: translateY(8px); filter: blur(3px); } }
+}
+
+/* Staff approval: the run waits here */
+.approve { background: var(--warn-soft); color: var(--ink); border-radius: var(--r); padding: 16px 18px; }
+.approve h3 { font-size: 16px; color: var(--warn); display: flex; gap: 8px; align-items: center; }
+.approve p { margin: 6px 0 10px; font-size: 15px; }
+.approve textarea {
+  width: 100%; min-height: 64px; resize: vertical; padding: 10px 12px; border-radius: var(--r-input);
+  border: 1px solid var(--line); background: var(--surface); line-height: 1.7; font-size: 15px;
+}
+.approve .btns { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.btn {
+  border-radius: 999px; padding: 8px 18px; cursor: pointer; font-weight: 600; font-size: 15px; border: 1px solid var(--line);
+  background: var(--surface); transition: transform 160ms var(--ease-out);
+}
+.btn:active { transform: scale(0.97); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+.detail {
+  position: sticky; top: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+  box-shadow: var(--shadow); padding: 24px 26px; max-height: calc(100dvh - 32px); overflow-y: auto;
+}
+.detail-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.detail-head h2 { font-size: 22px; }
+.detail-head span { color: var(--muted); font-size: 14px; }
+.role { color: var(--muted); font-size: 15px; margin: 2px 0 0; }
+.block { margin-top: 22px; }
+.block h3 { font-size: 15px; color: var(--muted); font-weight: 600; margin-bottom: 8px; display: flex; gap: 8px; align-items: center; }
+.recv { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.recv li { background: var(--sunk); border-radius: var(--r-input); padding: 10px 14px; font-size: 15px; white-space: pre-line; }
+.recv.clamp li { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.recv li b { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 14px; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+.steps { margin: 0; padding-inline-start: 22px; display: grid; gap: 6px; font-size: 16px; }
+.finding { font-size: 17px; margin: 0; }
+.say { border-inline-start: 3px solid var(--accent); padding-inline-start: 14px; font-size: 17px; white-space: pre-line; }
+.say.staff { border-color: var(--line); }
+.alert { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: var(--r-input); font-size: 15px; }
+.alert i { font-size: 19px; margin-top: 3px; }
+.alert.bad { background: var(--danger-soft); color: var(--danger); }
+.alert.warn { background: var(--warn-soft); color: var(--warn); }
+.gapbox { border: 1px solid var(--line); border-radius: var(--r-input); padding: 14px 16px; }
+.gapbox b { font-family: "Readex Pro", sans-serif; display: block; margin-bottom: 4px; }
+.gapbox p { margin: 0; font-size: 15px; }
+.gapbox p + p { margin-top: 8px; color: var(--muted); }
+.srcs { display: grid; gap: 10px; }
+.src { border: 1px solid var(--line); border-radius: var(--r-input); padding: 12px 14px; font-size: 15px; }
+.src.unused { opacity: .62; }
+.src-h { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.src-h strong { font-weight: 600; }
+.src blockquote { margin: 6px 0 0; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; }
+.src.open blockquote { -webkit-line-clamp: unset; }
+.src-f { display: flex; gap: 14px; margin-top: 6px; font-size: 14px; }
+.link-btn { border: 0; background: none; padding: 0; cursor: pointer; color: var(--accent); font-weight: 600; font-size: 14px; }
+.src-f a { color: var(--accent); font-weight: 600; text-decoration: none; }
+.empty { color: var(--muted); padding: 28px; border: 1px dashed var(--line); border-radius: var(--r); }
+
+footer { border-top: 1px solid var(--line); padding-block: 32px 48px; color: var(--muted); font-size: 14px; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+
+@media (max-width: 900px) {
+  .board { grid-template-columns: 1fr; }
+  .detail { position: static; max-height: none; }
+  .intro { grid-template-columns: 1fr; }
+  .legend { justify-content: start; }
+}
+@media (max-width: 640px) {
+  .wrap { padding-inline: 16px; }
+  nav a { display: none; }
+  .picker { grid-template-columns: 1fr; }
+  .case { padding: 20px; }
+  .detail { padding: 20px; }
+  .run-btn { width: 100%; justify-content: center; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/" aria-label="ميسّر">
+      <span class="mark" aria-hidden="true">م</span><b>ميسّر</b>
+    </a>
+    <nav aria-label="الصفحات">
+      <a href="/">اسأل</a>
+      <a href="/scenarios" aria-current="page">السيناريوهات</a>
+      <button class="icon-btn" id="theme" type="button" aria-label="بدّل الوضع الليلي"><i class="ph ph-moon-stars"></i></button>
+    </nav>
+  </header>
+
+  <main>
+    <div class="intro">
+      <div>
+        <h1>لما المعلومة توصل ناقصة، ومتأخرة، ولأكثر من وكيل.</h1>
+        <p>كل سيناريو بيوصّل المعلومات على دفعات، وكل دفعة لوكيل واحد بس. كل وكيل بيحكم على اللي وصله، والمنسّق بيجمع الأحكام. اكبس على أي خطوة لتشوف شو وصل الوكيل، وكيف فكّر، والمواد اللي اعتمد عليها.</p>
+      </div>
+      <div class="legend" aria-label="دليل الألوان">
+        <span class="tag bad"><i class="ph ph-warning-octagon"></i>بدون مصدر</span>
+        <span class="tag warn"><i class="ph ph-hand-palm"></i>قرار حساس</span>
+        <span class="tag ok"><i class="ph ph-seal-check"></i>مربوط بمادة</span>
+      </div>
+    </div>
+
+    <div class="picker" id="picker" role="group" aria-label="اختر سيناريو"></div>
+    <div id="case"></div>
+    <div class="board">
+      <ol class="timeline" id="timeline" aria-label="الخط الزمني"></ol>
+      <aside class="detail" id="detail" aria-live="polite"></aside>
+    </div>
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>البيانات في السيناريوهات تجريبية، والأحداث المعلّمة «افتراضي» ما صارت فعلاً.</span>
+    <span>كل خطوة بتنسجّل في <span class="ltr">logs/scenarios.jsonl</span></span>
+  </div>
+</footer>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+const root = document.documentElement;
+const store = { get: k => { try { return localStorage.getItem(k); } catch { return null; } },
+                set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
+const saved = store.get("theme");
+if (saved) root.dataset.theme = saved;
+const isDark = () => root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+const syncIcon = () => { $("#theme i").className = isDark() ? "ph ph-sun" : "ph ph-moon-stars"; };
+syncIcon();
+$("#theme").addEventListener("click", () => { root.dataset.theme = isDark() ? "light" : "dark"; store.set("theme", root.dataset.theme); syncIcon(); });
+
+const AGENTS = {
+  procedure:    { name: "مرشد الإجراءات", role: "بيرشد المواطن لخطوات المعاملة", icon: "ph-signpost" },
+  docs_check:   { name: "وكيل فحص الأوراق", role: "بيطابق الوثيقة المرفوعة مع السجل الرسمي", icon: "ph-identification-card" },
+  policy:       { name: "وكيل السياسات", role: "بيقرأ القانون وبيكشف الفجوات", icon: "ph-scales" },
+  entity:       { name: "وكيل الجهة", role: "بيمثّل الجهة الحكومية صاحبة الخدمة", icon: "ph-bank" },
+  orchestrator: { name: "المنسّق", role: "بيجمع أحكام الوكلاء وبيكتب الرد", icon: "ph-share-network" },
+  human:        { name: "الموظف المختص", role: "قرار بشري على اقتراح حساس", icon: "ph-user-check" },
+};
+const STATUS = {
+  running:        ["plain", "ph-circle-notch", "عم يشتغل"],
+  awaiting_human: ["warn", "ph-hand-palm", "بانتظار موافقة موظف"],
+  approved:       ["ok", "ph-check-circle", "وافق الموظف"],
+  rejected:       ["bad", "ph-x-circle", "رفض الموظف الاقتراح"],
+  done:           ["ok", "ph-check-circle", "خلص"],
+  error:          ["bad", "ph-warning-circle", "صار خطأ"],
+};
+
+let scenarios = [], current = null, run = null, selected = null, poll = null;
+
+const clock = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+const statusTag = st => { const [c, i, t] = STATUS[st] || STATUS.done; return `<span class="tag ${c}"><i class="ph ${i}"></i>${t}</span>`; };
+const shortName = name => String(name).replace(/\s+رقم\s+\d+\s+لسنة\s+\d+$/, "");
+const unit = a => /^\d+( مكرر)?$/.test(a) ? "المادة " + a : a;
+
+function renderPicker() {
+  $("#picker").innerHTML = scenarios.map((s, i) => `
+    <button type="button" class="pick" data-id="${esc(s.id)}" aria-pressed="${s.id === current?.id}">
+      <small>سيناريو ${i + 1} · ${esc(s.service)}</small>
+      <b>${esc(s.title)}</b>
+      <div class="st">${s.latest ? statusTag(s.latest.status) : `<span class="tag plain">ما انشغّل لسا</span>`}</div>
+    </button>`).join("");
+}
+
+function renderCase() {
+  const s = current, busy = run?.status === "running";
+  $("#case").innerHTML = `
+    <div class="case">
+      <span class="eyebrow">سؤال الحالة</span>
+      <div class="case-q">${esc(s.question)}</div>
+      <p>${esc(s.summary)}</p>
+      <div class="case-foot">
+        <span class="expected"><strong>الفجوة اللي صُمّم ليكشفها:</strong> ${esc(s.expected_gap)}</span>
+        <button type="button" class="run-btn" id="run" ${busy ? "disabled" : ""}>
+          <i class="ph ${busy ? "ph-circle-notch" : "ph-play"}"></i>${busy ? "عم يشتغل" : run ? "شغّله من جديد" : "شغّل السيناريو"}
+        </button>
+      </div>
+    </div>`;
+}
+
+function cardTags(st) {
+  const t = [];
+  if (st.unsourced) t.push(`<span class="tag bad"><i class="ph ph-warning-octagon"></i>بدون مصدر</span>`);
+  else if (st.cited?.length) t.push(`<span class="tag ok"><i class="ph ph-seal-check"></i>${st.cited.length} ${st.cited.length === 1 ? "مادة" : "مواد"}</span>`);
+  if (st.sensitive) t.push(`<span class="tag warn"><i class="ph ph-hand-palm"></i>قرار حساس</span>`);
+  if (st.gap) t.push(`<span class="tag plain"><i class="ph ph-puzzle-piece"></i>فجوة</span>`);
+  if (st.conflicts?.length) t.push(`<span class="tag plain"><i class="ph ph-arrows-split"></i>${st.conflicts.length} تعارض</span>`);
+  return t.join("");
+}
+
+function renderTimeline(fresh = new Set()) {
+  if (!run) {
+    $("#timeline").innerHTML = `<li class="empty">هالسيناريو ما انشغّل لسا. اكبس «شغّل السيناريو»، بياخذ تقريباً دقيقتين لأنه كل وكيل بيقرأ وبيكتب.</li>`;
+    return;
+  }
+  const items = run.steps.map(st => {
+    const a = AGENTS[st.agent] || { name: st.agent, icon: "ph-circle" };
+    const kind = st.agent === "human" ? "human" : st.agent === "orchestrator" ? "final" : st.unsourced ? "bad" : st.sensitive ? "warn" : "";
+    const last = st.received?.[st.received.length - 1];
+    const got = st.agent === "orchestrator" ? `استلم أحكام ${st.received.length} وكلاء` : st.agent === "human" ? (st.note ? `ملاحظة: ${st.note}` : "") : last ? `وصله: ${last.label}` : "";
+    const conf = st.confidence != null ? `<div class="conf"><span>الثقة</span><span class="bar"><i style="width:${Math.round(st.confidence * 100)}%"></i></span><span class="ltr">${st.confidence.toFixed(2)}</span></div>` : "";
+    return `
+      <li class="ev ${kind} ${fresh.has(st.n) ? "new" : ""}">
+        <span class="dot" aria-hidden="true"><i class="ph ${a.icon}"></i></span>
+        <button type="button" class="card" data-n="${st.n}" aria-current="${selected === st.n}">
+          <div class="card-top"><strong>${esc(a.name)}</strong><span class="ltr">t+${clock(st.at)}</span></div>
+          ${got ? `<div class="got">${esc(got)}</div>` : ""}
+          <div class="dec">${esc(st.decision)}</div>
+          ${conf}
+          <div class="tags">${cardTags(st)}</div>
+        </button>
+      </li>`;
+  });
+  if (run.status === "running") {
+    const a = AGENTS[run.current] || { name: "الوكيل التالي", icon: "ph-circle-notch" };
+    items.push(`
+      <li class="ev pending">
+        <span class="dot" aria-hidden="true"><i class="ph ${a.icon}"></i></span>
+        <div class="card"><div class="card-top"><strong>${esc(a.name)}</strong></div>
+        <div class="got"><span class="pulse"></span>عم يدوّر بالنصوص ويكتب حكمه</div></div>
+      </li>`);
+  }
+  if (run.status === "awaiting_human") {
+    items.push(`
+      <li class="ev warn">
+        <span class="dot" aria-hidden="true"><i class="ph ph-hand-palm"></i></span>
+        <div class="approve">
+          <h3><i class="ph ph-hand-palm"></i>النظام وقف هون</h3>
+          <p>المنسّق اقترح قرار حساس، فما بينفّذ ولا بيوصل الرد للمواطن قبل ما يوافق موظف.</p>
+          <textarea id="note" maxlength="500" aria-label="ملاحظة الموظف" placeholder="ملاحظة الموظف (اختياري)"></textarea>
+          <div class="btns">
+            <button type="button" class="btn primary" data-decide="1">وافق وأرسل الرد</button>
+            <button type="button" class="btn" data-decide="0">ارفض الاقتراح</button>
+          </div>
+        </div>
+      </li>`);
+  }
+  if (run.status === "error") {
+    items.push(`<li class="ev bad"><span class="dot" aria-hidden="true"><i class="ph ph-warning-circle"></i></span><div class="alert bad"><i class="ph ph-warning-circle"></i><div>وقف التشغيل: ${esc(run.error)}</div></div></li>`);
+  }
+  $("#timeline").innerHTML = items.join("");
+}
+
+function renderDetail() {
+  const st = run?.steps.find(s => s.n === selected);
+  if (!st) {
+    $("#detail").innerHTML = `<div class="detail-head"><h2>تفاصيل الخطوة</h2></div><p class="role">اختار خطوة من الخط الزمني.</p>`;
+    return;
+  }
+  const a = AGENTS[st.agent] || { name: st.agent, role: "" };
+  const recv = (st.received || []).map(r => `
+    <li><b><span class="ltr">t+${clock(r.at)}</span>${esc(r.label)}${r.simulated ? `<span class="tag plain">بيانات تجريبية</span>` : ""}</b>${esc(r.content)}</li>`).join("");
+  const sources = [...(st.retrieved || [])].sort((x, y) => st.cited.includes(y.id) - st.cited.includes(x.id)).map(s => {
+    const used = st.cited.includes(s.id);
+    return `
+      <div class="src ${used ? "" : "unused"}">
+        <div class="src-h"><strong>${esc(shortName(s.doc_name))} · ${esc(unit(s.article))}</strong>${used ? `<span class="tag ok"><i class="ph ph-seal-check"></i>اعتمد عليها</span>` : ""}</div>
+        <blockquote>${esc(s.text)}</blockquote>
+        <div class="src-f"><button type="button" class="link-btn" data-toggle>النص كامل</button>${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">المصدر <i class="ph ph-arrow-up-left"></i></a>` : ""}</div>
+      </div>`;
+  }).join("");
+
+  // The orchestrator's inputs are the agents' full verdicts: show its reply first, inputs clamped.
+  const recvBlock = recv ? `<div class="block"><h3><i class="ph ph-tray-arrow-down"></i>${st.agent === "orchestrator" ? "أحكام الوكلاء اللي وصلته" : "اللي وصله لحد هالخطوة"}</h3><ul class="recv ${st.agent === "orchestrator" ? "clamp" : ""}">${recv}</ul></div>` : "";
+  let body = "";
+  if (st.agent === "human") {
+    body = `<div class="block"><p class="finding">${st.approved ? "وافق الموظف على اقتراح المنسّق، فانرسل الرد للمواطن." : "رفض الموظف اقتراح المنسّق، فما انرسل الرد وبترجع الحالة للمراجعة."}</p>${st.note ? `<p class="role">ملاحظته: ${esc(st.note)}</p>` : ""}</div>`;
+  } else {
+    body = `
+      ${st.unsourced ? `<div class="block alert bad"><i class="ph ph-warning-octagon"></i><div>هالحكم مش مربوط بأي مادة رجعت بالبحث. لازم يتعامل معه كرأي، مش كحكم.</div></div>` : ""}
+      ${st.sensitive ? `<div class="block alert warn"><i class="ph ph-hand-palm"></i><div><strong>قرار حساس.</strong> ${esc(st.sensitive_reason)}</div></div>` : ""}
+      ${st.citizen_reply ? `<div class="block"><h3><i class="ph ph-chat-text"></i>الرد للمواطن${run.status === "awaiting_human" ? " (موقوف لحد موافقة الموظف)" : run.status === "rejected" ? " (ما انرسل)" : ""}</h3><div class="say">${esc(st.citizen_reply)}</div></div>` : ""}
+      ${st.staff_note ? `<div class="block"><h3><i class="ph ph-briefcase"></i>ملاحظة للموظف</h3><div class="say staff">${esc(st.staff_note)}</div></div>` : ""}
+      ${st.agent !== "orchestrator" ? `<div class="block"><h3><i class="ph ph-gavel"></i>الحكم</h3><p class="finding">${esc(st.finding)}</p></div>` : ""}
+      ${st.conflicts?.length ? `<div class="block"><h3><i class="ph ph-arrows-split"></i>تعارض بين الوكلاء</h3><ul class="steps">${st.conflicts.map(c => `<li>${esc(c)}</li>`).join("")}</ul></div>` : ""}
+      ${st.gap ? `<div class="block"><h3><i class="ph ph-puzzle-piece"></i>الفجوة اللي لقاها</h3><div class="gapbox"><b>${esc(st.gap_title)}</b><p>${esc(st.gap)}</p>${st.international ? `<p><strong>مثال عالمي:</strong> ${esc(st.international)}</p>` : ""}</div></div>` : ""}
+      <div class="block"><h3><i class="ph ph-list-numbers"></i>كيف وصل للحكم</h3><ol class="steps">${(st.steps || []).map(x => `<li>${esc(x)}</li>`).join("")}</ol></div>
+      <div class="block"><h3><i class="ph ph-books"></i>النصوص اللي رجعت (${st.retrieved?.length || 0})</h3><div class="srcs">${sources || `<p class="role">ولا نص.</p>`}</div></div>`;
+  }
+  $("#detail").innerHTML = `
+    <div class="detail-head"><h2>${esc(a.name)}</h2><span class="ltr">t+${clock(st.at)} · #${st.n}</span></div>
+    <p class="role">${esc(a.role)}${st.confidence != null ? ` · الثقة <span class="ltr">${st.confidence.toFixed(2)}</span>` : ""}</p>
+    ${st.agent === "orchestrator" ? body + recvBlock : recvBlock + body}`;
+}
+
+function select(n) {
+  selected = n;
+  renderTimeline();
+  renderDetail();
+}
+
+function show(id) {
+  current = scenarios.find(s => s.id === id);
+  run = current.latest;
+  const final = run?.steps.find(s => s.agent === "orchestrator");
+  selected = final?.n ?? run?.steps[0]?.n ?? null;
+  renderPicker(); renderCase(); renderTimeline(); renderDetail();
+  history.replaceState(null, "", "#" + id);
+}
+
+async function start() {
+  clearInterval(poll);
+  const res = await fetch(`/api/scenarios/${current.id}/run`, { method: "POST" });
+  const { run_id } = await res.json();
+  run = { run_id, status: "running", steps: [] };
+  selected = null;
+  renderCase(); renderTimeline(); renderDetail();
+  let seen = 0;
+  poll = setInterval(async () => {
+    const r = await fetch(`/api/runs/${run_id}`).then(x => x.json()).catch(() => null);
+    if (!r || (r.status === "running" && r.steps.length === seen && r.current === run.current)) return;
+    const fresh = new Set(r.steps.slice(seen).map(s => s.n));
+    seen = r.steps.length;
+    run = r; current.latest = r;
+    if (fresh.size) selected = r.steps[r.steps.length - 1].n;
+    renderTimeline(fresh); renderDetail();
+    if (r.status !== "running") { clearInterval(poll); renderCase(); renderPicker(); }
+  }, 1200);
+}
+
+async function decide(approved) {
+  const note = $("#note")?.value.trim() || "";
+  const res = await fetch(`/api/runs/${run.run_id}/decide`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ approved, note }) });
+  const data = await res.json();
+  if (!res.ok) { alert(data.error); return; }
+  run = data; current.latest = data;
+  select(data.steps[data.steps.length - 1].n);
+  renderPicker();
+}
+
+document.addEventListener("click", e => {
+  const pick = e.target.closest(".pick");
+  if (pick && pick.dataset.id !== current?.id) { clearInterval(poll); show(pick.dataset.id); return; }
+  const card = e.target.closest("button.card");
+  if (card) { select(Number(card.dataset.n)); if (matchMedia("(max-width: 900px)").matches) $("#detail").scrollIntoView({ block: "start" }); return; }
+  if (e.target.closest("#run")) { start(); return; }
+  const d = e.target.closest("[data-decide]");
+  if (d) { decide(d.dataset.decide === "1"); return; }
+  const toggle = e.target.closest("[data-toggle]");
+  if (toggle) {
+    const src = toggle.closest(".src");
+    src.classList.toggle("open");
+    toggle.textContent = src.classList.contains("open") ? "أقل" : "النص كامل";
+  }
+});
+
+addEventListener("hashchange", () => {
+  const id = location.hash.slice(1);
+  if (id !== current?.id && scenarios.some(s => s.id === id)) { clearInterval(poll); show(id); }
+});
+
+fetch("/api/scenarios").then(r => r.json()).then(list => {
+  scenarios = list;
+  const want = location.hash.slice(1);
+  show(list.some(s => s.id === want) ? want : list[0].id);
+}).catch(() => {
+  $("#timeline").innerHTML = `<li class="empty">ما قدرنا نجيب السيناريوهات. شغّل السيرفر بـ <span class="ltr">python -m muyassar.server</span></li>`;
+});
+</script>
+</body>
+</html>

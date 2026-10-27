@@ -43,6 +43,41 @@ Hybrid BM25 (custom Arabic normalisation and light stemming) plus dense `intfloa
 
 Most recall@1 misses are a neighbouring article or the same rule in another document (for example the EU AI Act's right to explanation ranking above the Jordanian ethics charter). The questions were written by the KB owner and still need review by the team.
 
+## Agents and scenarios
+
+An orchestrator and four agents, one per role the competition asks for (`muyassar/agents.py`):
+
+| Agent | Role | Sees |
+|---|---|---|
+| مرشد الإجراءات (procedure) | guides the citizen through the service | the citizen's request only |
+| وكيل فحص الأوراق (docs_check) | compares an uploaded document with the official record | the field-by-field comparison |
+| وكيل السياسات (policy) | legal advisor: what the law allows, who is responsible, where it is silent | the case question and what reaches it |
+| وكيل الجهة (entity) | speaks for the government body that owns the service | the body's updates and verification results |
+| المنسّق (orchestrator) | combines the verdicts, flags conflicts, writes the citizen reply and the staff note | the agents' verdicts, never raw events |
+
+Each agent retrieves its own articles and returns steps, a finding, a decision, a confidence, its citations and whether the decision is sensitive. Citations that were not retrieved are dropped; a verdict left with none is marked unsourced and shown in red. A sensitive final decision (rejecting a request, keeping or sending health data) stops the run until a staff member approves or rejects it, and that decision is logged too.
+
+Three failure scenarios in `scenarios/*.json`, each an ordered list of events with a simulated time and the one agent it reaches:
+
+1. **وثيقة مشكوك فيها:** the uploaded ID's expiry date does not match the civil registry. Expected gap: no rule on who answers for an automated verification error.
+2. **بيانات صحية في طلب بطاقة الإعاقة:** the voice assistant hears a diagnosis and medication; the father says «ماشي». Expected gap: when is spoken consent to health-data processing legally enough.
+3. **تغيّر الإجراء فجأة:** the passport office changes the documents for minors before the knowledge base is updated (a hypothetical event, labelled as such). Expected gap: no deadline for updating digital service information.
+
+`python -m muyassar.scenarios <id>` runs one from the terminal; `/scenarios` on the demo server shows the timeline, every step clickable, with the staff approval step. Every step is a line in `logs/scenarios.jsonl`. `python -m muyassar.gaps` writes `reports/gaps.md` from the latest run of each scenario, in the policy agent's own words.
+
+## ITU-T Y.3172 mapping
+
+| Y.3172 component | In Muyassar |
+|---|---|
+| Source | Jordanian laws, policies and service guides (`sources/`), and citizen requests and agency events (`scenarios/`) |
+| Collector | `muyassar/pdf_arabic.py` (Arabic PDF repair) and the source registry `sources/registry.json` |
+| Preprocessor | `muyassar/ingest.py`: chunking at article or section boundaries, metadata on every chunk |
+| Model | `muyassar/retrieval.py` (BM25 + e5 + reranker) and `muyassar/llm.py` (Claude, or a local model) |
+| Policy | the policy agent, the unsourced rule and the human-approval stop for sensitive decisions |
+| ML Function Orchestrator | the orchestrator agent and the scenario engine `muyassar/scenarios.py` |
+| Sink / Distributor | `muyassar/server.py` and `web/`: the citizen reply, the staff note, the audit logs |
+| ML Sandbox | local for now; the ITU cloud environment is not set up yet |
+
 ## Run it
 
 Python 3.11. Models download into the Hugging Face cache on first use (about 3 GB). A GPU is optional; on a 4 GB card both models run in fp16.
@@ -52,7 +87,9 @@ pip install -r requirements.txt
 cp .env.example .env          # add ANTHROPIC_API_KEY, never commit .env
 python -m muyassar.ingest     # sources/raw -> kb/chunks
 python .claude/skills/kb-eval/scripts/kb_eval.py -k 5
-python -m muyassar.server     # http://localhost:8765
+python -m muyassar.scenarios doubtful_id   # one scenario in the terminal
+python -m muyassar.gaps       # reports/gaps.md
+python -m muyassar.server     # http://localhost:8765 and /scenarios
 ```
 
 `MUYASSAR_RETRIEVAL` picks `rerank` (default), `hybrid`, `bm25` or `dense`. `MUYASSAR_LLM=ollama` switches answers to a local model.
@@ -60,12 +97,15 @@ python -m muyassar.server     # http://localhost:8765
 ## Layout
 
 ```
-muyassar/      arabic.py ingest.py pdf_arabic.py retrieval.py llm.py answer.py server.py
+muyassar/      arabic.py ingest.py pdf_arabic.py retrieval.py llm.py answer.py
+               agents.py scenarios.py gaps.py server.py
 sources/       registry.json, raw/ (clean texts), pdf/ (original files)
 kb/chunks/     one JSONL per document
 eval/          questions.jsonl, results.jsonl
-logs/          web.jsonl, append-only audit log of every question
-web/           index.html demo page
+scenarios/     the three failure scenarios
+reports/       gaps.md, generated
+logs/          web.jsonl and scenarios.jsonl, append-only audit logs
+web/           index.html (ask), scenarios.html (timeline)
 .claude/       hooks (KB metadata check, audit log protection), kb-eval skill
 ```
 

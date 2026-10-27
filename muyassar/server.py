@@ -2,23 +2,33 @@
 
     python -m muyassar.server          # http://localhost:8765
 
-GET  /            web/index.html
-GET  /api/stats   documents in the knowledge base and the latest benchmark runs
-POST /api/ask     {"question": "..."} → answer with its cited sources
+GET  /                              web/index.html
+GET  /scenarios                     web/scenarios.html, the scenario timeline
+GET  /api/stats                     documents in the knowledge base and the latest benchmark runs
+POST /api/ask                       {"question": "..."} → answer with its cited sources
+GET  /api/scenarios                 scenarios, each with its latest logged run
+POST /api/scenarios/<id>/run        start a live run → {"run_id": ...}
+GET  /api/runs/<run_id>             a run's steps so far, polled by the page
+POST /api/runs/<run_id>/decide      {"approved": bool, "note": "..."} → the staff decision
 
 Models load once at startup, so the first question isn't slow.
 """
 import json
 import os
 import sys
+import threading
+import uuid
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from muyassar import ROOT
 from muyassar.answer import answer
 from muyassar.retrieval import search
+from muyassar import scenarios
 
 PORT = 8765
 WEB = ROOT / "web"
+# Runs this server started or loaded from the log, by run_id.
+RUNS: dict[str, dict] = {}
 
 
 def stats() -> dict:
@@ -62,20 +72,43 @@ class Handler(BaseHTTPRequestHandler):
     def _json(self, status: int, data) -> None:
         self._send(status, json.dumps(data, ensure_ascii=False).encode("utf-8"), "application/json; charset=utf-8")
 
+    def _body(self) -> dict:
+        length = int(self.headers.get("Content-Length", 0))
+        return json.loads(self.rfile.read(length) or b"{}")
+
     def do_GET(self):
-        if self.path in ("/", "/index.html"):
+        path = self.path.split("?")[0]
+        parts = path.strip("/").split("/")
+        if path in ("/", "/index.html"):
             self._send(200, (WEB / "index.html").read_bytes(), "text/html; charset=utf-8")
-        elif self.path == "/api/stats":
+        elif path in ("/scenarios", "/scenarios.html"):
+            self._send(200, (WEB / "scenarios.html").read_bytes(), "text/html; charset=utf-8")
+        elif path == "/api/stats":
             self._json(200, stats())
+        elif path == "/api/scenarios":
+            out = []
+            for s in scenarios.all_scenarios():
+                last = scenarios.latest_run(s["id"])
+                if last:
+                    RUNS.setdefault(last["run_id"], last)
+                    last = RUNS[last["run_id"]]
+                out.append({**s, "latest": last})
+            self._json(200, out)
+        elif len(parts) == 3 and parts[:2] == ["api", "runs"] and parts[2] in RUNS:
+            self._json(200, RUNS[parts[2]])
         else:
             self._json(404, {"error": "مش موجود"})
 
     def do_POST(self):
+        parts = self.path.split("?")[0].strip("/").split("/")
+        if len(parts) == 4 and parts[:2] == ["api", "scenarios"] and parts[3] == "run":
+            return self._start_run(parts[2])
+        if len(parts) == 4 and parts[:2] == ["api", "runs"] and parts[3] == "decide":
+            return self._decide(parts[2])
         if self.path != "/api/ask":
             return self._json(404, {"error": "مش موجود"})
         try:
-            length = int(self.headers.get("Content-Length", 0))
-            question = json.loads(self.rfile.read(length) or b"{}").get("question", "").strip()
+            question = self._body().get("question", "").strip()
         except (ValueError, json.JSONDecodeError):
             return self._json(400, {"error": "طلب غير صالح"})
         if not question or len(question) > 500:
@@ -84,6 +117,30 @@ class Handler(BaseHTTPRequestHandler):
             self._json(200, answer(question))
         except Exception as e:  # shown to the user in the page, so keep it readable
             self._json(500, {"error": f"صار خطأ: {e}"})
+
+    def _start_run(self, scenario_id: str) -> None:
+        if scenario_id not in {s["id"] for s in scenarios.all_scenarios()}:
+            return self._json(404, {"error": "السيناريو مش موجود"})
+        run_id = uuid.uuid4().hex[:8]
+        RUNS[run_id] = {"run_id": run_id, "scenario": scenario_id, "status": "running", "steps": []}
+
+        def update(run):
+            RUNS[run_id] = {**run, "steps": list(run["steps"])}
+
+        threading.Thread(target=scenarios.run, args=(scenario_id, update, run_id), daemon=True).start()
+        self._json(202, {"run_id": run_id})
+
+    def _decide(self, run_id: str) -> None:
+        run = RUNS.get(run_id)
+        if not run:
+            return self._json(404, {"error": "التشغيل مش موجود"})
+        if run["status"] != "awaiting_human":
+            return self._json(409, {"error": "هالتشغيل مش بانتظار موافقة"})
+        try:
+            body = self._body()
+        except (ValueError, json.JSONDecodeError):
+            return self._json(400, {"error": "طلب غير صالح"})
+        self._json(200, scenarios.decide(run, bool(body.get("approved")), str(body.get("note", ""))[:500]))
 
     def log_message(self, fmt, *args):
         sys.stderr.write(f"{self.address_string()} {fmt % args}\n")
