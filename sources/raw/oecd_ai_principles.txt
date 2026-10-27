@@ -1,0 +1,80 @@
+## مقدمة | ما هي مبادئ منظمة التعاون الاقتصادي والتنمية للذكاء الاصطناعي
+ملخص عربي (ترجمة غير رسمية): مبادئ منظمة التعاون الاقتصادي والتنمية (OECD) للذكاء الاصطناعي هي أول معيار حكومي دولي للذكاء الاصطناعي، اعتمدت في أيار 2019 وحدثت في أيار 2024، ضمن توصية مجلس المنظمة بشأن الذكاء الاصطناعي (OECD/LEGAL/0449). تتكون من خمسة مبادئ قائمة على القيم لكل الجهات الفاعلة في الذكاء الاصطناعي (1.1 إلى 1.5)، وخمس توصيات للحكومات بشأن السياسات الوطنية والتعاون الدولي (2.1 إلى 2.5). ويستخدم الاتحاد الأوروبي ومجلس أوروبا والولايات المتحدة والأمم المتحدة تعريف المنظمة لنظام الذكاء الاصطناعي ودورة حياته في أطرهم التشريعية.
+النص بالإنجليزية:
+The OECD AI Principles promote use of AI that is innovative and trustworthy and that respects human rights and democratic values. Adopted in May 2019, they set standards for AI that are practical and flexible enough to stand the test of time.
+
+## المبدأ 1.1 | النمو الشامل والتنمية المستدامة والرفاه (Inclusive growth, sustainable development and well-being)
+ملخص عربي (ترجمة غير رسمية): على أصحاب المصلحة إدارة الذكاء الاصطناعي الجدير بالثقة بمسؤولية لتحقيق نتائج نافعة للناس والكوكب، مثل تعزيز القدرات البشرية والإبداع، وإدماج الفئات الأقل تمثيلا، وتقليل أوجه عدم المساواة الاقتصادية والاجتماعية والجندرية، وحماية البيئة.
+النص بالإنجليزية:
+This Principle highlights the potential for trustworthy AI to contribute to overall growth and prosperity for all – individuals, society, and planet – and advance global development objectives.
+Stakeholders should proactively engage in responsible stewardship of trustworthy AI in pursuit of beneficial outcomes for people and the planet, such as augmenting human capabilities and enhancing creativity, advancing inclusion of underrepresented populations, reducing economic, social, gender and other inequalities, and protecting natural environments, thus invigorating inclusive growth, well-being, sustainable development and environmental sustainability.
+
+## المبدأ 1.2 | احترام سيادة القانون وحقوق الإنسان والقيم الديمقراطية بما فيها العدالة والخصوصية (Respect for the rule of law, human rights and democratic values, including fairness and privacy)
+ملخص عربي (ترجمة غير رسمية): على الجهات الفاعلة في الذكاء الاصطناعي احترام سيادة القانون وحقوق الإنسان طوال دورة حياة النظام، ومنها عدم التمييز والمساواة والحرية والكرامة واستقلالية الأفراد والخصوصية وحماية البيانات والعدالة الاجتماعية وحقوق العمل، ومعالجة المعلومات المضللة التي يضخمها الذكاء الاصطناعي، وتطبيق آليات وضمانات مثل القدرة على التدخل والإشراف البشري.
+النص بالإنجليزية:
+AI systems should be designed in a way that respects the rule of law, human rights, democratic values and diversity, and should include appropriate safeguards to ensure a fair and just society.
+AI actors should respect the rule of law, human rights, democratic and human-centred values throughout the AI system lifecycle. These include non-discrimination and equality, freedom, dignity, autonomy of individuals, privacy and data protection, diversity, fairness, social justice, and internationally recognised labour rights. This also includes addressing misinformation and disinformation amplified by AI, while respecting freedom of expression and other rights and freedoms protected by applicable international law.
+To this end, AI actors should implement mechanisms and safeguards, such as capacity for human agency and oversight, including to address risks arising from uses outside of intended purpose, intentional misuse, or unintentional misuse in a manner appropriate to the context and consistent with the state of the art.
+
+## المبدأ 1.3 | الشفافية وقابلية التفسير (Transparency and explainability)
+ملخص عربي (ترجمة غير رسمية): على الجهات الفاعلة الالتزام بالشفافية والإفصاح المسؤول عن أنظمة الذكاء الاصطناعي: تعزيز الفهم العام لقدراتها وحدودها، وإعلام الناس بأنهم يتفاعلون معها، وتقديم معلومات بسيطة عن مصادر البيانات والعوامل والمنطق الذي أدى إلى القرار أو التوصية لتمكين المتأثرين من فهم المخرجات، وتقديم معلومات تمكن من تضرر من النظام من الاعتراض على مخرجاته.
+النص بالإنجليزية:
+This principle is about transparency and responsible disclosure around AI systems to ensure that people understand when they are engaging with them and can challenge outcomes.
+AI Actors should commit to transparency and responsible disclosure regarding AI systems. To this end, they should provide meaningful information, appropriate to the context, and consistent with the state of art:
+to foster a general understanding of AI systems, including their capabilities and limitations,
+to make stakeholders aware of their interactions with AI systems, including in the workplace,
+where feasible and useful, to provide plain and easy-to-understand information on the sources of data/input, factors, processes and/or logic that led to the prediction, content, recommendation or decision, to enable those affected by an AI system to understand the output, and,
+to provide information that enable those adversely affected by an AI system to challenge its output.
+
+## المبدأ 1.4 | المتانة والأمن والسلامة (Robustness, security and safety)
+ملخص عربي (ترجمة غير رسمية): يجب أن تعمل أنظمة الذكاء الاصطناعي بشكل متين وآمن طوال دورة حياتها، وأن تكون هناك آليات تضمن إمكانية تجاوزها أو إصلاحها أو إيقافها بأمان إذا خاطرت بإحداث ضرر أو أظهرت سلوكا غير مرغوب فيه.
+النص بالإنجليزية:
+AI systems must function in a robust, secure and safe way throughout their lifetimes, and potential risks should be continually assessed and managed.
+AI systems should be robust, secure and safe throughout their entire lifecycle so that, in conditions of normal use, foreseeable use or misuse, or other adverse conditions, they function appropriately and do not pose unreasonable safety and/or security risks.
+Mechanisms should be in place, as appropriate, to ensure that if AI systems risk causing undue harm or exhibit undesired behaviour, they can be overridden, repaired, and/or decommissioned safely as needed.
+Mechanisms should also, where technically feasible, be in place to bolster information integrity while ensuring respect for freedom of expression.
+
+## المبدأ 1.5 | المساءلة (Accountability)
+ملخص عربي (ترجمة غير رسمية): يجب أن تكون الجهات والأفراد الذين يطورون أو يشغلون أنظمة الذكاء الاصطناعي خاضعين للمساءلة عن حسن عملها. وعليهم ضمان إمكانية التتبع للبيانات والعمليات والقرارات طوال دورة حياة النظام لتمكين تحليل مخرجاته والرد على الاستفسارات، وتطبيق نهج منهجي لإدارة المخاطر في كل مرحلة، بما فيها مخاطر التحيز الضار وحقوق الإنسان والخصوصية.
+النص بالإنجليزية:
+Organisations and individuals developing, deploying or operating AI systems should be held accountable for their proper functioning in line with the OECD’s values-based principles for AI.
+AI actors should be accountable for the proper functioning of AI systems and for the respect of the above principles, based on their roles, the context, and consistent with the state of the art.
+To this end, AI actors should ensure traceability, including in relation to datasets, processes and decisions made during the AI system lifecycle, to enable analysis of the AI system’s outputs and responses to inquiry, appropriate to the context and consistent with the state of the art.
+AI actors, should, based on their roles, the context, and their ability to act, apply a systematic risk management approach to each phase of the AI system lifecycle on an ongoing basis and adopt responsible business conduct to address risks related to AI systems, including, as appropriate, via co-operation between different AI actors, suppliers of AI knowledge and AI resources, AI system users, and other stakeholders. Risks include those related to harmful bias, human rights including safety, security, and privacy, as well as labour and intellectual property rights.
+
+## التوصية 2.1 | الاستثمار في البحث والتطوير (Investing in AI research and development)
+ملخص عربي (ترجمة غير رسمية): على الحكومات تشجيع الاستثمار العام والخاص طويل الأجل في البحث والتطوير والعلوم المفتوحة، وفي الأدوات مفتوحة المصدر ومجموعات البيانات المفتوحة الممثلة التي تحترم الخصوصية.
+النص بالإنجليزية:
+Governments should facilitate public and private investment in research & development to spur innovation in trustworthy AI.
+Governments should consider long-term public investment, and encourage private investment, in research and development and open science, including interdisciplinary efforts, to spur innovation in trustworthy AI that focus on challenging technical issues and on AI-related social, legal and ethical implications and policy issues.
+Governments should also consider public investment and encourage private investment in open-source tools and open datasets that are representative and respect privacy and data protection to support an environment for AI research and development that is free of harmful bias and to improve interoperability and use of standards.
+
+## التوصية 2.2 | بناء منظومة شاملة ممكنة للذكاء الاصطناعي (Fostering an including AI-enabling ecosystem)
+ملخص عربي (ترجمة غير رسمية): على الحكومات تطوير منظومة رقمية شاملة ومستدامة وقابلة للتشغيل البيني تشمل البيانات والتقنيات والبنية الحاسوبية والاتصالية وآليات مشاركة المعرفة، والنظر في آليات مثل صناديق البيانات (Data Trusts) لمشاركة البيانات بشكل آمن وعادل وقانوني.
+النص بالإنجليزية:
+Governments should foster accessible AI ecosystems with digital infrastructure and technologies, and mechanisms to share data and knowledge.
+Governments should foster the development of, and access to, an inclusive, dynamic, sustainable, and interoperable digital ecosystem for trustworthy AI. Such an ecosystem includes inter alia, data, AI technologies, computational and connectivity infrastructure, and mechanisms for sharing AI knowledge, as appropriate. In this regard, governments should consider promoting mechanisms, such as data trusts, to support the safe, fair, legal and ethical sharing of data.
+
+## التوصية 2.3 | بيئة حوكمة وسياسات مرنة وقابلة للتشغيل البيني (Shaping and enabling interoperable governance and policy environment for AI)
+ملخص عربي (ترجمة غير رسمية): على الحكومات توفير بيئة سياسات مرنة تدعم الانتقال من البحث إلى التشغيل، واستخدام بيئات تجريبية خاضعة للرقابة (Sandboxes) لاختبار الأنظمة، وتبني مناهج قائمة على النتائج، ومراجعة الأطر التنظيمية وآليات التقييم وتكييفها بما يشجع الابتكار والمنافسة.
+النص بالإنجليزية:
+Governments should create a policy environment that will open the way to deployment of trustworthy AI systems.
+Governments should promote an agile policy environment that supports transitioning from the research and development stage to the deployment and operation stage for trustworthy AI systems. To this effect, they should consider using experimentation to provide a controlled environment in which AI systems can be tested, and scaled-up, as appropriate. They should also adopt outcome-based approaches that provide flexibility in achieving governance objectives and co-operate within and across jurisdictions to promote interoperable governance and policy environments, as appropriate.
+Governments should review and adapt, as appropriate, their policy and regulatory frameworks and assessment mechanisms as they apply to AI systems to encourage innovation and competition for trustworthy AI.
+
+## التوصية 2.4 | بناء القدرات البشرية والاستعداد لتحول سوق العمل (Building human capacity and preparing for labour market transformation)
+ملخص عربي (ترجمة غير رسمية): على الحكومات تزويد الناس بمهارات الذكاء الاصطناعي، وضمان انتقال عادل للعاملين من خلال الحوار الاجتماعي والتدريب المستمر ودعم المتأثرين بفقدان الوظائف عبر الحماية الاجتماعية، وتعزيز الاستخدام المسؤول للذكاء الاصطناعي في العمل وجودة الخدمات العامة.
+النص بالإنجليزية:
+Governments should equip people with the skills for AI and support workers to ensure a fair transition.
+Governments should work closely with stakeholders to prepare for the transformation of the world of work and of society. They should empower people to effectively use and interact with AI systems across the breadth of applications, including by equipping them with the necessary skills.
+Governments should take steps, including through social dialogue, to ensure a fair transition for workers as AI is deployed, such as through training programmes along the working life, support for those affected by displacement, including through social protection, and access to new opportunities in the labour market.
+Governments should also work closely with stakeholders to promote the responsible use of AI at work, to enhance the safety of workers, the quality of jobs and of public services, to foster entrepreneurship and productivity, and aim to ensure that the benefits from AI are broadly and fairly shared.
+
+## التوصية 2.5 | التعاون الدولي من أجل ذكاء اصطناعي جدير بالثقة (International co-operation for trustworthy AI)
+ملخص عربي (ترجمة غير رسمية): على الحكومات التعاون عبر الحدود والقطاعات لتبادل المعرفة، وتطوير معايير تقنية عالمية توافقية، ومؤشرات قابلة للمقارنة دوليا لقياس تطبيق المبادئ.
+النص بالإنجليزية:
+Governments should co-operate across borders and sectors to share information, develop standards and work towards responsible stewardship of AI.
+Governments, including developing countries and with stakeholders, should actively co-operate to advance these principles and to progress on responsible stewardship of trustworthy AI.
+Governments should work together in the OECD and other global and regional fora to foster the sharing of AI knowledge, as appropriate. They should encourage international, cross-sectoral and open multi-stakeholder initiatives to garner long-term expertise on AI.
+Governments should promote the development of multi-stakeholder, consensus-driven global technical standards for interoperable and trustworthy AI.
+Governments should also encourage the development, and their own use, of internationally comparable indicators to measure AI research, development and deployment, and gather the evidence base to assess progress in the implementation of these principles.

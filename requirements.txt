@@ -1,0 +1,5 @@
+chromadb>=1.5
+sentence-transformers>=3.4
+anthropic>=0.120
+python-dotenv>=1.0
+ollama>=0.6
