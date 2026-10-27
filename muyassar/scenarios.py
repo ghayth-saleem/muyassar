@@ -89,6 +89,9 @@ def _step(run: dict, agent: str, at: int, received: list[dict], verdict: dict) -
         "sensitive_reason": verdict["sensitive_reason"],
         "model": CLAUDE_MODEL if PROVIDER == "anthropic" else PROVIDER,
     }
+    if any(d.get("source") == "voice" for d in received):
+        step["input_source"] = "voice"  # this step acted on what the voice assistant heard
+        step["voice"] = run.get("voice", {})
     for extra in ("gap_title", "gap", "global_example_id", "global_example", "conflicts", "citizen_reply", "staff_note"):
         if verdict.get(extra):
             step[extra] = verdict[extra]
@@ -102,8 +105,12 @@ def _step(run: dict, agent: str, at: int, received: list[dict], verdict: dict) -
     return step
 
 
-def run(scenario_id: str, on_step=None, run_id: str | None = None) -> dict:
-    """Play the scenario. on_step(run) is called after every step, for live progress."""
+def run(scenario_id: str, on_step=None, run_id: str | None = None, voice: dict | None = None) -> dict:
+    """Play the scenario. on_step(run) is called after every step, for live progress.
+
+    voice: a transcript from muyassar.voice ({"text", "duration", "model"}). It
+    replaces the content of the event marked "voice_input" and that delivery is
+    marked source: voice. Only the text travels; the audio was never kept."""
     scenario = load(scenario_id)
     run = {
         "run_id": run_id or uuid.uuid4().hex[:8],
@@ -112,12 +119,16 @@ def run(scenario_id: str, on_step=None, run_id: str | None = None) -> dict:
         "status": "running",
         "steps": [],
     }
+    if voice:
+        run["voice"] = {k: voice[k] for k in ("duration", "model") if k in voice}
     inboxes: dict[str, list[dict]] = {}
     verdicts: dict[str, dict] = {}
     try:
         for event in sorted(scenario["events"], key=lambda e: e["at"]):
             delivery = {"at": event["at"], "label": event["label"], "content": _content(event)}
-            if event.get("simulated"):
+            if voice and event.get("voice_input"):
+                delivery.update(content=voice["text"], source="voice", label="طلب صوتي (نص مفرّغ من التسجيل)")
+            elif event.get("simulated"):
                 delivery["simulated"] = True
             inboxes.setdefault(event["to"], []).append(delivery)
             run["current"] = event["to"]

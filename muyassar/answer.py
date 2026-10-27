@@ -52,7 +52,8 @@ def _source(hit: dict) -> dict:
     }
 
 
-def answer(question: str) -> dict:
+def answer(question: str, source: str = "text") -> dict:
+    """source is "voice" when the question is a transcript from muyassar.voice."""
     started = time.perf_counter()
     sources = [_source(h) for h in search(question, K)]
     context = "\n\n".join(f"[id: {s['id']}] {s['doc_name']} - المادة {s['article']}\n{s['text']}" for s in sources)
@@ -62,6 +63,7 @@ def answer(question: str) -> dict:
     cited = [c for c in reply["cited"] if c in known]
     result = {
         "question": question,
+        "source": source,
         "answer": reply["answer"],
         "covered": reply["covered"],
         "cited": cited,
@@ -80,6 +82,7 @@ def _log(result: dict) -> None:
         "time": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "agent": "web",
         "input": result["question"],
+        "source": result["source"],
         "retrieved": [f"{s['doc_name']} / {s['article']} ({s['score']})" for s in result["sources"]],
         "decision": "answered" if result["covered"] else "not_covered",
         "cited": result["cited"],

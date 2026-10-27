@@ -5,9 +5,10 @@
 GET  /                              web/index.html
 GET  /scenarios                     web/scenarios.html, the scenario timeline
 GET  /api/stats                     documents in the knowledge base and the latest benchmark runs
-POST /api/ask                       {"question": "..."} → answer with its cited sources
+POST /api/ask                       {"question": "..."} or {"voice_id": "..."} → answer with its cited sources
+POST /api/voice                     raw audio body (webm, ogg, wav, mp3...) → {"voice_id", "text", ...}
 GET  /api/scenarios                 scenarios, each with its latest logged run
-POST /api/scenarios/<id>/run        start a live run → {"run_id": ...}
+POST /api/scenarios/<id>/run        start a live run, optionally {"voice_id": ...} → {"run_id": ...}
 GET  /api/runs/<run_id>             a run's steps so far, polled by the page
 POST /api/runs/<run_id>/decide      {"approved": bool, "note": "..."} → the staff decision
 
@@ -29,6 +30,9 @@ PORT = 8765
 WEB = ROOT / "web"
 # Runs this server started or loaded from the log, by run_id.
 RUNS: dict[str, dict] = {}
+# Transcripts waiting to be used, by voice_id. Only the text is kept, and only
+# here: a request can be marked source: voice only if this server heard it.
+VOICE: dict[str, dict] = {}
 
 
 def stats() -> dict:
@@ -105,30 +109,72 @@ class Handler(BaseHTTPRequestHandler):
             return self._start_run(parts[2])
         if len(parts) == 4 and parts[:2] == ["api", "runs"] and parts[3] == "decide":
             return self._decide(parts[2])
+        if parts == ["api", "voice"]:
+            return self._voice()
         if self.path != "/api/ask":
             return self._json(404, {"error": "مش موجود"})
         try:
-            question = self._body().get("question", "").strip()
+            body = self._body()
         except (ValueError, json.JSONDecodeError):
             return self._json(400, {"error": "طلب غير صالح"})
+        source = "text"
+        if body.get("voice_id"):
+            heard = VOICE.pop(str(body["voice_id"]), None)
+            if not heard:
+                return self._json(400, {"error": "التسجيل مش موجود أو انستعمل قبل"})
+            question, source = heard["text"], "voice"
+        else:
+            question = body.get("question", "").strip()
         if not question or len(question) > 500:
             return self._json(400, {"error": "اكتب سؤال بين حرف و500 حرف"})
         try:
-            self._json(200, answer(question))
+            self._json(200, answer(question, source))
         except Exception as e:  # shown to the user in the page, so keep it readable
             self._json(500, {"error": f"صار خطأ: {e}"})
 
     def _start_run(self, scenario_id: str) -> None:
         if scenario_id not in {s["id"] for s in scenarios.all_scenarios()}:
             return self._json(404, {"error": "السيناريو مش موجود"})
+        try:
+            body = self._body()
+        except (ValueError, json.JSONDecodeError):
+            return self._json(400, {"error": "طلب غير صالح"})
+        heard = None
+        if body.get("voice_id"):
+            if not any(e.get("voice_input") for e in scenarios.load(scenario_id)["events"]):
+                return self._json(400, {"error": "هالسيناريو ما فيه طلب صوتي"})
+            heard = VOICE.pop(str(body["voice_id"]), None)
+            if not heard:
+                return self._json(400, {"error": "التسجيل مش موجود أو انستعمل قبل"})
         run_id = uuid.uuid4().hex[:8]
         RUNS[run_id] = {"run_id": run_id, "scenario": scenario_id, "status": "running", "steps": []}
 
         def update(run):
             RUNS[run_id] = {**run, "steps": list(run["steps"])}
 
-        threading.Thread(target=scenarios.run, args=(scenario_id, update, run_id), daemon=True).start()
+        threading.Thread(target=scenarios.run, args=(scenario_id, update, run_id, heard), daemon=True).start()
         self._json(202, {"run_id": run_id})
+
+    def _voice(self) -> None:
+        from muyassar.voice import MAX_BYTES, transcribe
+
+        length = int(self.headers.get("Content-Length", 0))
+        if not length:
+            return self._json(400, {"error": "ما وصل تسجيل صوت"})
+        if length > MAX_BYTES:
+            return self._json(413, {"error": "التسجيل أكبر من 10 ميغا"})
+        audio = self.rfile.read(length)  # stays in memory; never written to disk
+        try:
+            heard = transcribe(audio)
+        except Exception as e:
+            return self._json(400, {"error": f"ما قدرنا نفهم التسجيل: {e}"})
+        finally:
+            del audio
+        if not heard["text"]:
+            return self._json(422, {"error": "ما طلع كلام من التسجيل. جرّب مرة تانية أوضح"})
+        voice_id = uuid.uuid4().hex[:12]
+        VOICE[voice_id] = heard
+        self._json(200, {"voice_id": voice_id, **heard})
 
     def _decide(self, run_id: str) -> None:
         run = RUNS.get(run_id)

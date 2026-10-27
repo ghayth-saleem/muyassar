@@ -67,6 +67,12 @@ Three failure scenarios in `scenarios/*.json`, each an ordered list of events wi
 
 `python -m muyassar.scenarios <id>` runs one from the terminal; `/scenarios` on the demo server shows the timeline, every step clickable, with the staff approval step. Every step is a line in `logs/scenarios.jsonl`. `python -m muyassar.gaps` writes `reports/gaps.md` from the latest run of each scenario, in the policy agent's own words. `python scripts/consistency.py` runs each scenario 5 times into `logs/consistency/` and writes `eval/consistency.md`; `python scripts/check_citations.py` checks every cited article exists in the knowledge base and lists citations resting on secondary text. Sampling temperature cannot be fixed on Claude Sonnet 5.5, so stability is measured instead.
 
+## Voice assistant
+
+`muyassar/voice.py` transcribes Arabic speech locally with faster-whisper `large-v3-turbo` (int8). On the scenarios page, the health-data scenario has a record button (MediaRecorder) and an audio upload; `POST /api/voice` returns the transcript and a `voice_id`, and running the scenario with it replaces the father's request with what was heard. The audio is decoded in memory and never written or logged; only the text is kept, and every step that acted on it records `input_source: voice`.
+
+It runs on the CPU by default. On a 4 GB RTX 3050 the retrieval models already hold 3.2–3.8 GB, and next to them Whisper took 17–22 s for a 13.9 s clip; on the CPU it took 14.6 s, alone on the GPU 1.3 s (`large-v3`: 2.8 s). `MUYASSAR_WHISPER_DEVICE=cuda` uses the GPU where there is room. The model downloads into `models/whisper/` (git-ignored) on first use.
+
 ## ITU-T Y.3172 mapping
 
 | Y.3172 component | In Muyassar |
@@ -100,7 +106,8 @@ python -m muyassar.server     # http://localhost:8765 and /scenarios
 
 ```
 muyassar/      arabic.py ingest.py pdf_arabic.py retrieval.py llm.py answer.py
-               agents.py scenarios.py gaps.py server.py
+               agents.py scenarios.py gaps.py voice.py server.py
+scripts/       consistency.py check_citations.py
 sources/       registry.json, raw/ (clean texts), pdf/ (original files)
 kb/chunks/     one JSONL per document
 eval/          questions.jsonl, results.jsonl

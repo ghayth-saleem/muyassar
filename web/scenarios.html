@@ -108,6 +108,20 @@ nav a[aria-current] { color: var(--ink); background: var(--sunk); }
 .run-btn[disabled] { opacity: .6; cursor: progress; }
 .eyebrow { color: var(--muted); font-size: 14px; }
 
+/* Voice request (health-data scenario) */
+.voice { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--line); }
+.voice-head { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; }
+.voice-head strong { font-family: "Readex Pro", sans-serif; display: inline-flex; gap: 6px; align-items: center; }
+.voice-head span, .voice-status { color: var(--muted); font-size: 14px; }
+.voice-row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin-top: 10px; }
+.voice .btn { display: inline-flex; gap: 6px; align-items: center; }
+.voice .btn.rec { border-color: var(--danger); color: var(--danger); }
+.voice .btn.off, .voice .btn[disabled] { opacity: .55; pointer-events: none; }
+.heard { margin: 12px 0 0; padding: 10px 14px; border-radius: var(--r-input); background: var(--sunk); font-size: 16px; }
+@media (prefers-reduced-motion: no-preference) {
+  .voice .btn.rec i { animation: pulse 1s ease-in-out infinite alternate; }
+}
+
 /* Tags */
 .tag { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; white-space: nowrap; }
 .tag.ok { background: var(--accent-soft); color: var(--accent); }
@@ -330,7 +344,70 @@ function renderCase() {
           <i class="ph ${busy ? "ph-circle-notch" : "ph-play"}"></i>${busy ? "عم يشتغل" : run ? "شغّله من جديد" : "شغّل السيناريو"}
         </button>
       </div>
+      ${s.events.some(e => e.voice_input) ? voiceBox(busy) : ""}
     </div>`;
+}
+
+// Voice request: the audio goes to /api/voice, is transcribed locally and dropped;
+// only the text comes back, and the run marks it source: voice.
+let heard = null, recorder = null, chunks = [];
+function voiceBox(busy) {
+  const recording = recorder?.state === "recording";
+  return `
+    <div class="voice">
+      <div class="voice-head">
+        <strong><i class="ph ph-microphone"></i> الطلب بصوتك</strong>
+        <span>التسجيل ما بينحفظ. بينحفظ النص بس، ومعلّم إنه من صوت.</span>
+      </div>
+      <div class="voice-row">
+        <button type="button" class="btn ${recording ? "rec" : ""}" id="rec" ${busy ? "disabled" : ""}>
+          <i class="ph ${recording ? "ph-stop-circle" : "ph-record"}"></i>${recording ? "وقّف التسجيل" : "سجّل من المايك"}</button>
+        <label class="btn ${busy ? "off" : ""}"><i class="ph ph-upload-simple"></i>ارفع ملف صوت
+          <input type="file" id="audio-file" accept="audio/*" hidden ${busy ? "disabled" : ""}></label>
+        <span class="voice-status" id="voice-status" aria-live="polite">${voiceStatus}</span>
+      </div>
+      ${heard ? `
+        <blockquote class="heard">${esc(heard.text)}</blockquote>
+        <div class="voice-row">
+          <button type="button" class="btn primary" id="run-voice" ${busy ? "disabled" : ""}><i class="ph ph-play"></i>شغّل السيناريو بهالطلب الصوتي</button>
+          <span class="voice-status">${heard.duration} ث صوت · ${(heard.ms / 1000).toFixed(1)} ث تفريغ · <span class="ltr">${esc(heard.model)}</span></span>
+        </div>` : ""}
+    </div>`;
+}
+let voiceStatus = "";
+const setVoice = msg => { voiceStatus = msg; renderCase(); };
+
+async function sendAudio(blob) {
+  heard = null;
+  setVoice("عم يفرّغ الصوت…");
+  try {
+    const res = await fetch("/api/voice", { method: "POST", headers: { "Content-Type": blob.type || "application/octet-stream" }, body: blob });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || res.statusText);
+    heard = data;
+    setVoice("");
+  } catch (err) {
+    setVoice("ما زبط: " + err.message);
+  }
+}
+
+async function toggleRecord() {
+  if (recorder?.state === "recording") { recorder.stop(); return; }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    chunks = [];
+    recorder = new MediaRecorder(stream);
+    recorder.ondataavailable = e => e.data.size && chunks.push(e.data);
+    recorder.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      sendAudio(new Blob(chunks, { type: recorder.mimeType || "audio/webm" }));
+      chunks = [];
+    };
+    recorder.start();
+    setVoice("عم يسجّل. احكِ طلبك وبعدين وقّف التسجيل.");
+  } catch (err) {
+    setVoice("ما قدرنا نفتح المايك: " + err.message);
+  }
 }
 
 // A gap must be compared with a global-layer article the policy agent retrieved; otherwise it is red.
@@ -343,6 +420,7 @@ function globalExample(st) {
 
 function cardTags(st) {
   const t = [];
+  if (st.input_source === "voice") t.push(`<span class="tag plain"><i class="ph ph-microphone"></i>طلب صوتي</span>`);
   if (st.unsourced) t.push(`<span class="tag bad"><i class="ph ph-warning-octagon"></i>بدون مصدر</span>`);
   else if (st.cited?.length) t.push(`<span class="tag ok"><i class="ph ph-seal-check"></i>${st.cited.length} ${st.cited.length === 1 ? "مادة" : "مواد"}</span>`);
   if (st.sensitive) t.push(`<span class="tag warn"><i class="ph ph-hand-palm"></i>${st.sensitive_rule ? "قرار حساس بقاعدة التعارض" : "قرار حساس"}</span>`);
@@ -414,7 +492,7 @@ function renderDetail() {
   }
   const a = AGENTS[st.agent] || { name: st.agent, role: "" };
   const recv = (st.received || []).map(r => `
-    <li><b><span class="ltr">t+${clock(r.at)}</span>${esc(r.label)}${r.simulated ? `<span class="tag plain">بيانات تجريبية</span>` : ""}</b>${esc(r.content)}</li>`).join("");
+    <li><b><span class="ltr">t+${clock(r.at)}</span>${esc(r.label)}${r.simulated ? `<span class="tag plain">بيانات تجريبية</span>` : ""}${r.source === "voice" ? `<span class="tag ok"><i class="ph ph-microphone"></i>من صوت</span>` : ""}</b>${esc(r.content)}</li>`).join("");
   const sources = [...(st.retrieved || [])].sort((x, y) => st.cited.includes(y.id) - st.cited.includes(x.id)).map(s => {
     const used = st.cited.includes(s.id);
     return `
@@ -463,10 +541,15 @@ function show(id) {
   history.replaceState(null, "", "#" + id);
 }
 
-async function start() {
+async function start(voiceId) {
   clearInterval(poll);
-  const res = await fetch(`/api/scenarios/${current.id}/run`, { method: "POST" });
-  const { run_id } = await res.json();
+  const res = await fetch(`/api/scenarios/${current.id}/run`, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(voiceId ? { voice_id: voiceId } : {}),
+  });
+  const { run_id, error } = await res.json();
+  if (!res.ok) { setVoice(error || res.statusText); return; }
+  if (voiceId) heard = null;  // a transcript is used once
   run = { run_id, status: "running", steps: [] };
   selected = null;
   renderCase(); renderTimeline(); renderDetail();
@@ -499,6 +582,8 @@ document.addEventListener("click", e => {
   const card = e.target.closest("button.card");
   if (card) { select(Number(card.dataset.n)); if (matchMedia("(max-width: 900px)").matches) $("#detail").scrollIntoView({ block: "start" }); return; }
   if (e.target.closest("#run")) { start(); return; }
+  if (e.target.closest("#rec")) { toggleRecord(); return; }
+  if (e.target.closest("#run-voice") && heard) { start(heard.voice_id); return; }
   const d = e.target.closest("[data-decide]");
   if (d) { decide(d.dataset.decide === "1"); return; }
   const toggle = e.target.closest("[data-toggle]");
@@ -507,6 +592,10 @@ document.addEventListener("click", e => {
     src.classList.toggle("open");
     toggle.textContent = src.classList.contains("open") ? "أقل" : "النص كامل";
   }
+});
+
+document.addEventListener("change", e => {
+  if (e.target.id === "audio-file" && e.target.files[0]) sendAudio(e.target.files[0]);
 });
 
 addEventListener("hashchange", () => {

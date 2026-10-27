@@ -58,6 +58,7 @@ NO_CONTRADICTION = "contradicts_guide = false وcontradicted_id فارغ؛ رص�
 # sensitive and waits for staff, whatever the agents or the orchestrator said.
 CONFLICT_RULE = "conflict_with_published_guide"
 GLOBAL_K = 3  # articles from the global layer the policy agent always gets, for its global example
+LAYER_TAG = {"global": " [عالمي]", "procedure": " [إجراءات]"}
 
 
 @dataclass(frozen=True)
@@ -68,7 +69,9 @@ class Agent:
     system: str
     focus: str  # added to the retrieval query so each agent pulls articles for its own job
     sees_question: bool = True  # the case's legal question; the guide and the checker stick to their own job
-    global_layer: bool = False  # also retrieves from the global layer, for the gap's global example
+    # (layer, k) searched on top of the main retrieval, so the articles this
+    # agent's job depends on are always in front of it.
+    extra_layers: tuple = ()
 
 
 AGENTS = {
@@ -89,11 +92,14 @@ decision: تسمية قصيرة مثل «إرشاد بالخطوات» أو «ل
             f"""أنت «وكيل فحص الأوراق» في نظام ميسّر. تصلك نتيجة مقارنة آلية بين حقول وثيقة رفعها المواطن وسجل الجهة الرسمي.
 مهمتك: تفسير نتيجة المقارنة، وتقدير ما إذا كان الفرق خطأ قراءة آلية أو اختلافاً حقيقياً، وما يجب التحقق منه بعد ذلك.
 لا تقرر رفض الطلب؛ هذا ليس دورك. decision: «مطابق» أو «غير مطابق - يحتاج تحقق» أو «تعذّر الفحص».
+- النصوص المعلّمة [إجراءات] أدلة الخدمة: اربط ما يجب التحقق منه بالخطوة أو الشرط أو الوثيقة المطلوبة في دليل الخدمة المرفق (مثل خطوة مطابقة المعلومات على النظام)، أو بنص قانوني مرفق عن دقة البيانات أو السجلات، واستشهد بمعرّفه.
+- إذا لم يتناول أي نص مرفق التحقق من هذه الوثيقة، اترك cited فارغة وقل ذلك؛ لا تستشهد بنص لا علاقة له.
 {NO_GAP}
 {NO_CONTRADICTION}
 {COMMON}""",
             "صحة الوثيقة السجل الإلكتروني التحقق دقة البيانات",
             sees_question=False,
+            extra_layers=(("procedure", 3),),
         ),
         Agent(
             "policy", "وكيل السياسات", "يقرأ القانون ويكشف الفجوات",
@@ -107,7 +113,7 @@ decision: تسمية قصيرة مثل «النص يحدد المسؤول» أو
 {NO_CONTRADICTION}
 {COMMON}""",
             "المسؤولية الموافقة حقوق صاحب البيانات القرار الآلي الإشراف البشري",
-            global_layer=True,
+            extra_layers=(("global", GLOBAL_K),),  # for the gap's global example
         ),
         Agent(
             "entity", "وكيل الجهة", "يمثل الجهة الحكومية صاحبة الخدمة",
@@ -170,7 +176,7 @@ def source(hit: dict) -> dict:
 
 def _context(sources: list[dict]) -> str:
     return "\n\n".join(
-        f"[id: {s['id']}]{' [عالمي]' if s.get('layer') == 'global' else ''} {s['doc_name']} - {s['article']}\n{s['text']}"
+        f"[id: {s['id']}]{LAYER_TAG.get(s.get('layer'), '')} {s['doc_name']} - {s['article']}\n{s['text']}"
         for s in sources
     )
 
@@ -186,9 +192,9 @@ def run_agent(key: str, question: str, inbox: list[dict]) -> dict:
     question = question if agent.sees_question else ""
     query = f"{question} {inbox[-1]['content']} {agent.focus}".strip()
     sources = [source(h) for h in search(query, K)]
-    if agent.global_layer:
+    for layer, k in agent.extra_layers:
         seen = {s["id"] for s in sources}
-        sources += [source(h) for h in search(query, GLOBAL_K, layer="global") if h["id"] not in seen]
+        sources += [source(h) for h in search(query, k, layer=layer) if h["id"] not in seen]
     case =f"سؤال الحالة: {question}\n\n" if question else ""
     reply = ask(
         agent.system,
