@@ -111,15 +111,18 @@ class Index:
             )
         self.collection = col
 
-    def bm25_ranking(self, query: str) -> list[int]:
+    def bm25_ranking(self, query: str, layer: str | None = None) -> list[int]:
         scores = self.bm25.scores(tokens(query))
         ranked = sorted(range(len(scores)), key=lambda i: -scores[i])
+        if layer:
+            ranked = [i for i in ranked if self.chunks[i]["metadata"].get("layer") == layer]
         return [i for i in ranked[:CANDIDATES] if scores[i] > 0]
 
-    def dense_ranking(self, query: str) -> list[int]:
+    def dense_ranking(self, query: str, layer: str | None = None) -> list[int]:
         vector = self.model.encode([f"query: {query}"], normalize_embeddings=True)[0]
         n = min(CANDIDATES, len(self.chunks))
-        hits = self.collection.query(query_embeddings=[vector.tolist()], n_results=n, include=[])
+        where = {"layer": layer} if layer else None
+        hits = self.collection.query(query_embeddings=[vector.tolist()], n_results=n, where=where, include=[])
         position = {c["id"]: i for i, c in enumerate(self.chunks)}
         return [position[i] for i in hits["ids"][0] if i in position]
 
@@ -155,15 +158,16 @@ def _reranker():
     return _cache["reranker"]
 
 
-def search(query: str, k: int = 5, mode: str | None = None) -> list[dict]:
-    """Top-k chunks for query. mode: rerank (default), hybrid, bm25 or dense."""
+def search(query: str, k: int = 5, mode: str | None = None, layer: str | None = None) -> list[dict]:
+    """Top-k chunks for query. mode: rerank (default), hybrid, bm25 or dense.
+    layer limits the search to one knowledge-base layer, e.g. "global"."""
     mode = mode or os.environ.get("MUYASSAR_RETRIEVAL", "rerank")
     index = get_index("hybrid" if mode == "rerank" else mode)
     rankings = []
     if mode in ("hybrid", "rerank", "bm25"):
-        rankings.append(index.bm25_ranking(query))
+        rankings.append(index.bm25_ranking(query, layer))
     if mode in ("hybrid", "rerank", "dense"):
-        rankings.append(index.dense_ranking(query))
+        rankings.append(index.dense_ranking(query, layer))
 
     fused = Counter()
     for ranking in rankings:

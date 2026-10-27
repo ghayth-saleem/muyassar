@@ -76,7 +76,8 @@ def _step(run: dict, agent: str, at: int, received: list[dict], verdict: dict) -
         "received": received,
         "steps": verdict["steps"],
         "retrieved": [
-            {k: s[k] for k in ("id", "doc_name", "article", "url", "score", "text")} for s in verdict["sources"]
+            {k: s.get(k) for k in ("id", "doc_name", "article", "url", "layer", "jurisdiction", "score", "text")}
+            for s in verdict["sources"]
         ],
         "cited": verdict["cited"],
         "dropped_citations": verdict["dropped_citations"],
@@ -88,9 +89,11 @@ def _step(run: dict, agent: str, at: int, received: list[dict], verdict: dict) -
         "sensitive_reason": verdict["sensitive_reason"],
         "model": CLAUDE_MODEL if PROVIDER == "anthropic" else PROVIDER,
     }
-    for extra in ("gap_title", "gap", "international", "conflicts", "citizen_reply", "staff_note"):
+    for extra in ("gap_title", "gap", "global_example_id", "global_example", "conflicts", "citizen_reply", "staff_note"):
         if verdict.get(extra):
             step[extra] = verdict[extra]
+    if "gap_no_global" in verdict:
+        step["gap_no_global"] = verdict["gap_no_global"]
     run["steps"].append(step)
     _write(step)
     return step

@@ -6,7 +6,7 @@ Muyassar is a multi-agent assistant for Jordanian government services, built for
 
 ## Knowledge base
 
-13 documents, 286 chunks, in three layers. Every chunk carries `doc_name`, `article`, `entity`, `date` and `url` (enforced by a hook on `kb/`).
+15 documents, 311 chunks, in three layers. Every chunk carries `doc_name`, `article`, `entity`, `date` and `url` (enforced by a hook on `kb/`).
 
 | Layer | Document | Units | Text source |
 |---|---|---|---|
@@ -20,9 +20,11 @@ Muyassar is a multi-agent assistant for Jordanian government services, built for
 | Procedure | Passport renewal guide (office and online) | 7 sections | CSPD website |
 | Procedure | Birth registration guide | 6 sections | CSPD website |
 | Procedure | Smart ID card renewal guide | 3 sections | CSPD website |
-| International | EU AI Act, selected articles (5, 6, 13, 14, 26, 27, 50, 86, Annex III) | 9 sections | official text via artificialintelligenceact.eu, Arabic summaries ours |
-| International | OECD AI Principles (OECD/LEGAL/0449, 2024) | 11 sections | oecd.ai, Arabic summaries ours |
-| International | Estonia's X-Road | 4 sections | RIA, e-Estonia, NIIS |
+| Global (EU) | EU AI Act, selected articles (5, 6, 13, 14, 26, 27, 50, 86, Annex III point 5) | 9 sections | EU Official Journal via the Publications Office (Cellar), Arabic summaries ours |
+| Global (EU) | GDPR, articles 7, 9, 22 | 3 sections | EU Official Journal via Cellar, Arabic summaries ours |
+| Global (EU) | Single Digital Gateway Regulation 2018/1724, articles 9, 10, 17 | 3 sections | EU Official Journal via Cellar, Arabic summaries ours |
+| Global (OECD) | OECD AI Principles (OECD/LEGAL/0449, 2024) | 11 sections | oecd.ai, Arabic summaries ours |
+| Global (Estonia) | Estonia's X-Road | 4 sections | RIA, e-Estonia, NIIS |
 
 `sources/registry.json` records, for each document, the official reference, both URLs, where the text came from and what is still unverified. Read its `verification` field before relying on a document.
 
@@ -34,12 +36,12 @@ Hybrid BM25 (custom Arabic normalisation and light stemming) plus dense `intfloa
 
 ## Benchmark
 
-76 questions (`eval/questions.jsonl`), mostly in Jordanian dialect, each with the expected document and article. Every run is appended to `eval/results.jsonl`.
+81 questions (`eval/questions.jsonl`), mostly in Jordanian dialect, each with the expected document and article. Every run is appended to `eval/results.jsonl`.
 
 | Mode | recall@5 | recall@1 |
 |---|---|---|
-| hybrid + reranker | **0.987** (75/76) | **0.868** (66/76) |
-| hybrid | 0.908 | 0.658 |
+| hybrid + reranker | **0.988** (80/81) | **0.864** (70/81) |
+| hybrid (76 questions, before the global layer) | 0.908 | 0.658 |
 
 Most recall@1 misses are a neighbouring article or the same rule in another document (for example the EU AI Act's right to explanation ranking above the Jordanian ethics charter). The questions were written by the KB owner and still need review by the team.
 
@@ -55,7 +57,7 @@ An orchestrator and four agents, one per role the competition asks for (`muyassa
 | وكيل الجهة (entity) | speaks for the government body that owns the service | the body's updates and verification results |
 | المنسّق (orchestrator) | combines the verdicts, flags conflicts, writes the citizen reply and the staff note | the agents' verdicts, never raw events |
 
-Each agent retrieves its own articles and returns steps, a finding, a decision, a confidence, its citations and whether the decision is sensitive. Citations that were not retrieved are dropped; a verdict left with none is marked unsourced and shown in red. A sensitive final decision (rejecting a request, keeping or sending health data) stops the run until a staff member approves or rejects it, and that decision is logged too.
+Each agent retrieves its own articles (the policy agent also always gets 3 global-layer articles, and every gap must name one of them as its global example or it is shown in red) and returns steps, a finding, a decision, a confidence, its citations and whether the decision is sensitive. Citations that were not retrieved are dropped; a verdict left with none is marked unsourced and shown in red. A sensitive final decision (rejecting a request, keeping or sending health data) stops the run until a staff member approves or rejects it, and that decision is logged too.
 
 Three failure scenarios in `scenarios/*.json`, each an ordered list of events with a simulated time and the one agent it reaches:
 
@@ -63,7 +65,7 @@ Three failure scenarios in `scenarios/*.json`, each an ordered list of events wi
 2. **بيانات صحية في طلب بطاقة الإعاقة:** the voice assistant hears a diagnosis and medication; the father says «ماشي». Expected gap: when is spoken consent to health-data processing legally enough.
 3. **تغيّر الإجراء فجأة:** the passport office changes the documents for minors before the knowledge base is updated (a hypothetical event, labelled as such). Expected gap: no deadline for updating digital service information.
 
-`python -m muyassar.scenarios <id>` runs one from the terminal; `/scenarios` on the demo server shows the timeline, every step clickable, with the staff approval step. Every step is a line in `logs/scenarios.jsonl`. `python -m muyassar.gaps` writes `reports/gaps.md` from the latest run of each scenario, in the policy agent's own words.
+`python -m muyassar.scenarios <id>` runs one from the terminal; `/scenarios` on the demo server shows the timeline, every step clickable, with the staff approval step. Every step is a line in `logs/scenarios.jsonl`. `python -m muyassar.gaps` writes `reports/gaps.md` from the latest run of each scenario, in the policy agent's own words. `python scripts/consistency.py` runs each scenario 5 times into `logs/consistency/` and writes `eval/consistency.md`; `python scripts/check_citations.py` checks every cited article exists in the knowledge base and lists citations resting on secondary text. Sampling temperature cannot be fixed on Claude Sonnet 5.5, so stability is measured instead.
 
 ## ITU-T Y.3172 mapping
 

@@ -3,7 +3,7 @@
     python -m muyassar.gaps          # writes reports/gaps.md
 
 Each gap is what the policy agent found in its own words, with the Jordanian
-articles it retrieved and cited and any international example it named, next
+articles it retrieved and cited and the global-layer article it compared with, next
 to the gap the scenario was designed to expose. Nothing here is written by
 hand, so the report shows what the agents found, not what we expected.
 """
@@ -44,8 +44,13 @@ def build() -> str:
                 lines += [f"**الفجوة التي وجدها الوكيل:** {s['gap_title']}", "", s["gap"], ""]
                 if s["cited"]:
                     lines += ["**النصوص الأردنية الأقرب:**", ""] + [f"- {_ref(s, c)}" for c in s["cited"]] + [""]
-                if s.get("international"):
-                    lines += [f"**مثال عالمي:** {s['international']}", ""]
+                if s.get("global_example_id"):
+                    lines += [f"**المثال العالمي:** {_ref(s, s['global_example_id'])}", "", s["global_example"], ""]
+                elif "gap_no_global" in s:
+                    lines += ["**المثال العالمي:** لم يُسترجع نص من الطبقة العالمية يعالج هذه النقطة."
+                              + (f" ({s['global_example']})" if s.get("global_example") else ""), ""]
+                elif s.get("international"):  # runs logged before global_example existed
+                    lines += [f"**مثال عالمي (غير مربوط بنص مسترجع):** {s['international']}", ""]
         else:
             lines += ["**لم يجد وكيل السياسات فجوة.** " + (policy[-1]["finding"] if policy else ""), ""]
         if final.get("conflicts"):

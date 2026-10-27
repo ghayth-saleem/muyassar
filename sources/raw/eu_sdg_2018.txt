@@ -1,0 +1,42 @@
+## المادة 9 | جودة المعلومات عن الحقوق والالتزامات والقواعد (Article 9: Quality of information on rights, obligations and rules)
+ملخص عربي (ترجمة غير رسمية): على الدول الأعضاء والمفوضية أن تكون المعلومات المنشورة عبر البوابة الرقمية الموحدة سهلة الاستخدام ودقيقة وكاملة بما يكفي، وتذكر الجهة المسؤولة عن محتواها، وتذكر تاريخ آخر تحديث لها أو تاريخ نشرها إن لم تُحدَّث، وأن تبقى محدّثة. ولا تحدد المادة مدة زمنية معينة للتحديث.
+النص الرسمي بالإنجليزية:
+1. Where Member States and the Commission are responsible in accordance with Article 4 for ensuring access to information referred to in point (a) of Article 2(2), they shall make sure that such information complies with the following requirements:
+(a) it is user-friendly, enabling users to easily find and understand the information and to easily identify which parts of the information are relevant to their particular situation;
+(b) it is accurate and sufficiently comprehensive to cover information that users need to know in order to exercise their rights in full compliance with applicable rules and obligations;
+(c) it includes references, links to legal acts, technical specifications and guidelines, where relevant;
+(d) it includes the name of the competent authority or entity responsible for the content of the information;
+(e) it includes the contact details of any relevant assistance or problem-solving services, such as a phone number, an email address, an online enquiry form or any other commonly used means of electronic communication that is most suitable for the type of service offered and for the target audience of that service;
+(f) it includes the date of the last update of the information, if any, or, where the information has not been updated, the date of publication of the information;
+(g) it is well-structured and presented, so that users can quickly find the information they need;
+(h) it is kept up-to-date; and
+(i) it is written in clear and plain language adapted to the needs of the target users.
+2. Member States shall make the information referred to in paragraph 1 of this Article accessible in an official language of the Union that is broadly understood by the largest possible number of cross-border users, in accordance with Article 12.
+
+## المادة 10 | جودة المعلومات عن الإجراءات (Article 10: Quality of information on procedures)
+ملخص عربي (ترجمة غير رسمية): المعلومات عن كل إجراء إداري يجب أن تشرح خطواته والوثائق المطلوبة والجهة المختصة ووسائل التحقق والرسوم وطرق الاعتراض، والمدد التي يلتزم بها المستخدم أو الجهة، وإن لم توجد مدد فالوقت التقريبي لإنجاز الإجراء.
+النص الرسمي بالإنجليزية:
+1. The Member States and the Commission shall, for the purposes of complying with Article 4, ensure that, before users have to identify themselves prior to launching the procedure, they have access to a sufficiently comprehensive, clear and user-friendly explanation of the following elements, where applicable, of the procedures referred to in point (b) of Article 2(2):
+(a) the relevant steps of the procedure to be taken by the user, including any exception, under Article 6(3), to the obligation of Member States to offer the procedure fully online;
+(b) the name of the competent authority responsible for the procedure, including its contact details;
+(c) the accepted means of authentication, identification and signature for the procedure;
+(d) the type and format of evidence to be submitted;
+(e) the means of redress or appeal which are generally available in the event of disputes with the competent authorities;
+(f) the applicable fees and the online methods of payment;
+(g) any deadlines to be respected by the user or by the competent authority and where no deadlines exist, the average, estimated or indicative time that the competent authority needs to complete the procedure;
+(h) any rules concerning a lack of reply from the competent authority and the legal consequences thereof for the users, including tacit approval or administrative silence arrangements;
+(i) any additional languages in which the procedure can be carried out.
+2. If no tacit approval, administrative silence or similar arrangements exist, competent authorities shall, where applicable, inform users of any delays and of any extension of deadlines or any consequences thereof.
+3. Where the explanation referred to in paragraph 1 is already made available for non-crossborder users, it may be used or reused for the purposes of this Regulation, provided that it also covers the situation of cross-border users, where applicable.
+4. Member States shall make the explanation referred to in paragraph 1 of this Article accessible in an official language of the Union that is broadly understood by the largest possible number of cross-border users, in accordance with Article 12.
+
+## المادة 17 | مراقبة الجودة (Article 17: Quality monitoring)
+ملخص عربي (ترجمة غير رسمية): تراقب المفوضية والمنسقون الوطنيون بانتظام التزام المعلومات والإجراءات بمتطلبات الجودة. وإذا تراجعت الجودة، للمفوضية أن تطلب إجراءً تصحيحياً، أو ترسل توصيات للدولة، أو تفصل المعلومة أو الإجراء عن البوابة مؤقتاً.
+النص الرسمي بالإنجليزية:
+1. The national coordinators referred to in Article 28 and the Commission shall, within their respective competences, regularly monitor the compliance of the information, procedures and assistance and problem-solving services available through the gateway with the quality requirements laid down in Articles 8 to 13 and 16. The monitoring shall be carried out on the basis of the data gathered in accordance with Articles 24 and 25.
+2. In the event of a deterioration in the quality of the information, of the procedures and of the assistance or problem-solving services referred to in paragraph 1 provided by the competent authorities, the Commission shall, taking into account the seriousness and persistence of the deterioration, take one or more of the following measures:
+(a) inform the relevant national coordinator and ask for remedial action;
+(b) submit for discussion in the gateway coordination group recommended actions to improve compliance with the quality requirements;
+(c) send a letter with recommendations to the Member State concerned;
+(d) temporarily disconnect the information, the procedure, or the assistance or problem-solving service from the gateway.
+3. Where an assistance or problem-solving service to which links are provided in accordance with Article 7(3) consistently does not comply with requirements laid down in Articles 11 and 16, or no longer meets the needs of the users as indicated by the data gathered in accordance with Articles 24 and 25, the Commission may, after consultation with the relevant national coordinator and, where necessary, with the gateway coordination group, disconnect it from the gateway.

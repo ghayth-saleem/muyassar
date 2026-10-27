@@ -333,12 +333,22 @@ function renderCase() {
     </div>`;
 }
 
+// A gap must be compared with a global-layer article the policy agent retrieved; otherwise it is red.
+function globalExample(st) {
+  const src = st.global_example_id && st.retrieved?.find(r => r.id === st.global_example_id);
+  if (src) return `<p><strong>المثال العالمي (${esc(src.jurisdiction || "")}):</strong> ${esc(shortName(src.doc_name))} · ${esc(unit(src.article))}. ${esc(st.global_example)}</p>`;
+  if (st.gap_no_global) return `<div class="alert bad" style="margin-top:10px"><i class="ph ph-warning-octagon"></i><div>ما في مثال عالمي مسترجع لهالفجوة. ${esc(st.global_example)}</div></div>`;
+  return "";
+}
+
 function cardTags(st) {
   const t = [];
   if (st.unsourced) t.push(`<span class="tag bad"><i class="ph ph-warning-octagon"></i>بدون مصدر</span>`);
   else if (st.cited?.length) t.push(`<span class="tag ok"><i class="ph ph-seal-check"></i>${st.cited.length} ${st.cited.length === 1 ? "مادة" : "مواد"}</span>`);
   if (st.sensitive) t.push(`<span class="tag warn"><i class="ph ph-hand-palm"></i>قرار حساس</span>`);
-  if (st.gap) t.push(`<span class="tag plain"><i class="ph ph-puzzle-piece"></i>فجوة</span>`);
+  if (st.gap) t.push(st.gap_no_global
+    ? `<span class="tag bad"><i class="ph ph-puzzle-piece"></i>فجوة بدون مثال عالمي</span>`
+    : `<span class="tag plain"><i class="ph ph-puzzle-piece"></i>فجوة${st.global_example_id ? " + مثال عالمي" : ""}</span>`);
   if (st.conflicts?.length) t.push(`<span class="tag plain"><i class="ph ph-arrows-split"></i>${st.conflicts.length} تعارض</span>`);
   return t.join("");
 }
@@ -350,7 +360,7 @@ function renderTimeline(fresh = new Set()) {
   }
   const items = run.steps.map(st => {
     const a = AGENTS[st.agent] || { name: st.agent, icon: "ph-circle" };
-    const kind = st.agent === "human" ? "human" : st.agent === "orchestrator" ? "final" : st.unsourced ? "bad" : st.sensitive ? "warn" : "";
+    const kind = st.agent === "human" ? "human" : st.agent === "orchestrator" ? "final" : st.unsourced || st.gap_no_global ? "bad" : st.sensitive ? "warn" : "";
     const last = st.received?.[st.received.length - 1];
     const got = st.agent === "orchestrator" ? `استلم أحكام ${st.received.length} وكلاء` : st.agent === "human" ? (st.note ? `ملاحظة: ${st.note}` : "") : last ? `وصله: ${last.label}` : "";
     const conf = st.confidence != null ? `<div class="conf"><span>الثقة</span><span class="bar"><i style="width:${Math.round(st.confidence * 100)}%"></i></span><span class="ltr">${st.confidence.toFixed(2)}</span></div>` : "";
@@ -428,7 +438,7 @@ function renderDetail() {
       ${st.staff_note ? `<div class="block"><h3><i class="ph ph-briefcase"></i>ملاحظة للموظف</h3><div class="say staff">${esc(st.staff_note)}</div></div>` : ""}
       ${st.agent !== "orchestrator" ? `<div class="block"><h3><i class="ph ph-gavel"></i>الحكم</h3><p class="finding">${esc(st.finding)}</p></div>` : ""}
       ${st.conflicts?.length ? `<div class="block"><h3><i class="ph ph-arrows-split"></i>تعارض بين الوكلاء</h3><ul class="steps">${st.conflicts.map(c => `<li>${esc(c)}</li>`).join("")}</ul></div>` : ""}
-      ${st.gap ? `<div class="block"><h3><i class="ph ph-puzzle-piece"></i>الفجوة اللي لقاها</h3><div class="gapbox"><b>${esc(st.gap_title)}</b><p>${esc(st.gap)}</p>${st.international ? `<p><strong>مثال عالمي:</strong> ${esc(st.international)}</p>` : ""}</div></div>` : ""}
+      ${st.gap ? `<div class="block"><h3><i class="ph ph-puzzle-piece"></i>الفجوة اللي لقاها</h3><div class="gapbox"><b>${esc(st.gap_title)}</b><p>${esc(st.gap)}</p>${globalExample(st)}</div></div>` : ""}
       <div class="block"><h3><i class="ph ph-list-numbers"></i>كيف وصل للحكم</h3><ol class="steps">${(st.steps || []).map(x => `<li>${esc(x)}</li>`).join("")}</ol></div>
       <div class="block"><h3><i class="ph ph-books"></i>النصوص اللي رجعت (${st.retrieved?.length || 0})</h3><div class="srcs">${sources || `<p class="role">ولا نص.</p>`}</div></div>`;
   }

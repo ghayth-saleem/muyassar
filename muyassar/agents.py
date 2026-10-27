@@ -40,14 +40,16 @@ AGENT_SCHEMA = {
         "sensitive_reason": {"type": "string"},
         "gap_title": {"type": "string"},
         "gap": {"type": "string"},
-        "international": {"type": "string"},
+        "global_example_id": {"type": "string"},
+        "global_example": {"type": "string"},
     },
     "required": ["steps", "finding", "decision", "confidence", "cited", "sensitive",
-                 "sensitive_reason", "gap_title", "gap", "international"],
+                 "sensitive_reason", "gap_title", "gap", "global_example_id", "global_example"],
     "additionalProperties": False,
 }
 
-NO_GAP = "اترك gap_title وgap وinternational فارغة؛ كشف الفجوات من عمل وكيل السياسات."
+NO_GAP = "اترك gap_title وgap وglobal_example_id وglobal_example فارغة؛ كشف الفجوات من عمل وكيل السياسات."
+GLOBAL_K = 3  # articles from the global layer the policy agent always gets, for its global example
 
 
 @dataclass(frozen=True)
@@ -58,6 +60,7 @@ class Agent:
     system: str
     focus: str  # added to the retrieval query so each agent pulls articles for its own job
     sees_question: bool = True  # the case's legal question; the guide and the checker stick to their own job
+    global_layer: bool = False  # also retrieves from the global layer, for the gap's global example
 
 
 AGENTS = {
@@ -86,11 +89,14 @@ decision: تسمية قصيرة مثل «إرشاد بالخطوات» أو «ل
             "policy", "وكيل السياسات", "يقرأ القانون ويكشف الفجوات",
             f"""أنت «وكيل السياسات» في نظام ميسّر، المستشار القانوني. تقرأ القوانين والسياسات الأردنية المرفقة وتجيب عن سؤال الحالة: ماذا يسمح النص، ومن المسؤول، وأين يسكت.
 - إذا لم يحدد أي نص أردني مرفق الجواب، فهذه فجوة: اكتب gap_title (عنوان قصير) وgap (وصف الفجوة بجملتين أو ثلاث، مع ذكر المواد الأردنية الأقرب).
-- international: إذا وجدت في النصوص المرفقة مثالاً عالمياً (قانون الذكاء الاصطناعي الأوروبي، مبادئ OECD، إكس-رود) يعالج النقطة، اذكره برقم المادة أو المبدأ. وإلا اتركه فارغاً.
+- النصوص المعلّمة [عالمي] من الطبقة العالمية (اللائحة الأوروبية لحماية البيانات، قانون الذكاء الاصطناعي الأوروبي، لائحة البوابة الرقمية الموحدة، مبادئ OECD، إكس-رود).
+- كل فجوة تكتبها يجب أن يرافقها مثال عالمي من هذه النصوص: global_example_id معرّف النص (id) كما هو، وglobal_example جملة أو جملتان تقولان ماذا يقرر النص العالمي في نفس النقطة، مع اسمه ورقم مادته.
+- إذا لم يعالج أي نص [عالمي] مرفق نقطة الفجوة، اترك global_example_id فارغاً واكتب في global_example: «لا يوجد في النصوص العالمية المسترجعة ما يعالج هذه النقطة». لا تذكر مثالاً من خارج النصوص المرفقة.
 - لا تخترع فجوة إذا كان النص الأردني واضحاً؛ اترك الحقول فارغة.
 decision: تسمية قصيرة مثل «النص يحدد المسؤول» أو «فجوة: لا نص يحدد المسؤول».
 {COMMON}""",
             "المسؤولية الموافقة حقوق صاحب البيانات القرار الآلي الإشراف البشري",
+            global_layer=True,
         ),
         Agent(
             "entity", "وكيل الجهة", "يمثل الجهة الحكومية صاحبة الخدمة",
@@ -142,13 +148,18 @@ def source(hit: dict) -> dict:
         "article": m["article"],
         "entity": m.get("entity"),
         "url": m.get("url"),
+        "layer": m.get("layer"),
+        "jurisdiction": m.get("jurisdiction"),
         "text": hit["text"].split("\n", 1)[-1],
         "score": hit["score"],
     }
 
 
 def _context(sources: list[dict]) -> str:
-    return "\n\n".join(f"[id: {s['id']}] {s['doc_name']} - {s['article']}\n{s['text']}" for s in sources)
+    return "\n\n".join(
+        f"[id: {s['id']}]{' [عالمي]' if s.get('layer') == 'global' else ''} {s['doc_name']} - {s['article']}\n{s['text']}"
+        for s in sources
+    )
 
 
 def _clamp(x) -> float:
@@ -162,7 +173,10 @@ def run_agent(key: str, question: str, inbox: list[dict]) -> dict:
     question = question if agent.sees_question else ""
     query = f"{question} {inbox[-1]['content']} {agent.focus}".strip()
     sources = [source(h) for h in search(query, K)]
-    case = f"سؤال الحالة: {question}\n\n" if question else ""
+    if agent.global_layer:
+        seen = {s["id"] for s in sources}
+        sources += [source(h) for h in search(query, GLOBAL_K, layer="global") if h["id"] not in seen]
+    case =f"سؤال الحالة: {question}\n\n" if question else ""
     reply = ask(
         agent.system,
         f"{case}المعلومات التي وصلتك حتى الآن:\n{received}\n\nالنصوص:\n{_context(sources)}",
@@ -201,7 +215,7 @@ def run_orchestrator(question: str, verdicts: dict[str, dict]) -> dict:
 def _verdict(reply: dict, sources: list[dict]) -> dict:
     known = {s["id"] for s in sources}
     cited = [c for c in reply["cited"] if c in known]
-    return {
+    out = {
         **reply,
         "confidence": _clamp(reply["confidence"]),
         "cited": cited,
@@ -209,3 +223,10 @@ def _verdict(reply: dict, sources: list[dict]) -> dict:
         "unsourced": not cited,
         "sources": sources,
     }
+    if reply.get("gap"):
+        # A gap counts as compared only against a global-layer article this agent actually retrieved.
+        global_ids = {s["id"] for s in sources if s.get("layer") == "global"}
+        if reply.get("global_example_id") not in global_ids:
+            out["global_example_id"] = ""
+        out["gap_no_global"] = not out["global_example_id"]
+    return out

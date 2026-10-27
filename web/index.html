@@ -384,7 +384,7 @@ function renderSources(r) {
   const order = [...r.sources].sort((a, b) => r.cited.includes(b.id) - r.cited.includes(a.id));
   $("#source-list").innerHTML = order.map((s, i) => {
     const used = r.cited.includes(s.id);
-    const official = ["official_pdf", "official_site"].includes(s.text_source);
+    const official = ["official_pdf", "official_site", "official_eu"].includes(s.text_source);
     // Laws are cut by article number; strategies and guides by named section.
     const unit = /^\d+( مكرر)?$/.test(s.article) ? "المادة" : "القسم";
     return `
@@ -455,7 +455,7 @@ fetch("/api/stats").then(r => r.json()).then(({ documents, benchmark }) => {
   $("#docs").innerHTML = documents.map(d => {
     // official_pdf / official_site are the authority's own text; a translation
     // or a copy hosted elsewhere is not, and the tag says so.
-    const official = ["official_pdf", "official_site"].includes(d.text_source);
+    const official = ["official_pdf", "official_site", "official_eu"].includes(d.text_source);
     const label = official ? "نص رسمي" : d.text_source === "official_pdf_translated" ? "ترجمة لنص رسمي" : "مصدر ثانوي";
     return `
       <div class="doc">

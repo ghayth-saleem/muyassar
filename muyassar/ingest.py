@@ -32,7 +32,7 @@ SECTION = re.compile(r"^##\s*([^|\n]+?)\s*\|\s*(.+?)\s*$", re.M)
 
 # Registry fields copied onto every chunk. The first five are what the kb/
 # hook requires; the rest let an agent say how far to trust the text.
-META_FIELDS = ("doc_name", "entity", "date", "url", "layer", "official_ref", "official_url", "text_source")
+META_FIELDS = ("doc_name", "entity", "date", "url", "layer", "jurisdiction", "official_ref", "official_url", "text_source")
 
 
 def split_articles(text: str) -> list[tuple[str, str]]:
