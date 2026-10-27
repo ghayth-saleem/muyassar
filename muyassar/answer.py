@@ -87,6 +87,5 @@ def _log(result: dict) -> None:
         "model": result["model"],
         "ms": result["ms"],
     }
-    with LOG.open("a", encoding="utf-8", newline="
-") as f:
+    with LOG.open("a", encoding="utf-8", newline="\n") as f:
         f.write(json.dumps(line, ensure_ascii=False) + "\n")

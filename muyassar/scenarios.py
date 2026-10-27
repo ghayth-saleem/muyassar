@@ -57,8 +57,7 @@ def _content(event: dict) -> str:
 def _write(line: dict) -> None:
     with _lock:
         LOG.parent.mkdir(exist_ok=True)
-        with LOG.open("a", encoding="utf-8", newline="
-") as f:
+        with LOG.open("a", encoding="utf-8", newline="\n") as f:
             f.write(json.dumps(line, ensure_ascii=False) + "\n")
 
 
