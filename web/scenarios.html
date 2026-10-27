@@ -345,7 +345,7 @@ function cardTags(st) {
   const t = [];
   if (st.unsourced) t.push(`<span class="tag bad"><i class="ph ph-warning-octagon"></i>بدون مصدر</span>`);
   else if (st.cited?.length) t.push(`<span class="tag ok"><i class="ph ph-seal-check"></i>${st.cited.length} ${st.cited.length === 1 ? "مادة" : "مواد"}</span>`);
-  if (st.sensitive) t.push(`<span class="tag warn"><i class="ph ph-hand-palm"></i>قرار حساس</span>`);
+  if (st.sensitive) t.push(`<span class="tag warn"><i class="ph ph-hand-palm"></i>${st.sensitive_rule ? "قرار حساس بقاعدة التعارض" : "قرار حساس"}</span>`);
   if (st.gap) t.push(st.gap_no_global
     ? `<span class="tag bad"><i class="ph ph-puzzle-piece"></i>فجوة بدون مثال عالمي</span>`
     : `<span class="tag plain"><i class="ph ph-puzzle-piece"></i>فجوة${st.global_example_id ? " + مثال عالمي" : ""}</span>`);

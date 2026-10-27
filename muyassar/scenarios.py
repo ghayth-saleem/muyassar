@@ -94,6 +94,9 @@ def _step(run: dict, agent: str, at: int, received: list[dict], verdict: dict) -
             step[extra] = verdict[extra]
     if "gap_no_global" in verdict:
         step["gap_no_global"] = verdict["gap_no_global"]
+    for extra in ("contradicts_guide", "contradicted_id", "sensitive_by", "sensitive_rule"):
+        if extra in verdict:
+            step[extra] = verdict[extra]
     run["steps"].append(step)
     _write(step)
     return step

@@ -38,17 +38,25 @@ AGENT_SCHEMA = {
         "cited": {"type": "array", "items": {"type": "string"}},
         "sensitive": {"type": "boolean"},
         "sensitive_reason": {"type": "string"},
+        "contradicts_guide": {"type": "boolean"},
+        "contradicted_id": {"type": "string"},
         "gap_title": {"type": "string"},
         "gap": {"type": "string"},
         "global_example_id": {"type": "string"},
         "global_example": {"type": "string"},
     },
     "required": ["steps", "finding", "decision", "confidence", "cited", "sensitive",
-                 "sensitive_reason", "gap_title", "gap", "global_example_id", "global_example"],
+                 "sensitive_reason", "contradicts_guide", "contradicted_id", "gap_title", "gap",
+                 "global_example_id", "global_example"],
     "additionalProperties": False,
 }
 
 NO_GAP = "اترك gap_title وgap وglobal_example_id وglobal_example فارغة؛ كشف الفجوات من عمل وكيل السياسات."
+NO_CONTRADICTION = "contradicts_guide = false وcontradicted_id فارغ؛ رصد التعارض مع الأدلة من عمل وكيل الجهة."
+# The conflict rule: when the entity agent shows that what its agency says now
+# contradicts a published service guide it retrieved, the final decision is
+# sensitive and waits for staff, whatever the agents or the orchestrator said.
+CONFLICT_RULE = "conflict_with_published_guide"
 GLOBAL_K = 3  # articles from the global layer the policy agent always gets, for its global example
 
 
@@ -71,6 +79,7 @@ AGENTS = {
             f"""أنت «مرشد الإجراءات» في نظام ميسّر. تشرح للمواطن خطوات معاملته الحكومية والأوراق والرسوم والجهة، من أدلة الخدمات والتعليمات المرفقة.
 decision: تسمية قصيرة مثل «إرشاد بالخطوات» أو «لا يوجد دليل للخدمة».
 {NO_GAP}
+{NO_CONTRADICTION}
 {COMMON}""",
             "الخطوات الوثائق المطلوبة الرسوم الجهة",
             sees_question=False,
@@ -81,6 +90,7 @@ decision: تسمية قصيرة مثل «إرشاد بالخطوات» أو «ل
 مهمتك: تفسير نتيجة المقارنة، وتقدير ما إذا كان الفرق خطأ قراءة آلية أو اختلافاً حقيقياً، وما يجب التحقق منه بعد ذلك.
 لا تقرر رفض الطلب؛ هذا ليس دورك. decision: «مطابق» أو «غير مطابق - يحتاج تحقق» أو «تعذّر الفحص».
 {NO_GAP}
+{NO_CONTRADICTION}
 {COMMON}""",
             "صحة الوثيقة السجل الإلكتروني التحقق دقة البيانات",
             sees_question=False,
@@ -94,6 +104,7 @@ decision: تسمية قصيرة مثل «إرشاد بالخطوات» أو «ل
 - إذا لم يعالج أي نص [عالمي] مرفق نقطة الفجوة، اترك global_example_id فارغاً واكتب في global_example: «لا يوجد في النصوص العالمية المسترجعة ما يعالج هذه النقطة». لا تذكر مثالاً من خارج النصوص المرفقة.
 - لا تخترع فجوة إذا كان النص الأردني واضحاً؛ اترك الحقول فارغة.
 decision: تسمية قصيرة مثل «النص يحدد المسؤول» أو «فجوة: لا نص يحدد المسؤول».
+{NO_CONTRADICTION}
 {COMMON}""",
             "المسؤولية الموافقة حقوق صاحب البيانات القرار الآلي الإشراف البشري",
             global_layer=True,
@@ -104,6 +115,8 @@ decision: تسمية قصيرة مثل «النص يحدد المسؤول» أو
 تصلك تحديثات الجهة ونتائج التحقق من أنظمتها. مهمتك: ما موقف الجهة من الطلب، وما الذي تطلبه، وهل يتعارض مع ما في قاعدة المعرفة المرفقة.
 إذا كان التحديث الذي وصلك يختلف عن النصوص المرفقة، قل ذلك صراحة في finding.
 decision: تسمية قصيرة مثل «الجهة تطلب استكمال» أو «تحديث يخالف قاعدة المعرفة».
+- contradicts_guide = true فقط إذا كان ما وصلك من الجهة (تعميم، تحديث، شرط جديد) يغيّر أو يخالف ما يقوله دليل خدمة أو تعليمات منشورة من النصوص المرفقة. وضع في contradicted_id معرّف (id) ذلك النص كما هو.
+- إذا لم يخالف ما وصلك أي دليل مرفق، اجعل contradicts_guide = false واترك contradicted_id فارغاً.
 {NO_GAP}
 {COMMON}""",
             "الجهة المختصة اللجنة الطلب القرار الاعتراض",
@@ -206,9 +219,22 @@ def run_orchestrator(question: str, verdicts: dict[str, dict]) -> dict:
     # A sensitive call by any agent stays sensitive: the orchestrator may not
     # quietly drop the need for a human.
     flagged = [AGENTS[k].name for k, v in verdicts.items() if v["sensitive"]]
+    out["sensitive_by"] = "model" if out["sensitive"] else None
     if flagged and not out["sensitive"]:
         out["sensitive"] = True
+        out["sensitive_by"] = "agent"
         out["sensitive_reason"] = "وكيل وصف القرار بأنه حساس: " + "، ".join(flagged)
+    entity = verdicts.get("entity", {})
+    if entity.get("contradicted_id"):
+        guide = next(s for s in entity["sources"] if s["id"] == entity["contradicted_id"])
+        out["sensitive"] = True
+        out["sensitive_by"] = "rule"
+        out["sensitive_rule"] = CONFLICT_RULE
+        out["sensitive_reason"] = (
+            f"قاعدة التعارض: ما وصل وكيل الجهة يخالف دليلاً منشوراً ({guide['doc_name']} - {guide['article']}). "
+            "أي تعارض بين الجهة ودليل منشور قرار حساس ينتظر موافقة موظف."
+            + (f" {out['sensitive_reason']}" if flagged or out["sensitive_reason"] else "")
+        )
     return out
 
 
@@ -223,6 +249,11 @@ def _verdict(reply: dict, sources: list[dict]) -> dict:
         "unsourced": not cited,
         "sources": sources,
     }
+    if "contradicts_guide" in reply:
+        # The conflict rule fires only on a published guide or instruction this agent actually retrieved.
+        guide_ids = {s["id"] for s in sources if s.get("layer") == "procedure"}
+        if not (reply["contradicts_guide"] and reply.get("contradicted_id") in guide_ids):
+            out["contradicted_id"] = ""
     if reply.get("gap"):
         # A gap counts as compared only against a global-layer article this agent actually retrieved.
         global_ids = {s["id"] for s in sources if s.get("layer") == "global"}
