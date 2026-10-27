@@ -59,12 +59,22 @@ def load_kb():
     return chunks, articles, sources
 
 
-def doc_for(text_after: str) -> str | None:
-    window = text_after[:80]
+def doc_for(text_after: str, text_before: str = "") -> str | None:
+    """The law named right after the mention ("المادة 5 من قانون ..."), else the
+    one named just before it on the same line ("قانون ...، المادة 5"). Never
+    crosses a line break, so a list item does not borrow the next line's law."""
+    after = text_after.split("\n", 1)[0][:80]
     for doc_id, names in ALIASES:
-        if any(n in window for n in names):
+        if any(n in after for n in names):
             return doc_id
-    return None
+    before = text_before.rsplit("\n", 1)[-1][-120:]
+    best = None
+    for doc_id, names in ALIASES:
+        for n in names:
+            i = before.rfind(n)
+            if i >= 0 and (best is None or i > best[0]):
+                best = (i, doc_id)
+    return best[1] if best else None
 
 
 def clause_present(texts: list[str], clause: str) -> bool:
@@ -77,13 +87,13 @@ def mentions(text: str):
     for m in MENTION.finditer(text):
         for ref in re.split(r"\s*(?:و|،|,|أو)\s*", m.group(1)):
             if ref:
-                yield ref, text[m.end():]
+                yield ref, text[m.end():], text[:m.start()]
 
 
 def check_text(where: str, text: str, retrieved_docs: set[str], articles, problems, ok):
-    for ref, after in mentions(text):
+    for ref, after, before in mentions(text):
         num, *clauses = ref.split("/")
-        doc = doc_for(after)
+        doc = doc_for(after, before)
         candidates = [doc] if doc else sorted(d for d in retrieved_docs if d in articles)
         if not candidates:
             problems.append((where, ref, "ما عرفنا أي قانون (ما في اسم بعدها ولا مصدر مسترجع مرقّم)"))
