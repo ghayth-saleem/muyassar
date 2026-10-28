@@ -34,3 +34,7 @@ __pycache__/
 
 # Playwright MCP working files
 .playwright-mcp/
+
+# Video media stays local (large); the plan and end card are tracked
+docs/video/keyframe-*.png
+docs/video/*.mp4
