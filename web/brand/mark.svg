@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-labelledby="t"><title id="t">ميسّر</title>
+  <!-- Square-kufic initial meem on a 4-unit grid: a closed loop (the procedure's knot)
+       and the stroke that leaves it level (the way through). One stroke weight: 4. -->
+  <path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/>
+</svg>

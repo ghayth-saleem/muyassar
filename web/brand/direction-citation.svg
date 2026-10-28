@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="اتجاه 2: علامة الاستشهاد">
+  <!-- Direction 2: a cited article - a closed square holding one line of text. -->
+  <path fill="currentColor" fill-rule="evenodd" d="M6 6H26V26H6ZM10 10V22H22V10Z"/>
+  <rect x="13" y="14" width="6" height="4" fill="currentColor"/>
+</svg>

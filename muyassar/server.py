@@ -101,6 +101,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, (WEB / "scenarios.html").read_bytes(), "text/html; charset=utf-8")
         elif path == "/site.css":
             self._send(200, (WEB / "site.css").read_bytes(), "text/css; charset=utf-8")
+        elif path.startswith("/brand/") and path.endswith(".svg") and (WEB / path.lstrip("/")).is_file() and "/.." not in path:
+            self._send(200, (WEB / path.lstrip("/")).read_bytes(), "image/svg+xml")
         elif path == "/api/stats":
             self._json(200, stats())
         elif path == "/api/scenarios":
