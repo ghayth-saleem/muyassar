@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>هوية ميسّر</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Noto+Kufi+Arabic:wght@700&display=swap" rel="stylesheet">
+<link rel="icon" href="/brand/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/site.css">
+<style>
+.directions { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 16px; }
+.direction { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.direction.chosen { border: 2px solid var(--accent); }
+.direction svg { width: 72px; height: 72px; color: var(--text); display: block; margin-bottom: 12px; }
+.direction h3 { margin-bottom: 4px; }
+.direction p { font-size: 17px; margin: 0; }
+.wordmark-c { font-family: "Noto Kufi Arabic", sans-serif; font-weight: 700; font-size: 46px; line-height: 72px; height: 72px; margin-bottom: 12px; }
+
+.sizes { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.sizes > div { display: flex; align-items: flex-end; gap: 28px; padding: 24px; }
+.sizes .on-light { background: #ffffff; color: #0e5e6f; }
+.sizes .on-dark { background: #0e1517; color: #6cc3d1; }
+.sizes .on-accent { background: #0e5e6f; color: #ffffff; }
+.sizes .mono-black { background: #ffffff; color: #000000; }
+.sizes svg { display: block; }
+.sizes small { display: block; font-size: 14px; margin-top: 6px; opacity: .85; }
+.sizes .on-light small, .sizes .mono-black small { color: #46585c; opacity: 1; }
+.lockups { display: flex; flex-wrap: wrap; gap: 40px; align-items: center; }
+.stacked { display: inline-flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text); }
+.stacked svg { width: 56px; height: 56px; color: var(--accent); }
+.stacked .ar { font-family: "Noto Kufi Arabic", sans-serif; font-weight: 700; font-size: 30px; line-height: 1.2; }
+.stacked .lat { font-size: 15px; font-weight: 600; color: var(--text-muted); }
+.big .lockup svg { width: 84px; height: 45px; }
+.big .lockup .ar { font-size: 44px; }
+.big .lockup .lat { font-size: 18px; }
+
+table.spec { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); }
+.spec th, .spec td { text-align: start; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 17px; vertical-align: middle; }
+.spec th { color: var(--text-muted); font-weight: 600; font-size: 16px; }
+.swatch { display: inline-block; width: 28px; height: 28px; border: 1px solid var(--border-strong); vertical-align: middle; margin-inline-end: 8px; }
+.type-row { border-top: 1px solid var(--border); padding: 14px 0; display: grid; grid-template-columns: 180px 1fr; gap: 16px; align-items: baseline; }
+.type-row .meta { color: var(--text-muted); font-size: 15px; }
+.ui-sample { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+pre { background: var(--surface-2); padding: 14px 16px; overflow-x: auto; font-size: 14px; line-height: 1.6; direction: ltr; text-align: left; border-radius: var(--radius); }
+@media (max-width: 760px) {
+  .directions, .sizes { grid-template-columns: 1fr; }
+  .type-row { grid-template-columns: 1fr; gap: 2px; }
+  .spec { display: block; overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">انتقل للمحتوى</a>
+<aside class="demo-strip" aria-label="عن هالنموذج"><div class="wrap">نموذج تجريبي لمسابقة AI for Good، مش موقع حكومي رسمي. كل البيانات وهمية.</div></aside>
+<header class="site">
+  <div class="wrap">
+    <a class="lockup" href="/" aria-label="ميسّر، الصفحة الرئيسية"><svg viewBox="3 9 26 14" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg><span><span class="ar">ميسّر</span><span class="lat">Muyassar</span></span></a>
+    <nav aria-label="الصفحات">
+      <a href="/">اسأل</a>
+      <a href="/scenarios">السيناريوهات</a>
+      <a href="/brand" aria-current="page">الهوية</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <h1>هوية ميسّر</h1>
+  <p class="lead">موثوق وواضح، وأبداً مش بيروقراطي. الشعار حرف من الاسم، واللون الوحيد للهوية فيروزي حبري، وكل لون تاني إله معنى واحد بالواجهة.</p>
+
+  <h2>ثلاث اتجاهات للعلامة</h2>
+  <div class="directions">
+    <div class="direction chosen">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg>
+      <h3>الميم الكوفية (المختارة)</h3>
+      <p>ميم «ميسّر» بالكوفي المربع على شبكة: حلقة مسكّرة، عقدة المعاملة، وبيطلع منها خط مستقيم، الطريق السالك. حرف حقيقي من الاسم، مش زخرفة.</p>
+    </div>
+    <div class="direction">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M6 6H26V26H6ZM10 10V22H22V10Z"/><rect x="13" y="14" width="6" height="4" fill="currentColor"/></svg>
+      <h3>علامة الاستشهاد</h3>
+      <p>مربع مسكّر جواه سطر: مادة من نص قانون. قريبة من آلية النظام، بس بتشبه أيقونات عامة.</p>
+    </div>
+    <div class="direction">
+      <div class="wordmark-c" aria-hidden="true">ميسّر</div>
+      <h3>الاسم لحاله</h3>
+      <p>«ميسّر» بخط Noto Kufi Arabic بدون رمز. قوي بالكبير، بس ما في إشي بيضل مقروء بحجم 16px.</p>
+    </div>
+  </div>
+
+  <h2>العلامة بأحجامها الحقيقية</h2>
+  <div class="sizes">
+    <div class="on-light">
+      <span><svg width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg><small>16px</small></span>
+      <span><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg><small>32px</small></span>
+      <span><svg width="96" height="96" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg><small>96px، على فاتح</small></span>
+    </div>
+    <div class="on-dark">
+      <span><svg width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg><small>16px</small></span>
+      <span><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg><small>32px</small></span>
+      <span><svg width="96" height="96" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg><small>96px، على غامق</small></span>
+    </div>
+    <div class="mono-black">
+      <span><svg width="64" height="64" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg><small>أسود فقط</small></span>
+      <span><svg width="64" height="64" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 10H28V22H4V18H16Z"/></svg><small>الظل مصمت</small></span>
+    </div>
+    <div class="on-accent">
+      <span><svg width="64" height="64" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg><small>معكوسة على لون الهوية</small></span>
+    </div>
+  </div>
+  <p class="hint">الشبكة 32 وحدة وسماكة وحدة واحدة (4). المساحة الفاضية حولها أقلها سماكة الخط مرتين (8 وحدات)، وأصغر حجم 16px.</p>
+
+  <h2>الشعار مع الاسم</h2>
+  <div class="lockups">
+    <div class="big"><span class="lockup"><svg viewBox="3 9 26 14" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg><span><span class="ar">ميسّر</span><span class="lat">Muyassar</span></span></span></div>
+    <div class="stacked"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg><span class="ar">ميسّر</span><span class="lat">Muyassar</span></div>
+  </div>
+  <p class="hint">الأفقي: الاسم العربي على نفس خط قاعدة ذيل الميم، واللاتيني تحته بحجم أصغر. العمودي: العلامة بالنص وفوق الاسمين. الاسم العربي مكتوب بخط عربي، مش مقلوب عن اللاتيني.</p>
+
+  <h2>الألوان: كل لون إله دور</h2>
+  <table class="spec">
+    <thead><tr><th scope="col">الدور</th><th scope="col">فاتح</th><th scope="col">غامق</th><th scope="col">التباين (فاتح / غامق)</th></tr></thead>
+    <tbody>
+      <tr><td>الهوية: الأزرار والروابط</td><td><span class="swatch" style="background:#0e5e6f"></span><span class="ltr code">#0e5e6f</span></td><td><span class="swatch" style="background:#6cc3d1"></span><span class="ltr code">#6cc3d1</span></td><td class="num">7.37 / 8.20 على اللوحة</td></tr>
+      <tr><td>النص</td><td><span class="swatch" style="background:#0f1d20"></span><span class="ltr code">#0f1d20</span></td><td><span class="swatch" style="background:#e8f0f0"></span><span class="ltr code">#e8f0f0</span></td><td class="num">16.05 / 15.95</td></tr>
+      <tr><td>نص ثانوي</td><td><span class="swatch" style="background:#46585c"></span><span class="ltr code">#46585c</span></td><td><span class="swatch" style="background:#a9bbbe"></span><span class="ltr code">#a9bbbe</span></td><td class="num">6.95 / 9.26</td></tr>
+      <tr><td>بدون مصدر (أحمر)</td><td><span class="swatch" style="background:#b4282b"></span><span class="ltr code">#b4282b</span></td><td><span class="swatch" style="background:#ff9b94"></span><span class="ltr code">#ff9b94</span></td><td class="num">5.58 / 7.85 على خلفية الشارة</td></tr>
+      <tr><td>قرار حساس (كهرماني)</td><td><span class="swatch" style="background:#6e4200"></span><span class="ltr code">#6e4200</span></td><td><span class="swatch" style="background:#ffd47a"></span><span class="ltr code">#ffd47a</span></td><td class="num">7.71 / 10.41 على خلفية الشارة</td></tr>
+      <tr><td>وافق الموظف (أخضر)</td><td><span class="swatch" style="background:#1f6b3a"></span><span class="ltr code">#1f6b3a</span></td><td><span class="swatch" style="background:#8fd6a8"></span><span class="ltr code">#8fd6a8</span></td><td class="num">5.65 / 9.10</td></tr>
+      <tr><td>تركيز الكيبورد</td><td><span class="swatch" style="background:#ffdd00"></span><span class="ltr code">#ffdd00</span></td><td><span class="swatch" style="background:#ffdd00"></span><span class="ltr code">#ffdd00</span></td><td class="num">14.55 مع نص أسود</td></tr>
+      <tr><td>حدود الأزرار والحقول</td><td><span class="swatch" style="background:#566a6e"></span><span class="ltr code">#566a6e</span></td><td><span class="swatch" style="background:#8ea4a8"></span><span class="ltr code">#8ea4a8</span></td><td class="num">5.70 / 6.35 (المطلوب 3)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>الخطوط</h2>
+  <div class="type-row"><span class="meta">عنوان، Noto Kufi Arabic، 42px</span><span style="font-family:'Noto Kufi Arabic';font-weight:700;font-size:42px;line-height:1.45">اسأل عن حقّك</span></div>
+  <div class="type-row"><span class="meta">عنوان قسم، 26px</span><span style="font-family:'Noto Kufi Arabic';font-weight:700;font-size:26px">النصوص اللي قرأها قبل ما يجاوب</span></div>
+  <div class="type-row"><span class="meta">الرد، IBM Plex Sans Arabic، 22px</span><span style="font-size:22px">طلبك قيد المراجعة ولم يُتخذ أي قرار بالرفض.</span></div>
+  <div class="type-row"><span class="meta">نص، 19px</span><span>ما في نص أردني بيحدد مين بيتحمل مسؤولية خطأ آلي بالتحقق.</span></div>
+  <div class="type-row"><span class="meta">صغير، 16px</span><span style="font-size:16px;color:var(--text-muted)">الوقت بالدقائق والثواني من بداية السيناريو.</span></div>
+
+  <h2>بالواجهة</h2>
+  <div class="ui-sample">
+    <button type="button" class="button">اسأل</button>
+    <button type="button" class="button secondary">إعادة عرض</button>
+    <strong class="tag bad">بدون مصدر</strong>
+    <strong class="tag warn">قرار حساس</strong>
+    <strong class="tag ok">وافق</strong>
+    <span class="tag">3 مواد</span>
+    <span>المادة <span class="art">22</span> من اللائحة العامة لحماية البيانات</span>
+  </div>
+  <p class="hint">المربع حول رقم المادة هو حلقة الميم، وبيطلع بس حوالين مادة مستشهد فيها.</p>
+
+  <h2>الرموز بالكود</h2>
+  <p class="body-text">كل الألوان والأحجام متغيرات بملف <span class="ltr code">web/site.css</span>، بالفاتح والغامق، والغامق بيتبع إعداد الجهاز.</p>
+<pre>:root { --accent: #0e5e6f; --text: #0f1d20; --ground: #f5f7f7; --surface: #ffffff;
+        --danger: #b4282b; --warn-ink: #6e4200; --warn-bg: #fff2cc; --focus: #ffdd00; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --accent: #6cc3d1; --text: #e8f0f0; --ground: #0e1517; ... }
+}</pre>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <svg viewBox="3 9 26 14" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg>
+    <p>العلامة مرسومة كـ SVG على شبكة. الملفات بـ <span class="ltr code">web/brand/</span>.</p>
+  </div>
+</footer>
+</body>
+</html>

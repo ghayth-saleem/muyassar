@@ -4,7 +4,8 @@
 
 GET  /                              web/index.html
 GET  /scenarios                     web/scenarios.html, the scenario timeline
-GET  /site.css                      shared styles for both pages
+GET  /site.css                      shared styles for every page
+GET  /brand                         web/brand.html, the identity sheet; /brand/*.svg the marks
 GET  /api/stats                     documents in the knowledge base and the latest benchmark runs
 POST /api/ask                       {"question": "..."} or {"voice_id": "..."} → answer with its cited sources
 POST /api/voice                     raw audio body (webm, ogg, wav, mp3...) → {"voice_id", "text", ...}
@@ -99,6 +100,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, (WEB / "index.html").read_bytes(), "text/html; charset=utf-8")
         elif path in ("/scenarios", "/scenarios.html"):
             self._send(200, (WEB / "scenarios.html").read_bytes(), "text/html; charset=utf-8")
+        elif path in ("/brand", "/brand.html"):
+            self._send(200, (WEB / "brand.html").read_bytes(), "text/html; charset=utf-8")
         elif path == "/site.css":
             self._send(200, (WEB / "site.css").read_bytes(), "text/css; charset=utf-8")
         elif path.startswith("/brand/") and path.endswith(".svg") and (WEB / path.lstrip("/")).is_file() and "/.." not in path:

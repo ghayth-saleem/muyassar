@@ -10,7 +10,9 @@
 <link rel="icon" href="/brand/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/site.css">
 <style>
-.ask { max-width: 40em; }
+.hero { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; margin-top: 8px; }
+.hero h1 { font-size: 46px; line-height: 1.5; }
+.ask { margin-top: 44px; }
 .ask textarea { min-height: 110px; }
 .examples { margin: 20px 0 0; }
 .examples ul { list-style: none; margin: 6px 0 0; padding: 0; }
@@ -47,7 +49,9 @@ table.docs { width: 100%; border-collapse: collapse; }
 .metric b { display: block; font-size: 48px; line-height: 1.2; font-weight: 700; }
 .metric span { color: var(--muted); font-size: 17px; }
 
+@media (max-width: 900px) { .hero { grid-template-columns: 1fr; gap: 0; } .ask { margin-top: 8px; } }
 @media (max-width: 640px) {
+  .hero h1 { font-size: 30px; }
   .answer p { font-size: 20px; }
   table.docs, .docs tbody, .docs tr, .docs td { display: block; width: 100%; }
   .docs thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
@@ -63,19 +67,23 @@ table.docs { width: 100%; border-collapse: collapse; }
 <aside class="demo-strip" aria-label="عن هالنموذج"><div class="wrap">نموذج تجريبي لمسابقة AI for Good، مش موقع حكومي رسمي. كل البيانات وهمية.</div></aside>
 <header class="site">
   <div class="wrap">
-    <a class="lockup" href="/" aria-label="ميسّر، الصفحة الرئيسية"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg><span><span class="ar">ميسّر</span><span class="lat">MUYASSAR</span></span></a>
+    <a class="lockup" href="/" aria-label="ميسّر، الصفحة الرئيسية"><svg viewBox="3 9 26 14" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg><span><span class="ar">ميسّر</span><span class="lat">Muyassar</span></span></a>
     <nav aria-label="الصفحات">
       <a href="/" aria-current="page">اسأل</a>
       <a href="/scenarios">السيناريوهات</a>
+      <a href="/brand">الهوية</a>
     </nav>
   </div>
 </header>
 
 <main id="main" class="wrap">
+  <div class="hero">
+  <div class="hero-text">
   <h1>اسأل عن حقّك، والجواب مع رقم المادة</h1>
   <p class="lead">ميسّر بيقرأ القوانين والسياسات وأدلة الخدمات الأردنية المنشورة، وبيجاوبك بلغة بسيطة، وكل حكم مربوط بنصّه.</p>
 
-  <form class="ask" id="form">
+  </div>
+  <form class="ask panel" id="form">
     <div class="field">
       <label for="question">سؤالك</label>
       <p class="hint" id="question-hint">بالعامية أو بالفصحى، لحد 500 حرف. Ctrl+Enter للإرسال.</p>
@@ -87,6 +95,7 @@ table.docs { width: 100%; border-collapse: collapse; }
       <ul id="examples"></ul>
     </div>
   </form>
+  </div>
 
   <section id="answer" aria-live="polite"></section>
 
@@ -115,8 +124,8 @@ table.docs { width: 100%; border-collapse: collapse; }
 
 <footer class="site">
   <div class="wrap">
-    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg>
-    <p>ميسّر بيشرح النص القانوني، وما بيقدّم استشارة قانونية شخصية. كل سؤال بينسجّل في <span class="ltr">logs/web.jsonl</span>.</p>
+    <svg viewBox="3 9 26 14" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg>
+    <p>ميسّر بيشرح النص القانوني، وما بيقدّم استشارة قانونية شخصية. كل سؤال بينسجّل في <span class="ltr code">logs/web.jsonl</span>.</p>
   </div>
 </footer>
 
@@ -163,7 +172,7 @@ function linkify(text, sources, cited) {
   }
   return esc(text).replace(/المادة\s+(\d+)((?:\/[^\s()،.]+)*)/g, (m, n) => {
     const id = byArticle.get(n);
-    return id ? `<button type="button" class="cite" data-id="${esc(id)}">${m}</button>` : m;
+    return id ? `<button type="button" class="cite" data-id="${esc(id)}">المادة <span class="art">${esc(n)}</span>${esc(m.slice(("المادة " + n).length))}</button>` : m;
   });
 }
 
@@ -176,7 +185,7 @@ function renderAnswer(r) {
     <div class="answer">${paras}</div>
     ${r.covered ? "" : `<div class="notice warn"><strong>الجواب ناقص.</strong> النصوص اللي عنا ما بتجاوب هالسؤال بشكل كامل، والأفضل تراجع الجهة المختصة.</div>`}
     ${r.cited.length ? "" : `<div class="notice bad"><strong>بدون مصدر.</strong> الجواب ما اعتمد على أي نص رجع من البحث.</div>`}
-    <p class="run-meta">اعتمد على <span class="num">${r.cited.length}</span> من <span class="num">${r.sources.length}</span> نصوص${usedDocs.length ? ` · ${usedDocs.map(esc).join("، ")}` : ""} · النموذج <span class="ltr">${esc(r.model)}</span> · <span class="num">${(r.ms / 1000).toFixed(1)}</span> ث</p>`;
+    <p class="run-meta">اعتمد على <span class="num">${r.cited.length}</span> من <span class="num">${r.sources.length}</span> نصوص${usedDocs.length ? `: ${usedDocs.map(esc).join("، ")}` : ""}. النموذج <span class="ltr code">${esc(r.model)}</span>، خلال <span class="num">${(r.ms / 1000).toFixed(1)}</span> ث.</p>`;
   renderSources(r);
 }
 
@@ -185,11 +194,11 @@ function renderSources(r) {
   $("#source-list").innerHTML = order.map(s => {
     const used = r.cited.includes(s.id);
     // Laws are cut by article number; strategies and guides by named section.
-    const unit = /^\d+( مكرر)?$/.test(s.article) ? `المادة <span class="num">${esc(s.article)}</span>` : esc(s.article);
+    const unit = /^\d+( مكرر)?$/.test(s.article) ? `المادة <span class="art">${esc(s.article)}</span>` : esc(s.article);
     return `
       <li class="${used ? "cited" : "unused"}" id="src-${esc(s.id)}">
-        <h3>${unit} · ${esc(s.doc_name)}</h3>
-        <p class="hint">${used ? "<strong>استشهد فيها الجواب.</strong>" : "رجعت بالبحث، وما استخدمها الجواب."} ${sourceLabel(s.text_source)}${s.official_ref ? ` · ${esc(s.official_ref)}` : ""}</p>
+        <h3>${unit} ${esc(s.doc_name)}</h3>
+        <p class="hint">${used ? "<strong>استشهد فيها الجواب.</strong>" : "رجعت بالبحث، وما استخدمها الجواب."} ${sourceLabel(s.text_source)}${s.official_ref ? `، ${esc(s.official_ref)}` : ""}</p>
         <blockquote>${esc(s.text)}</blockquote>
         <div class="foot">
           <button type="button" class="link" data-toggle>النص كامل</button>
@@ -266,7 +275,7 @@ fetch("/api/stats").then(r => r.json()).then(({ documents, benchmark, live }) =>
   $("#caveat").innerHTML = `<strong>اقرأ الرقم بحذر.</strong> القياس على <span class="num">${n}</span> سؤال كتبناها نحن، فوق <span class="num">${documents.length}</span> وثيقة و<span class="num">${chunks}</span> مقطع، وهو للبحث بس، مش لجودة الجواب.`;
   if (live && !live.ready) {
     $("#ask").disabled = true;
-    $("#form").insertAdjacentHTML("afterbegin", `<div class="notice"><strong>ما في مفتاح للنموذج على هالسيرفر.</strong> الأسئلة بتحتاج مفتاح بـ <span class="ltr">.env</span>. صفحة <a href="/scenarios">السيناريوهات</a> بتعرض التشغيلات المسجّلة بدونه.</div>`);
+    $("#form").insertAdjacentHTML("afterbegin", `<div class="notice"><strong>ما في مفتاح للنموذج على هالسيرفر.</strong> الأسئلة بتحتاج مفتاح بـ <span class="ltr code">.env</span>. صفحة <a href="/scenarios">السيناريوهات</a> بتعرض التشغيلات المسجّلة بدونه.</div>`);
   }
 }).catch(() => {
   $("#docs").innerHTML = `<tr><td colspan="4"><div class="notice bad">ما قدرنا نجيب محتوى القاعدة. تأكد إنه السيرفر شغّال.</div></td></tr>`;

@@ -72,7 +72,8 @@ p { margin: 0 0 16px; }
 .body-text { max-width: 40em; }
 .caption { font-family: "IBM Plex Sans Arabic", sans-serif; font-size: var(--fs-small); color: var(--text-muted); font-weight: 600; margin: 0 0 6px; }
 .hint { color: var(--text-muted); font-size: 17px; }
-.ltr { direction: ltr; unicode-bidi: isolate; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .88em; }
+.ltr { direction: ltr; unicode-bidi: isolate; }
+.code { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: .86em; }
 .num { font-variant-numeric: tabular-nums; }
 .sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
@@ -94,9 +95,9 @@ header.site { background: var(--surface); border-bottom: 1px solid var(--border)
 header.site .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 72px; flex-wrap: wrap; }
 .lockup { display: inline-flex; align-items: center; gap: 12px; color: var(--text); text-decoration: none; }
 .lockup:hover { color: var(--text); }
-.lockup svg { width: 40px; height: 40px; color: var(--accent); flex: none; }
+.lockup svg { width: 52px; height: 28px; color: var(--accent); flex: none; margin-top: 6px; } /* frame cropped to the letter: 26x14 units */
 .lockup .ar { font-family: "Noto Kufi Arabic", sans-serif; font-weight: 700; font-size: 28px; line-height: 1; }
-.lockup .lat { display: block; font-family: "IBM Plex Sans Arabic", sans-serif; font-size: 13px; font-weight: 600; letter-spacing: .14em; color: var(--text-muted); line-height: 1.2; margin-top: 4px; direction: ltr; text-align: end; }
+.lockup .lat { display: block; font-family: "IBM Plex Sans Arabic", sans-serif; font-size: 15px; font-weight: 600; color: var(--text-muted); line-height: 1.2; margin-top: 4px; direction: ltr; text-align: end; }
 header.site nav { display: flex; gap: 28px; }
 header.site nav a { color: var(--text); font-weight: 600; text-decoration: none; padding: 6px 0; border-bottom: 3px solid transparent; }
 header.site nav a:hover { border-bottom-color: var(--border-strong); }
@@ -123,7 +124,7 @@ main { padding-bottom: 64px; }
 .button.secondary:hover { background: var(--surface-2); }
 .button:active { transform: scale(0.97); }
 .button[disabled] { opacity: .45; cursor: not-allowed; transform: none; }
-.button:focus-visible { background: var(--focus); color: var(--focus-ink); border-color: var(--focus-ink); box-shadow: none; }
+.button:focus-visible { background: var(--focus); color: var(--focus-ink); border-color: var(--focus-ink); box-shadow: none; transition: none; } /* focus shows at once, never mid-fade */
 .button-group { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
 button.link { font: inherit; font-size: 17px; background: none; border: 0; padding: 0; color: var(--accent); text-decoration: underline; text-underline-offset: .2em; cursor: pointer; }
 button.link:hover { color: var(--accent-hover); text-decoration-thickness: 3px; }
@@ -162,7 +163,7 @@ textarea { line-height: 1.8; resize: vertical; }
 
 footer.site { background: var(--surface); border-top: 1px solid var(--border); padding: 28px 0 44px; color: var(--text-muted); font-size: 17px; }
 footer.site .wrap { display: flex; gap: 16px; align-items: flex-start; }
-footer.site svg { width: 24px; height: 24px; color: var(--text-muted); flex: none; margin-top: 4px; }
+footer.site svg { width: 34px; height: 18px; color: var(--text-muted); flex: none; margin-top: 8px; }
 footer.site p { margin: 0; max-width: 46em; }
 
 /* Motion: only feedback and arrival, short, and none for people who ask for none */
@@ -181,7 +182,7 @@ footer.site p { margin: 0; max-width: 46em; }
   h2 { font-size: 23px; margin-top: 32px; }
   .lead { font-size: 19px; }
   .panel { padding: 18px 16px; }
-  .lockup svg { width: 34px; height: 34px; }
+  .lockup svg { width: 44px; height: 24px; }
   .lockup .ar { font-size: 24px; }
   header.site nav { gap: 18px; }
   .button { width: 100%; text-align: center; }

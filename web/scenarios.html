@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ميسّر · السيناريوهات</title>
+<title>السيناريوهات، ميسّر</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Noto+Kufi+Arabic:wght@700&display=swap" rel="stylesheet">
@@ -21,7 +21,10 @@
 .controls .field { margin: 0; }
 
 /* The citizen reply comes first, larger than everything below it */
-.reply { border-inline-start: 5px solid var(--primary); padding: 4px 20px 4px 0; margin: 0 0 12px; }
+.reply { border-inline-start: 4px solid var(--accent); padding: 2px 20px 2px 0; margin: 0 0 12px; }
+.reply-status .tag { margin-inline-end: 6px; }
+.table-panel { padding: 8px 20px 4px; }
+.verdicts tr.step:last-child > td { border-bottom: 0; }
 .reply p { font-size: 22px; line-height: 1.9; margin: 0 0 12px; max-width: 38em; }
 .reply-status { margin: 0 0 8px; }
 .staff-note { color: var(--muted); max-width: 42em; }
@@ -38,7 +41,7 @@ table.verdicts { width: 100%; border-collapse: collapse; margin: 8px 0 0; }
 .verdicts .who { font-weight: 700; }
 .verdicts .who small { display: block; font-weight: 400; color: var(--muted); font-size: 16px; }
 .verdicts .num { white-space: nowrap; }
-.verdicts tr.detail > td { background: var(--panel); padding: 20px 20px 8px; border-bottom: 1px solid var(--line); }
+.verdicts tr.detail > td { background: var(--surface-2); padding: 20px 20px 8px; border-bottom: 1px solid var(--line); }
 .verdicts tr.pending td { color: var(--muted); }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; }
 
@@ -75,6 +78,7 @@ table.verdicts { width: 100%; border-collapse: collapse; margin: 8px 0 0; }
   .verdicts td.who::before, .verdicts td.act::before { content: none; }
   .verdicts td.act { padding: 8px 0 8px; }
   .verdicts tr.detail > td { padding: 16px; }
+  .table-panel { padding: 4px 14px; }
 }
 </style>
 </head>
@@ -83,10 +87,11 @@ table.verdicts { width: 100%; border-collapse: collapse; margin: 8px 0 0; }
 <aside class="demo-strip" aria-label="عن هالنموذج"><div class="wrap">نموذج تجريبي لمسابقة AI for Good، مش موقع حكومي رسمي. كل البيانات وهمية.</div></aside>
 <header class="site">
   <div class="wrap">
-    <a class="lockup" href="/" aria-label="ميسّر، الصفحة الرئيسية"><svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg><span><span class="ar">ميسّر</span><span class="lat">MUYASSAR</span></span></a>
+    <a class="lockup" href="/" aria-label="ميسّر، الصفحة الرئيسية"><svg viewBox="3 9 26 14" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg><span><span class="ar">ميسّر</span><span class="lat">Muyassar</span></span></a>
     <nav aria-label="الصفحات">
       <a href="/">اسأل</a>
       <a href="/scenarios" aria-current="page">السيناريوهات</a>
+      <a href="/brand">الهوية</a>
     </nav>
   </div>
 </header>
@@ -102,8 +107,8 @@ table.verdicts { width: 100%; border-collapse: collapse; margin: 8px 0 0; }
 
 <footer class="site">
   <div class="wrap">
-    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg>
-    <p>البيانات في السيناريوهات وهمية، والأحداث المعلّمة «افتراضي» ما صارت فعلاً. كل خطوة بتنسجّل في <span class="ltr">logs/scenarios.jsonl</span>.</p>
+    <svg viewBox="3 9 26 14" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/></svg>
+    <p>البيانات في السيناريوهات وهمية، والأحداث المعلّمة «افتراضي» ما صارت فعلاً. كل خطوة بتنسجّل في <span class="ltr code">logs/scenarios.jsonl</span>.</p>
   </div>
 </footer>
 
@@ -129,7 +134,7 @@ const STATUS = {
   error:          ["bad", "صار خطأ"],
 };
 
-let scenarios = [], current = null, run = null, poll = null;
+let scenarios = [], current = null, run = null, poll = null, lastArrived = null;
 let live = { ready: false }, loggedRuns = {}, replayTimer = null;
 const autoReplay = new URLSearchParams(location.search).get("replay");
 let openAll = Boolean(autoReplay);  // a replay for the video shows every step's details
@@ -139,6 +144,8 @@ const clock = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 const statusTag = st => { const [c, t] = STATUS[st] || STATUS.done; return `<strong class="tag ${c}">${t}</strong>`; };
 const shortName = name => String(name).replace(/\s+رقم\s+\d+\s+لسنة\s+\d+$/, "");
 const unit = a => /^\d+( مكرر)?$/.test(a) ? "المادة " + a : a;
+// an article number in the mark's loop; a named section stays plain text
+const artLabel = a => /^\d+( مكرر)?$/.test(a) ? `المادة <span class="art">${esc(a)}</span>` : esc(a);
 // "2026-10-27T20:07:12+00:00" -> "27/10/2026، 20:07 (UTC)"
 const when = iso => {
   const m = String(iso || "").match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
@@ -149,7 +156,7 @@ function renderPicker() {
   $("#picker").innerHTML = scenarios.map((s, i) => `
     <li><a href="#${esc(s.id)}" data-id="${esc(s.id)}" aria-current="${s.id === current?.id}">
       ${i + 1}. ${esc(s.title)}
-      <small>${esc(s.service)} · ${s.latest ? (STATUS[s.latest.status] || STATUS.done)[1] : "ما انشغّل لسا"}</small>
+      <small>${esc(s.service)}، ${s.latest ? (STATUS[s.latest.status] || STATUS.done)[1] : "ما انشغّل لسا"}</small>
     </a></li>`).join("");
 }
 
@@ -166,13 +173,13 @@ function renderCase() {
         <div class="field">
           <label for="replay-pick">تشغيلة مسجّلة</label>
           <select id="replay-pick" ${busy ? "disabled" : ""}>
-            ${runs.map(r => { const m = r.started.match(/^\d{4}-(\d{2})-(\d{2})T(\d{2}:\d{2})/) || []; return `<option value="${esc(r.run_id)}">${m[2]}/${m[1]} ${m[3]}${r.voice ? " · صوت" : ""} · ${esc((STATUS[r.status] || STATUS.done)[1])}</option>`; }).join("")}
+            ${runs.map(r => { const m = r.started.match(/^\d{4}-(\d{2})-(\d{2})T(\d{2}:\d{2})/) || []; return `<option value="${esc(r.run_id)}">${m[2]}/${m[1]} ${m[3]}${r.voice ? "، صوت" : ""}، ${esc((STATUS[r.status] || STATUS.done)[1])}</option>`; }).join("")}
           </select>
         </div>
         <button type="button" class="button secondary" id="replay" ${busy ? "disabled" : ""}>إعادة عرض</button>` : ""}
       <button type="button" class="button" id="run" ${busy || !live.ready ? "disabled" : ""}>${busy && !run?.replay ? "عم يشتغل…" : "تشغيل مباشر"}</button>
     </div>
-    ${live.ready ? "" : `<p class="hint">التشغيل المباشر بدو مفتاح للنموذج بـ <span class="ltr">.env</span>. بدونه، إعادة عرض التشغيلات المسجّلة بتشتغل.</p>`}
+    ${live.ready ? "" : `<p class="hint">التشغيل المباشر بدو مفتاح للنموذج بـ <span class="ltr code">.env</span>. بدونه، إعادة عرض التشغيلات المسجّلة بتشتغل.</p>`}
     ${s.events.some(e => e.voice_input) && live.ready ? voiceBox(busy) : ""}`;
 }
 
@@ -192,7 +199,7 @@ function stepTags(st) {
 
 function globalExample(st) {
   const src = st.global_example_id && st.retrieved?.find(r => r.id === st.global_example_id);
-  if (src) return `<p><strong>المثال العالمي (${esc(src.jurisdiction || "")}):</strong> ${esc(shortName(src.doc_name))} · ${esc(unit(src.article))}. ${esc(st.global_example)}</p>`;
+  if (src) return `<p><strong>المثال العالمي (${esc(src.jurisdiction || "")}):</strong> ${esc(shortName(src.doc_name))}، ${artLabel(src.article)}. ${esc(st.global_example)}</p>`;
   if (st.gap_no_global) return `<div class="notice bad"><strong>ما في مثال عالمي مسترجع لهالفجوة.</strong> ${esc(st.global_example)}</div>`;
   return "";
 }
@@ -207,9 +214,9 @@ function detailHTML(st) {
     const used = st.cited.includes(s.id);
     return `
       <li class="${used ? "" : "unused"}">
-        <strong>${esc(shortName(s.doc_name))} · ${esc(unit(s.article))}</strong>${used ? ` <span class="tag">اعتمد عليها</span>` : ""}
+        <strong>${artLabel(s.article)} ${esc(shortName(s.doc_name))}</strong>${used ? ` <span class="tag">اعتمد عليها</span>` : ""}
         <blockquote>${esc(s.text)}</blockquote>
-        <button type="button" class="link" data-toggle>النص كامل</button>${s.url ? ` · <a href="${esc(s.url)}" target="_blank" rel="noopener">المصدر</a>` : ""}
+        <button type="button" class="link" data-toggle>النص كامل</button>${s.url ? `، <a href="${esc(s.url)}" target="_blank" rel="noopener">المصدر</a>` : ""}
       </li>`;
   }).join("");
   return `
@@ -255,7 +262,7 @@ function rowsHTML(fresh) {
     const kind = st.agent === "human" ? "" : st.unsourced || st.gap_no_global ? "bad" : st.sensitive ? "warn" : "";
     const isOpen = openAll || open.has(st.n);
     return `
-      <tr class="step ${kind}">
+      <tr class="step ${kind} ${st.n === lastArrived ? "arrive" : ""}">
         <td data-label="الوقت" class="num"><span class="ltr">${clock(st.at)}</span></td>
         <td class="who">${esc(a.name)}<small>${esc(a.role)}</small></td>
         <td data-label="الحكم">${esc(st.decision)}</td>
@@ -283,18 +290,21 @@ function renderResult() {
   $("#result").innerHTML = `
     ${banner}
     <h2>الرد للمواطن</h2>
-    ${replyHTML()}
+    <div class="panel">${replyHTML()}</div>
     <div class="toolbar">
       <h2>أحكام الوكلاء</h2>
       ${run.steps.length ? `<button type="button" class="link" id="toggle-all">${openAll ? "سكّر الكل" : "افتح الكل"}</button>` : ""}
     </div>
+    <div class="panel table-panel">
     <table class="verdicts">
       <thead><tr><th scope="col">الوقت</th><th scope="col">الوكيل</th><th scope="col">الحكم</th><th scope="col">الثقة</th><th scope="col">الحالة</th><th scope="col"><span class="sr">التفاصيل</span></th></tr></thead>
       <tbody>${rowsHTML()}</tbody>
     </table>
+    </div>
     <p class="hint">الوقت بالدقائق والثواني من بداية السيناريو.</p>
     ${run.status === "error" ? `<div class="notice bad"><strong>وقف التشغيل:</strong> ${esc(run.error)}</div>` : ""}
-    <p class="run-meta">${model ? `النموذج <span class="ltr">${esc(model)}</span> · ` : ""}التشغيلة <span class="ltr">${esc(run.run_id || "")}</span>${run.started ? ` · ${when(run.started)}` : ""}</p>`;
+    <p class="run-meta">${model ? `النموذج <span class="ltr code">${esc(model)}</span>، ` : ""}التشغيلة <span class="ltr code">${esc(run.run_id || "")}</span>${run.started ? `، ${when(run.started)}` : ""}</p>`;
+  lastArrived = null;  // arrival plays once, not on every re-render
 }
 
 function show(id) {
@@ -319,6 +329,7 @@ async function replay(runId) {
   const next = () => {
     const st = logged.steps[i++];
     run.steps.push(st);
+    lastArrived = st.n;
     const more = i < logged.steps.length;
     run.current = more ? logged.steps[i].agent : null;
     if (!more) run.status = logged.status;
@@ -345,6 +356,7 @@ async function start(voiceId) {
   poll = setInterval(async () => {
     const r = await fetch(`/api/runs/${run_id}`).then(x => x.json()).catch(() => null);
     if (!r || (r.status === "running" && r.steps.length === seen && r.current === run.current)) return;
+    if (r.steps.length > seen) lastArrived = r.steps[r.steps.length - 1].n;
     seen = r.steps.length;
     run = r; current.latest = r;
     renderResult();
@@ -379,7 +391,7 @@ function voiceBox(busy) {
         <blockquote class="heard">${esc(heard.text)}</blockquote>
         <div class="row">
           <button type="button" class="button" id="run-voice" ${busy ? "disabled" : ""}>شغّل السيناريو بهالطلب الصوتي</button>
-          <span class="hint"><span class="num">${heard.duration}</span> ث صوت · <span class="num">${(heard.ms / 1000).toFixed(1)}</span> ث تفريغ · <span class="ltr">${esc(heard.model)}</span></span>
+          <span class="hint"><span class="num">${heard.duration}</span> ث صوت، انفرّغ بـ <span class="num">${(heard.ms / 1000).toFixed(1)}</span> ث (<span class="ltr code">${esc(heard.model)}</span>)</span>
         </div>` : ""}
     </div>`;
 }
@@ -472,7 +484,7 @@ Promise.all([
     replay(autoReplay);
   }
 }).catch(() => {
-  $("#result").innerHTML = `<div class="notice bad">ما قدرنا نجيب السيناريوهات. شغّل السيرفر بـ <span class="ltr">python -m muyassar.server</span></div>`;
+  $("#result").innerHTML = `<div class="notice bad">ما قدرنا نجيب السيناريوهات. شغّل السيرفر بـ <span class="ltr code">python -m muyassar.server</span></div>`;
 });
 </script>
 </body>

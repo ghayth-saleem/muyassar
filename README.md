@@ -70,6 +70,10 @@ Three failure scenarios in `scenarios/*.json`, each an ordered list of events wi
 
 `python -m muyassar.scenarios <id>` runs one from the terminal; `/scenarios` on the demo server shows the timeline, every step clickable, with the staff approval step. Every step is a line in `logs/scenarios.jsonl`. `python -m muyassar.gaps` writes `reports/gaps.md` from the latest run of each scenario, in the policy agent's own words. `python scripts/consistency.py` runs each scenario 5 times into `logs/consistency/` and writes `eval/consistency.md`; `python scripts/check_citations.py` checks every cited article exists in the knowledge base and lists citations resting on secondary text. Sampling temperature cannot be fixed on Claude Sonnet 5.5, so stability is measured instead.
 
+## Identity
+
+The mark is the square-kufic meem of «ميسّر», drawn as SVG on a 32-unit grid (`web/brand/`). One identity colour, ink teal `#0e5e6f` (`#6cc3d1` in dark mode); red, amber and green each keep one meaning (no source, sensitive decision, approved), and every state also has a word. Noto Kufi Arabic for headings, IBM Plex Sans Arabic for reading. All tokens live in `web/site.css`; `/brand` on the demo server is the brand sheet, with the three directions considered, the mark at real sizes and the contrast of every colour pair. A demo strip on every page says the site is a test prototype with fictitious data.
+
 ## Model providers, replay and tests
 
 Every model call goes through one interface (`muyassar/providers.py`); `MUYASSAR_LLM` in `.env` picks `anthropic` (default), `gemini` (written against the google-genai SDK docs, not yet run against the API; needs `pip install google-genai` and `GEMINI_API_KEY`) or `ollama`.
