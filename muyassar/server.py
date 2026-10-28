@@ -9,7 +9,8 @@ POST /api/ask                       {"question": "..."} or {"voice_id": "..."} �
 POST /api/voice                     raw audio body (webm, ogg, wav, mp3...) → {"voice_id", "text", ...}
 GET  /api/scenarios                 scenarios, each with its latest logged run
 POST /api/scenarios/<id>/run        start a live run, optionally {"voice_id": ...} → {"run_id": ...}
-GET  /api/runs/<run_id>             a run's steps so far, polled by the page
+GET  /api/scenarios/<id>/runs       the scenario's finished runs in the log, newest first (for replay)
+GET  /api/runs/<run_id>             a run's steps so far (polled by the page), or a logged run for replay
 POST /api/runs/<run_id>/decide      {"approved": bool, "note": "..."} → the staff decision
 
 Models load once at startup, so the first question isn't slow.
@@ -62,7 +63,16 @@ def stats() -> dict:
     for run in runs:
         if run.get("note", "").startswith(mode):
             latest[run["k"]] = run
-    return {"documents": docs, "benchmark": [latest[k] for k in sorted(latest)]}
+    return {"documents": docs, "benchmark": [latest[k] for k in sorted(latest)], "live": live_model()}
+
+
+def live_model() -> dict:
+    """Whether this server can run scenarios live: a key for the configured
+    provider. Without one the page offers replay of logged runs only."""
+    provider = os.environ.get("MUYASSAR_LLM", "anthropic")
+    key = {"anthropic": "ANTHROPIC_API_KEY", "gemini": "GEMINI_API_KEY"}.get(provider)
+    ready = provider == "ollama" or bool(key and (os.environ.get(key) or (provider == "gemini" and os.environ.get("GOOGLE_API_KEY"))))
+    return {"provider": provider, "ready": ready}
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -98,8 +108,11 @@ class Handler(BaseHTTPRequestHandler):
                     last = RUNS[last["run_id"]]
                 out.append({**s, "latest": last})
             self._json(200, out)
-        elif len(parts) == 3 and parts[:2] == ["api", "runs"] and parts[2] in RUNS:
-            self._json(200, RUNS[parts[2]])
+        elif len(parts) == 4 and parts[:2] == ["api", "scenarios"] and parts[3] == "runs":
+            self._json(200, scenarios.logged_runs(parts[2]))
+        elif len(parts) == 3 and parts[:2] == ["api", "runs"]:
+            run = RUNS.get(parts[2]) or scenarios.logged_run(parts[2])
+            self._json(200, run) if run else self._json(404, {"error": "التشغيل مش موجود"})
         else:
             self._json(404, {"error": "مش موجود"})
 

@@ -108,6 +108,25 @@ nav a[aria-current] { color: var(--ink); background: var(--sunk); }
 .run-btn[disabled] { opacity: .6; cursor: progress; }
 .eyebrow { color: var(--muted); font-size: 14px; }
 
+/* Live run and replay controls */
+.run-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.run-row select {
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px;
+  padding: 8px 14px; font: inherit; font-size: 15px; max-width: 100%;
+}
+.run-row .btn { display: inline-flex; gap: 6px; align-items: center; }
+.case-foot .hint { flex-basis: 100%; color: var(--muted); font-size: 14px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.replay-banner {
+  list-style: none; display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px;
+  padding: 10px 14px; border-radius: var(--r-input); background: var(--sunk); color: var(--muted); font-size: 14px;
+}
+.replay-banner i { font-size: 19px; margin-top: 2px; }
+.replay-banner strong { color: var(--ink); }
+.replay-banner.on { background: var(--accent-soft); }
+.replay-banner.on strong, .replay-banner.on i { color: var(--accent); }
+.approve .hint { color: var(--warn); font-size: 14px; margin: 0; }
+
 /* Voice request (health-data scenario) */
 .voice { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--line); }
 .voice-head { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; }
@@ -333,6 +352,8 @@ function renderPicker() {
 
 function renderCase() {
   const s = current, busy = run?.status === "running";
+  const canLive = live.ready;
+  const runs = loggedRuns[s.id] || [];
   $("#case").innerHTML = `
     <div class="case">
       <span class="eyebrow">سؤال الحالة</span>
@@ -340,12 +361,49 @@ function renderCase() {
       <p>${esc(s.summary)}</p>
       <div class="case-foot">
         <span class="expected"><strong>الفجوة اللي صُمّم ليكشفها:</strong> ${esc(s.expected_gap)}</span>
-        <button type="button" class="run-btn" id="run" ${busy ? "disabled" : ""}>
-          <i class="ph ${busy ? "ph-circle-notch" : "ph-play"}"></i>${busy ? "عم يشتغل" : run ? "شغّله من جديد" : "شغّل السيناريو"}
-        </button>
+        <div class="run-row">
+          ${runs.length ? `
+            <label class="sr" for="replay-pick">تشغيلة مسجّلة</label>
+            <select id="replay-pick" ${busy ? "disabled" : ""}>
+              ${runs.map(r => `<option value="${esc(r.run_id)}">${esc(r.started.slice(0, 16).replace("T", " "))}${r.voice ? " · صوت" : ""} · ${esc((STATUS[r.status] || STATUS.done)[2])}</option>`).join("")}
+            </select>
+            <button type="button" class="btn" id="replay" ${busy ? "disabled" : ""}><i class="ph ph-clock-counter-clockwise"></i>إعادة عرض</button>` : ""}
+          <button type="button" class="run-btn" id="run" ${busy || !canLive ? "disabled" : ""} ${canLive ? "" : `title="ما في مفتاح للنموذج على هالسيرفر"`}>
+            <i class="ph ${busy && !run?.replay ? "ph-circle-notch" : "ph-play"}"></i>${busy && !run?.replay ? "عم يشتغل" : "تشغيل مباشر"}
+          </button>
+        </div>
+        ${canLive ? "" : `<span class="hint">التشغيل المباشر بدو مفتاح للنموذج بـ <span class="ltr">.env</span>. بدونه، إعادة عرض التشغيلات المسجّلة بتشتغل.</span>`}
       </div>
-      ${s.events.some(e => e.voice_input) ? voiceBox(busy) : ""}
+      ${s.events.some(e => e.voice_input) && canLive ? voiceBox(busy) : ""}
     </div>`;
+}
+
+// Replay: plays a logged run step by step, as it looked live, with no model call.
+// Decisions and the staff step are shown exactly as they were logged.
+let live = { ready: false }, loggedRuns = {}, replayTimer = null;
+const REPLAY_THINK = 1400, REPLAY_READ = 1100;  // ms on the "working" card, then on the new step
+
+function stopReplay() { clearTimeout(replayTimer); replayTimer = null; }
+
+async function replay(runId) {
+  stopReplay(); clearInterval(poll);
+  const logged = await fetch(`/api/runs/${runId}`).then(r => r.json());
+  run = { ...logged, steps: [], status: "running", replay: true, current: logged.steps[0]?.agent };
+  selected = null;
+  renderCase(); renderTimeline(); renderDetail();
+  let i = 0;
+  const next = () => {
+    const st = logged.steps[i++];
+    run.steps.push(st);
+    selected = st.n;
+    const more = i < logged.steps.length;
+    run.current = more ? logged.steps[i].agent : null;
+    if (!more) run.status = logged.status;
+    renderTimeline(new Set([st.n])); renderDetail();
+    if (more) replayTimer = setTimeout(() => { renderTimeline(); replayTimer = setTimeout(next, REPLAY_THINK); }, REPLAY_READ);
+    else { renderCase(); replayTimer = null; }
+  };
+  replayTimer = setTimeout(next, REPLAY_THINK);
 }
 
 // Voice request: the audio goes to /api/voice, is transcribed locally and dropped;
@@ -436,6 +494,13 @@ function renderTimeline(fresh = new Set()) {
     $("#timeline").innerHTML = `<li class="empty">هالسيناريو ما انشغّل لسا. اكبس «شغّل السيناريو»، بياخذ تقريباً دقيقتين لأنه كل وكيل بيقرأ وبيكتب.</li>`;
     return;
   }
+  const banner = run.logged || run.replay ? `
+    <li class="replay-banner ${run.replay ? "on" : ""}">
+      <i class="ph ${run.replay ? "ph-clock-counter-clockwise" : "ph-archive"}"></i>
+      <div><strong>${run.replay ? "إعادة عرض لتشغيلة مسجّلة، مش تشغيل مباشر." : "تشغيلة مسجّلة."}</strong>
+      ${esc(run.started?.slice(0, 16).replace("T", " ") || "")} · <span class="ltr">${esc(run.run_id)}</span>.
+      الخطوات والقرارات زي ما انسجّلت بـ <span class="ltr">logs/scenarios.jsonl</span>، وما في أي طلب للنموذج.</div>
+    </li>` : "";
   const items = run.steps.map(st => {
     const a = AGENTS[st.agent] || { name: st.agent, icon: "ph-circle" };
     const kind = st.agent === "human" ? "human" : st.agent === "orchestrator" ? "final" : st.unsourced || st.gap_no_global ? "bad" : st.sensitive ? "warn" : "";
@@ -464,24 +529,27 @@ function renderTimeline(fresh = new Set()) {
       </li>`);
   }
   if (run.status === "awaiting_human") {
+    // A replayed run shows where it stopped; deciding is for live runs, so the log gets no replayed decision.
+    const replaying = run.replay;
     items.push(`
       <li class="ev warn">
         <span class="dot" aria-hidden="true"><i class="ph ph-hand-palm"></i></span>
         <div class="approve">
           <h3><i class="ph ph-hand-palm"></i>النظام وقف هون</h3>
           <p>المنسّق اقترح قرار حساس، فما بينفّذ ولا بيوصل الرد للمواطن قبل ما يوافق موظف.</p>
+          ${replaying ? `<p class="hint">بإعادة العرض، قرار الموظف ما بينسجّل. التشغيلة الأصلية لسا بانتظار موظف.</p>` : `
           <textarea id="note" maxlength="500" aria-label="ملاحظة الموظف" placeholder="ملاحظة الموظف (اختياري)"></textarea>
           <div class="btns">
             <button type="button" class="btn primary" data-decide="1">وافق وأرسل الرد</button>
             <button type="button" class="btn" data-decide="0">ارفض الاقتراح</button>
-          </div>
+          </div>`}
         </div>
       </li>`);
   }
   if (run.status === "error") {
     items.push(`<li class="ev bad"><span class="dot" aria-hidden="true"><i class="ph ph-warning-circle"></i></span><div class="alert bad"><i class="ph ph-warning-circle"></i><div>وقف التشغيل: ${esc(run.error)}</div></div></li>`);
   }
-  $("#timeline").innerHTML = items.join("");
+  $("#timeline").innerHTML = banner + items.join("");
 }
 
 function renderDetail() {
@@ -533,6 +601,7 @@ function select(n) {
 }
 
 function show(id) {
+  stopReplay();
   current = scenarios.find(s => s.id === id);
   run = current.latest;
   const final = run?.steps.find(s => s.agent === "orchestrator");
@@ -542,7 +611,7 @@ function show(id) {
 }
 
 async function start(voiceId) {
-  clearInterval(poll);
+  stopReplay(); clearInterval(poll);
   const res = await fetch(`/api/scenarios/${current.id}/run`, {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify(voiceId ? { voice_id: voiceId } : {}),
@@ -582,6 +651,7 @@ document.addEventListener("click", e => {
   const card = e.target.closest("button.card");
   if (card) { select(Number(card.dataset.n)); if (matchMedia("(max-width: 900px)").matches) $("#detail").scrollIntoView({ block: "start" }); return; }
   if (e.target.closest("#run")) { start(); return; }
+  if (e.target.closest("#replay")) { replay($("#replay-pick").value); return; }
   if (e.target.closest("#rec")) { toggleRecord(); return; }
   if (e.target.closest("#run-voice") && heard) { start(heard.voice_id); return; }
   const d = e.target.closest("[data-decide]");
@@ -603,10 +673,22 @@ addEventListener("hashchange", () => {
   if (id !== current?.id && scenarios.some(s => s.id === id)) { clearInterval(poll); show(id); }
 });
 
-fetch("/api/scenarios").then(r => r.json()).then(list => {
+// ?replay=<run_id>#<scenario> starts a replay on load (for recording the video).
+Promise.all([
+  fetch("/api/scenarios").then(r => r.json()),
+  fetch("/api/stats").then(r => r.json()).catch(() => ({})),
+]).then(async ([list, stats]) => {
   scenarios = list;
+  live = stats.live || { ready: false };
+  const runs = await Promise.all(list.map(s => fetch(`/api/scenarios/${s.id}/runs`).then(r => r.json()).catch(() => [])));
+  list.forEach((s, i) => { loggedRuns[s.id] = runs[i]; });
   const want = location.hash.slice(1);
   show(list.some(s => s.id === want) ? want : list[0].id);
+  const auto = new URLSearchParams(location.search).get("replay");
+  if (auto && (loggedRuns[current.id] || []).some(r => r.run_id === auto)) {
+    $("#replay-pick").value = auto;
+    replay(auto);
+  }
 }).catch(() => {
   $("#timeline").innerHTML = `<li class="empty">ما قدرنا نجيب السيناريوهات. شغّل السيرفر بـ <span class="ltr">python -m muyassar.server</span></li>`;
 });

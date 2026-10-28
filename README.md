@@ -37,14 +37,14 @@ Hybrid BM25 (custom Arabic normalisation and light stemming) plus dense `intfloa
 
 ## Benchmark
 
-84 questions (`eval/questions.jsonl`), mostly in Jordanian dialect, each with the expected document and article. Every run is appended to `eval/results.jsonl`.
+87 questions (`eval/questions.jsonl`), mostly in Jordanian dialect, each with the expected document and article. Every run is appended to `eval/results.jsonl`.
 
 | Mode | recall@5 | recall@1 |
 |---|---|---|
-| hybrid + reranker (window 30) | **0.988** (83/84) | **0.857** (72/84) |
+| hybrid + reranker (window 30) | **0.977** (85/87) | **0.839** (73/87) |
 | hybrid (76 questions, before the global layer) | 0.908 | 0.658 |
 
-Adding the Civil Status Law pushed q32 (ETL art. 6) out of the top 5 until the rerank window was widened to 30, and took rank 1 on q67 with its art. 14, which states the same rule as the birth-registration guide the question expects. Most recall@1 misses are a neighbouring article or the same rule in another document (for example the EU AI Act's right to explanation ranking above the Jordanian ethics charter). The questions were written by the KB owner and still need review by the team.
+Of the three disability-law questions added last, q85 (a screen-reader complaint in dialect) misses the top 5 because its words share little with art. 32, and q86 ranks third behind art. 2, which defines the accessible formats it asks about. Adding the Civil Status Law pushed q32 (ETL art. 6) out of the top 5 until the rerank window was widened to 30, and took rank 1 on q67 with its art. 14, which states the same rule as the birth-registration guide the question expects. Most recall@1 misses are a neighbouring article or the same rule in another document (for example the EU AI Act's right to explanation ranking above the Jordanian ethics charter). The questions were written by the KB owner and still need review by the team.
 
 ## Agents and scenarios
 
@@ -70,11 +70,23 @@ Three failure scenarios in `scenarios/*.json`, each an ordered list of events wi
 
 `python -m muyassar.scenarios <id>` runs one from the terminal; `/scenarios` on the demo server shows the timeline, every step clickable, with the staff approval step. Every step is a line in `logs/scenarios.jsonl`. `python -m muyassar.gaps` writes `reports/gaps.md` from the latest run of each scenario, in the policy agent's own words. `python scripts/consistency.py` runs each scenario 5 times into `logs/consistency/` and writes `eval/consistency.md`; `python scripts/check_citations.py` checks every cited article exists in the knowledge base and lists citations resting on secondary text. Sampling temperature cannot be fixed on Claude Sonnet 5.5, so stability is measured instead.
 
+## Model providers, replay and tests
+
+Every model call goes through one interface (`muyassar/providers.py`); `MUYASSAR_LLM` in `.env` picks `anthropic` (default), `gemini` (written against the google-genai SDK docs, not yet run against the API; needs `pip install google-genai` and `GEMINI_API_KEY`) or `ollama`.
+
+**Replay mode:** the scenarios page replays any logged run step by step, as it looked live, with a banner saying it is a replay and no model call; a replay never logs a staff decision. `/scenarios?replay=<run_id>#<scenario>` starts one on load (used for the demo video). Without a model key the page disables live runs and offers replay only.
+
+**Tests:** `cd tests && python -m unittest` runs 25 tests with no network, no API and no models: the scenario engine end to end on a `ReplayProvider` (the replies a model once gave, from `tests/fixtures/`) with search stubbed to the logged articles, the citation rule, the global-example rule, the conflict rule, and `scripts/check_citations.py`.
+
 ## Voice assistant
 
 `muyassar/voice.py` transcribes Arabic speech locally with faster-whisper `large-v3-turbo` (int8). On the scenarios page, the health-data scenario has a record button (MediaRecorder) and an audio upload; `POST /api/voice` returns the transcript and a `voice_id`, and running the scenario with it replaces the father's request with what was heard. The audio is decoded in memory and never written or logged; only the text is kept, and every step that acted on it records `input_source: voice`.
 
 It runs on the CPU by default. On a 4 GB RTX 3050 the retrieval models already hold 3.2–3.8 GB, and next to them Whisper took 17–22 s for a 13.9 s clip; on the CPU it took 14.6 s, alone on the GPU 1.3 s (`large-v3`: 2.8 s). A real 12.1 s recording in Jordanian dialect took 9.0 s on the CPU once the model was loaded (18 s on the first request). Whisper misspelled a few dialect words in it («تعرفية» for «تعريفية», «لابن» for «لابني», «السن الماضي» for «السنة الماضية»); the policy agent still found the spoken-consent gap. `MUYASSAR_WHISPER_DEVICE=cuda` uses the GPU where there is room. The model downloads into `models/whisper/` (git-ignored) on first use.
+
+## ITU AI Readiness 2.0 mapping
+
+From *AI Ready – Analysis Towards a Standardized Readiness Framework, Report 2.0* (ITU, January 2026): six factors (Data, Research, Deployment Support, Standards, Open source and Code, Sandbox Environments) and thirteen dimensions derived from the Plugfest projects. Muyassar touches D1 Data/model Marketplace, D4 Contextualization and Regional Impact (Jordanian dialect, Jordanian law), D5 Level of Integration of AI in Workflows, D6 Human Interface, D8 Collaboration with AI, D9 Impacts of Humans in AI Integration (staff approval), D10 AI & Policies (gap detection), D11 AI for Inclusion (voice, disability services) and D13 Digital Infrastructure. The report states the factor for every dimension except D9 and D11; the technical report draft gives the node-by-node table.
 
 ## ITU-T Y.3172 mapping
 
@@ -108,8 +120,10 @@ python -m muyassar.server     # http://localhost:8765 and /scenarios
 ## Layout
 
 ```
-muyassar/      arabic.py ingest.py pdf_arabic.py retrieval.py llm.py answer.py
+muyassar/      arabic.py ingest.py pdf_arabic.py retrieval.py llm.py providers.py answer.py
                agents.py scenarios.py gaps.py voice.py server.py
+tests/         offline unit tests and logged-run fixtures
+docs/          video-script.md
 scripts/       consistency.py check_citations.py
 sources/       registry.json, raw/ (clean texts), pdf/ (original files)
 kb/chunks/     one JSONL per document
@@ -124,6 +138,6 @@ web/           index.html (ask), scenarios.html (timeline)
 ## Known gaps
 
 - The Arabic wording of the PDPL and the Electronic Transactions Law comes from a secondary site and still needs matching against the Official Gazette. A 2025 amendment to the Electronic Transactions Law passed the House; its publication is unconfirmed.
-- Disability law: Gazette issue and page not found yet, and article 14/b/1 has a known extraction defect.
+- Disability law: Gazette issue and page not found yet. Article 14/b was corrected from the HCD's official copy (read from the page image: its font has no text layer); the other articles have not been compared with that copy.
 - The 2025 disability card instructions have no fee article, and the new classification list is not included.
 - Service-guide fees are copied from CSPD as of 27/10/2026 and can change.

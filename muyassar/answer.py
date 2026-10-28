@@ -10,7 +10,7 @@ import time
 from datetime import datetime, timezone
 
 from muyassar import ROOT
-from muyassar.llm import CLAUDE_MODEL, PROVIDER, ask
+from muyassar.llm import ask, model_name
 from muyassar.retrieval import search
 
 LOG = ROOT / "logs" / "web.jsonl"
@@ -69,7 +69,7 @@ def answer(question: str, source: str = "text") -> dict:
         "cited": cited,
         "dropped_citations": [c for c in reply["cited"] if c not in known],
         "sources": sources,
-        "model": CLAUDE_MODEL if PROVIDER == "anthropic" else PROVIDER,
+        "model": model_name(),
         "ms": round((time.perf_counter() - started) * 1000),
     }
     _log(result)

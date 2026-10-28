@@ -22,7 +22,7 @@ from datetime import datetime, timezone
 
 from muyassar import ROOT
 from muyassar.agents import AGENTS, run_agent, run_orchestrator
-from muyassar.llm import CLAUDE_MODEL, PROVIDER
+from muyassar.llm import model_name
 
 SCENARIOS = ROOT / "scenarios"
 LOG = ROOT / "logs" / "scenarios.jsonl"
@@ -87,7 +87,7 @@ def _step(run: dict, agent: str, at: int, received: list[dict], verdict: dict) -
         "confidence": verdict["confidence"],
         "sensitive": verdict["sensitive"],
         "sensitive_reason": verdict["sensitive_reason"],
-        "model": CLAUDE_MODEL if PROVIDER == "anthropic" else PROVIDER,
+        "model": model_name(),
     }
     if any(d.get("source") == "voice" for d in received):
         step["input_source"] = "voice"  # this step acted on what the voice assistant heard
@@ -179,34 +179,49 @@ def decide(run: dict, approved: bool, note: str = "") -> dict:
     return run
 
 
-def latest_run(scenario_id: str) -> dict | None:
-    """Rebuild the most recent run of a scenario from the log, so the page can
-    show a finished run without calling the model again."""
+def _logged_runs(scenario_id: str | None = None) -> list[dict]:
+    """Every run in the log that reached the orchestrator, oldest first.
+    A run cut short (an API error) is not a demo, so it is left out."""
     if not LOG.is_file():
-        return None
+        return []
     runs: dict[str, list[dict]] = {}
-    order = []
     for line in LOG.read_text(encoding="utf-8").splitlines():
         if not line.strip():
             continue
         step = json.loads(line)
-        if step.get("scenario") != scenario_id:
+        if scenario_id and step.get("scenario") != scenario_id:
             continue
-        if step["run_id"] not in runs:
-            order.append(step["run_id"])
         runs.setdefault(step["run_id"], []).append(step)
-    # Latest run that reached the orchestrator; a run cut short is not a demo.
-    for run_id in reversed(order):
-        steps = runs[run_id]
-        agents = [s["agent"] for s in steps]
-        if "orchestrator" not in agents:
+    out = []
+    for run_id, steps in runs.items():
+        final = next((s for s in steps if s["agent"] == "orchestrator"), None)
+        if not final:
             continue
-        final = next(s for s in steps if s["agent"] == "orchestrator")
         human = next((s for s in steps if s["agent"] == "human"), None)
         status = ("approved" if human["approved"] else "rejected") if human else (
             "awaiting_human" if final["sensitive"] else "done")
-        return {"run_id": run_id, "scenario": scenario_id, "started": steps[0]["time"], "status": status, "steps": steps}
-    return None
+        out.append({"run_id": run_id, "scenario": steps[0]["scenario"], "started": steps[0]["time"],
+                    "status": status, "voice": any(s.get("input_source") == "voice" for s in steps),
+                    "logged": True, "steps": steps})
+    return out
+
+
+def latest_run(scenario_id: str) -> dict | None:
+    """The most recent finished run of a scenario, so the page can show it
+    without calling the model again."""
+    runs = _logged_runs(scenario_id)
+    return runs[-1] if runs else None
+
+
+def logged_runs(scenario_id: str) -> list[dict]:
+    """The scenario's finished runs, newest first, without their steps (for a picker)."""
+    return [{k: v for k, v in r.items() if k != "steps"} | {"steps": len(r["steps"])}
+            for r in reversed(_logged_runs(scenario_id))]
+
+
+def logged_run(run_id: str) -> dict | None:
+    """One finished run from the log, for replay."""
+    return next((r for r in _logged_runs() if r["run_id"] == run_id), None)
 
 
 def main() -> None:
