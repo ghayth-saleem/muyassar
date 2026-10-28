@@ -6,316 +6,121 @@
 <title>ميسّر</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/site.css">
 <style>
-/* Shape system: surfaces 14px, inputs 12px, every pressable thing is a pill. */
-:root {
-  --bg: #f2f4f3; --surface: #fbfcfb; --sunk: #e9eeec;
-  --ink: #10201b; --muted: #4a5a55; --line: #d5ddd9;
-  --accent: #0a7b4b; --accent-ink: #f4fbf7; --accent-soft: #dcefe5;
-  --warn: #8a5200; --warn-soft: #f6e8cf;
-  --shadow: 0 1px 0 rgb(16 32 27 / .04), 0 12px 32px -12px rgb(16 32 27 / .18);
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --r: 14px; --r-input: 12px;
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0c1311; --surface: #131d1a; --sunk: #0f1815;
-    --ink: #e4ece8; --muted: #9db0a9; --line: #24332e;
-    --accent: #3dcb8a; --accent-ink: #06140e; --accent-soft: #133325;
-    --warn: #e8b25a; --warn-soft: #33260f;
-    --shadow: 0 1px 0 rgb(0 0 0 / .3), 0 16px 40px -16px rgb(0 0 0 / .6);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0c1311; --surface: #131d1a; --sunk: #0f1815;
-  --ink: #e4ece8; --muted: #9db0a9; --line: #24332e;
-  --accent: #3dcb8a; --accent-ink: #06140e; --accent-soft: #133325;
-  --warn: #e8b25a; --warn-soft: #33260f;
-  --shadow: 0 1px 0 rgb(0 0 0 / .3), 0 16px 40px -16px rgb(0 0 0 / .6);
-  color-scheme: dark;
-}
+.ask { max-width: 40em; }
+.ask textarea { min-height: 110px; }
+.examples { margin: 20px 0 0; }
+.examples ul { list-style: none; margin: 6px 0 0; padding: 0; }
+.examples li { margin: 0 0 6px; }
 
-* { box-sizing: border-box; }
-body {
-  margin: 0; direction: rtl; background: var(--bg); color: var(--ink);
-  font: 400 17px/1.85 "IBM Plex Sans Arabic", system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-.wrap { max-width: 1180px; margin-inline: auto; padding-inline: 24px; }
-h1, h2, h3 { font-family: "Readex Pro", "IBM Plex Sans Arabic", sans-serif; line-height: 1.3; margin: 0; }
-.ltr { direction: ltr; unicode-bidi: isolate; font-family: "IBM Plex Mono", monospace; font-size: .86em; }
-a { color: inherit; }
-button { font: inherit; color: inherit; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+/* The answer: large, plain, with each article number a link to its text */
+.answer { border-inline-start: 5px solid var(--primary); padding: 4px 20px 4px 0; max-width: 40em; }
+.answer p { font-size: 22px; line-height: 1.9; }
+.answer-q { font-size: 19px; color: var(--muted); margin-bottom: 8px; }
+.cite { font: inherit; background: none; border: 0; padding: 0; color: var(--primary); text-decoration: underline; text-underline-offset: .18em; cursor: pointer; font-weight: 600; }
+.cite:hover { color: var(--primary-hover); text-decoration-thickness: 3px; }
+.loading { color: var(--muted); }
 
-/* Header */
-header { height: 68px; display: flex; align-items: center; justify-content: space-between; }
-.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.mark {
-  width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
-  border: 2px solid var(--accent); color: var(--accent);
-  font: 700 17px/1 "Readex Pro", sans-serif;
-}
-.brand b { font: 700 22px/1 "Readex Pro", sans-serif; }
-nav { display: flex; align-items: center; gap: 4px; }
-nav a { text-decoration: none; color: var(--muted); padding: 6px 12px; border-radius: 999px; font-size: 15px; }
-nav a:hover { color: var(--ink); background: var(--sunk); }
-.icon-btn {
-  width: 38px; height: 38px; border-radius: 999px; border: 1px solid var(--line);
-  background: var(--surface); display: grid; place-items: center; cursor: pointer;
-  transition: transform 140ms var(--ease-out);
-}
-.icon-btn:active { transform: scale(0.95); }
+/* Sources: the cited ones first, the rest greyed with a word saying so */
+.sources { list-style: none; margin: 0; padding: 0; max-width: 46em; }
+.sources li { border-top: 1px solid var(--line); padding: 16px 0; scroll-margin-top: 16px; }
+.sources li.cited { border-inline-start: 5px solid var(--primary); padding-inline-start: 16px; }
+.sources li.unused { color: var(--muted); }
+.sources h3 { font-size: 19px; margin: 0 0 4px; }
+.sources blockquote { margin: 8px 0; white-space: pre-line; display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; }
+.sources li.open blockquote { -webkit-line-clamp: unset; }
+.sources .foot { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-size: 17px; }
+.sources li.flash { background: var(--panel); }
 
-/* Hero: question on one side, the answer sheet on the other */
-.hero { display: grid; grid-template-columns: 5fr 6fr; gap: 56px; padding-block: 40px 72px; align-items: start; }
-.hero h1 { font-size: clamp(34px, 4.2vw, 52px); font-weight: 700; letter-spacing: -0.01em; }
-.hero h1 em { font-style: normal; color: var(--accent); }
-.lead { color: var(--muted); font-size: 18px; max-width: 34ch; margin: 18px 0 32px; }
-form label { display: block; font-weight: 600; font-size: 15px; margin-bottom: 8px; }
-textarea {
-  width: 100%; min-height: 112px; resize: vertical; padding: 14px 16px;
-  border-radius: var(--r-input); border: 1px solid var(--line); background: var(--surface);
-  color: var(--ink); font: inherit; line-height: 1.8;
-  transition: border-color 160ms ease, box-shadow 160ms ease;
-}
-textarea::placeholder { color: var(--muted); opacity: .85; }
-textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
-.hint { color: var(--muted); font-size: 14px; margin-top: 8px; }
-.row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 16px; }
-.ask {
-  display: inline-flex; align-items: center; gap: 10px; border: 0; cursor: pointer;
-  background: var(--accent); color: var(--accent-ink); font-weight: 600; font-size: 17px;
-  padding: 12px 26px; border-radius: 999px; white-space: nowrap;
-  transition: transform 160ms var(--ease-out), opacity 160ms ease;
-}
-.ask:active { transform: scale(0.97); }
-.ask[disabled] { opacity: .6; cursor: progress; }
-.ask i { transform: scaleX(-1); } /* arrow points the reading direction */
+/* Knowledge base: a table, stacked on a phone */
+table.docs { width: 100%; border-collapse: collapse; }
+.docs caption { text-align: start; color: var(--muted); font-size: 17px; padding-bottom: 8px; }
+.docs th { text-align: start; font-size: 16px; color: var(--muted); font-weight: 600; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line); }
+.docs td { padding: 12px 12px 12px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+.docs td.n { text-align: end; white-space: nowrap; }
+.docs .layer { color: var(--muted); font-size: 16px; display: block; }
 
-/* The answer sheet */
-.sheet {
-  position: relative; background: var(--surface); border: 1px solid var(--line);
-  border-radius: var(--r); box-shadow: var(--shadow); padding: 32px 32px 28px; min-height: 420px;
-}
-.sheet::before { /* binding margin, like an official form */
-  content: ""; position: absolute; inset-block: 24px; inset-inline-start: 0;
-  width: 3px; border-radius: 3px; background: var(--accent);
-}
-.sheet-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 18px; color: var(--muted); font-size: 14px; }
-.sheet-head strong { color: var(--ink); font-family: "Readex Pro", sans-serif; font-size: 16px; }
-.q { font-family: "Readex Pro", sans-serif; font-weight: 600; font-size: 21px; margin-bottom: 14px; }
-.answer { font-size: 18px; max-width: 62ch; }
-.answer p { margin: 0 0 12px; }
-.cite {
-  display: inline; border: 0; cursor: pointer; padding: 1px 8px; margin-inline: 2px;
-  border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 600;
-  font-size: .9em; transition: transform 140ms var(--ease-out);
-}
-.cite:active { transform: scale(0.96); }
-.notice {
-  display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: var(--r-input);
-  background: var(--warn-soft); color: var(--warn); font-size: 15px; margin-top: 16px;
-}
-.notice i { font-size: 20px; margin-top: 3px; }
-.meta { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 22px; padding-top: 16px; border-top: 1px dashed var(--line); color: var(--muted); font-size: 14px; }
+.metrics { display: flex; flex-wrap: wrap; gap: 24px 56px; margin: 8px 0 16px; }
+.metric b { display: block; font-size: 48px; line-height: 1.2; font-weight: 700; }
+.metric span { color: var(--muted); font-size: 17px; }
 
-.empty h3 { font-size: 20px; margin-bottom: 8px; }
-.empty p { color: var(--muted); margin: 0 0 20px; max-width: 46ch; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip {
-  border: 1px solid var(--line); background: var(--bg); border-radius: 999px; cursor: pointer;
-  padding: 8px 14px; font-size: 15px; text-align: start; line-height: 1.6;
-  transition: transform 140ms var(--ease-out), border-color 160ms ease;
-}
-@media (hover: hover) and (pointer: fine) { .chip:hover { border-color: var(--accent); } }
-.chip:active { transform: scale(0.97); }
-
-.skeleton span { display: block; height: 14px; border-radius: 7px; background: var(--sunk); margin-bottom: 14px; }
-.skeleton span:nth-child(1) { width: 92%; } .skeleton span:nth-child(2) { width: 100%; }
-.skeleton span:nth-child(3) { width: 78%; } .skeleton span:nth-child(4) { width: 64%; }
-@media (prefers-reduced-motion: no-preference) {
-  .skeleton span { background: linear-gradient(90deg, var(--sunk) 0%, var(--line) 50%, var(--sunk) 100%); background-size: 200% 100%; animation: shimmer 1.1s linear infinite; }
-  @keyframes shimmer { to { background-position: -200% 0; } }
-  .reveal { animation: reveal 320ms var(--ease-out) both; }
-  @keyframes reveal { from { opacity: 0; transform: translateY(8px); filter: blur(3px); } }
-}
-.status { color: var(--muted); font-size: 15px; margin-top: 6px; }
-
-/* Sources */
-section { padding-block: 72px; border-top: 1px solid var(--line); }
-.sec-title { font-size: clamp(26px, 3vw, 34px); margin-bottom: 10px; }
-.sec-lead { color: var(--muted); max-width: 60ch; margin: 0 0 36px; }
-.sources { display: grid; gap: 18px; }
-.src {
-  display: grid; grid-template-columns: 112px 1fr; gap: 24px; align-items: start;
-  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 24px;
-  scroll-margin-top: 24px; transition: border-color 200ms ease;
-}
-.src.unused { background: transparent; }
-.src.unused .num, .src.unused blockquote { opacity: .62; }
-.num { text-align: center; }
-.num small { display: block; color: var(--muted); font-size: 13px; }
-.num b { display: block; font: 700 46px/1.1 "Readex Pro", sans-serif; color: var(--accent); }
-.src h3 { font-size: 17px; margin-bottom: 6px; }
-.src blockquote {
-  margin: 12px 0 14px; padding-inline-start: 16px; border-inline-start: 3px solid var(--line);
-  color: var(--ink); font-size: 16px; white-space: pre-line;
-  display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden;
-}
-.src.open blockquote { -webkit-line-clamp: unset; }
-.src-foot { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 14px; color: var(--muted); }
-.tag { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; }
-.tag.official { background: var(--accent-soft); color: var(--accent); }
-.tag.secondary { background: var(--warn-soft); color: var(--warn); }
-.link-btn { border: 0; background: none; padding: 0; cursor: pointer; color: var(--accent); font-weight: 600; font-size: 14px; }
-.src-foot a { color: var(--accent); font-weight: 600; text-decoration: none; }
-
-/* The stamp: lands on an article when its citation is clicked */
-.stamp {
-  position: absolute; inset-block-start: 18px; inset-inline-end: 22px;
-  border: 2px solid var(--accent); color: var(--accent); border-radius: 999px;
-  padding: 4px 14px; font: 600 13px/1.4 "Readex Pro", sans-serif; transform: rotate(-6deg);
-  opacity: 0; pointer-events: none;
-}
-.src { position: relative; }
-.src.cited .stamp { opacity: .9; }
-.src.flash { border-color: var(--accent); }
-@media (prefers-reduced-motion: no-preference) {
-  .src.flash .stamp { animation: stamp 420ms var(--ease-out); }
-  @keyframes stamp { from { opacity: 0; transform: rotate(-14deg) scale(1.25); } to { opacity: .9; transform: rotate(-6deg) scale(1); } }
-  .sources .src { animation: reveal 320ms var(--ease-out) both; animation-delay: calc(var(--i) * 50ms); }
-}
-.sources-empty { color: var(--muted); padding: 28px; border: 1px dashed var(--line); border-radius: var(--r); }
-
-/* Knowledge base: documents as wide bands */
-.docs { display: grid; gap: 0; border-block: 1px solid var(--line); }
-.doc { display: grid; grid-template-columns: 1.6fr 1fr auto; gap: 24px; align-items: center; padding-block: 24px; }
-.doc + .doc { border-top: 1px solid var(--line); }
-.doc h3 { font-size: 19px; }
-.doc .who { color: var(--muted); font-size: 15px; }
-.doc .count { font: 600 28px/1 "Readex Pro", sans-serif; text-align: end; }
-.doc .count small { display: block; font: 400 13px/1.6 "IBM Plex Sans Arabic", sans-serif; color: var(--muted); }
-
-/* Benchmark: two numbers, plainly labelled */
-.bench { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 40px; align-items: start; }
-.metric b { display: block; font: 700 clamp(64px, 9vw, 112px)/1 "Readex Pro", sans-serif; letter-spacing: -0.02em; }
-.metric b span { font-size: .45em; color: var(--muted); margin-inline-start: 4px; }
-.metric p { margin: 10px 0 0; color: var(--muted); font-size: 15px; max-width: 26ch; }
-.caveat { background: var(--sunk); border-radius: var(--r); padding: 22px 24px; font-size: 15px; color: var(--muted); }
-.caveat strong { color: var(--ink); }
-
-footer { border-top: 1px solid var(--line); padding-block: 32px 48px; color: var(--muted); font-size: 14px; }
-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
-
-@media (max-width: 900px) {
-  .hero { grid-template-columns: 1fr; gap: 36px; padding-block: 24px 56px; }
-  .bench { grid-template-columns: 1fr 1fr; }
-  .caveat { grid-column: 1 / -1; }
-}
 @media (max-width: 640px) {
-  .wrap { padding-inline: 16px; }
-  nav a { display: none; }
-  .sheet { padding: 24px 20px 20px; min-height: 0; }
-  .src { grid-template-columns: 1fr; gap: 8px; padding: 20px; }
-  .num { text-align: start; display: flex; align-items: baseline; gap: 10px; }
-  .num b { font-size: 34px; }
-  .doc { grid-template-columns: 1fr auto; }
-  .doc .who { grid-column: 1 / -1; grid-row: 2; }
-  .bench { grid-template-columns: 1fr; gap: 28px; }
-  .row { flex-direction: column; align-items: stretch; }
-  .ask { justify-content: center; }
+  .answer p { font-size: 20px; }
+  table.docs, .docs tbody, .docs tr, .docs td { display: block; width: 100%; }
+  .docs thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .docs tr { border-top: 1px solid var(--line); padding: 10px 0; }
+  .docs td { border: 0; padding: 2px 0; }
+  .docs td.n { text-align: start; }
+  .docs td[data-label]::before { content: attr(data-label) ": "; color: var(--muted); font-size: 16px; }
 }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <a class="brand" href="#" aria-label="ميسّر">
-      <span class="mark" aria-hidden="true">م</span><b>ميسّر</b>
-    </a>
-    <nav aria-label="أقسام الصفحة">
-      <a href="/scenarios">السيناريوهات</a>
-      <a href="#sources">المصادر</a>
-      <a href="#kb">قاعدة المعرفة</a>
-      <a href="#bench">القياس</a>
-      <button class="icon-btn" id="theme" type="button" aria-label="بدّل الوضع الليلي"><i class="ph ph-moon-stars"></i></button>
-    </nav>
-  </header>
-
-  <main>
-    <div class="hero">
-      <div>
-        <h1>اسأل عن حقّك، <em>والجواب مع رقم المادة.</em></h1>
-        <p class="lead">ميسّر بيقرأ القوانين والسياسات وأدلة الخدمات الأردنية المنشورة وبيجاوبك بلغة بسيطة، وكل حكم مربوط بنصّه.</p>
-        <form id="form">
-          <label for="question">سؤالك</label>
-          <textarea id="question" name="question" maxlength="500" required
-            placeholder="مثلًا: بدي أمسح بياناتي من عند شركة، بيحقلي؟"></textarea>
-          <div class="row">
-            <span class="hint" id="hint">بالعامية أو بالفصحى. اضغط Ctrl+Enter للإرسال.</span>
-            <button class="ask" id="ask" type="submit">اسأل <i class="ph ph-arrow-right"></i></button>
-          </div>
-        </form>
-      </div>
-
-      <article class="sheet" id="sheet" aria-live="polite">
-        <div class="empty">
-          <div class="sheet-head"><strong>ورقة الجواب</strong></div>
-          <h3>الجواب بيظهر هون، مع المواد اللي اعتمد عليها.</h3>
-          <p>القاعدة فيها قوانين أردنية، واستراتيجيات حكومية، وأدلة خدمات مثل الجواز وتسجيل المولود وبطاقة ذوي الإعاقة. جرّب سؤال من هدول:</p>
-          <div class="chips" id="chips"></div>
-        </div>
-      </article>
-    </div>
-
-    <section id="sources">
-      <h2 class="sec-title">النصوص اللي قرأها قبل ما يجاوب</h2>
-      <p class="sec-lead">كل جواب بيعرض المواد اللي رجعت من البحث، حتى اللي ما استخدمها. اللي عليها ختم هي اللي بُني عليها الجواب.</p>
-      <div class="sources" id="source-list">
-        <div class="sources-empty">لسا ما سألت. أول ما تسأل، بتظهر هون النصوص بالترتيب اللي رجعت فيه.</div>
-      </div>
-    </section>
-
-    <section id="kb">
-      <h2 class="sec-title">شو في قاعدة المعرفة</h2>
-      <p class="sec-lead">كل قانون مقطّع على حدود المواد، وكل استراتيجية أو دليل خدمة على حدود أقسامه، وكل مقطع بيحمل اسم الوثيقة ورقم المادة أو القسم والجهة والتاريخ والرابط.</p>
-      <div class="docs" id="docs"></div>
-    </section>
-
-    <section id="bench">
-      <h2 class="sec-title">قديش البحث بيجيب المادة الصحيحة</h2>
-      <p class="sec-lead">بنسأل النظام أسئلة نعرف جوابها، وبنقيس إذا المادة الصحيحة رجعت.</p>
-      <div class="bench" id="bench-grid"></div>
-    </section>
-  </main>
-</div>
-
-<footer>
+<a class="skip" href="#main">انتقل للمحتوى</a>
+<aside class="demo-strip" aria-label="عن هالنموذج"><div class="wrap">نموذج تجريبي لمسابقة AI for Good، مش موقع حكومي رسمي. كل البيانات وهمية.</div></aside>
+<header class="site">
   <div class="wrap">
-    <span>ميسّر بيشرح النص القانوني، وما بيقدّم استشارة قانونية شخصية.</span>
-    <span>كل سؤال بينسجّل في <span class="ltr">logs/web.jsonl</span></span>
+    <a class="brand" href="/">ميسّر</a>
+    <nav aria-label="الصفحات">
+      <a href="/" aria-current="page">اسأل</a>
+      <a href="/scenarios">السيناريوهات</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <h1>اسأل عن حقّك، والجواب مع رقم المادة</h1>
+  <p class="lead">ميسّر بيقرأ القوانين والسياسات وأدلة الخدمات الأردنية المنشورة، وبيجاوبك بلغة بسيطة، وكل حكم مربوط بنصّه.</p>
+
+  <form class="ask" id="form">
+    <div class="field">
+      <label for="question">سؤالك</label>
+      <p class="hint" id="question-hint">بالعامية أو بالفصحى، لحد 500 حرف. Ctrl+Enter للإرسال.</p>
+      <textarea id="question" name="question" maxlength="500" required aria-describedby="question-hint"></textarea>
+    </div>
+    <button class="button" id="ask" type="submit">اسأل</button>
+    <div class="examples">
+      <p class="hint">أو جرّب سؤال من أسئلة القياس:</p>
+      <ul id="examples"></ul>
+    </div>
+  </form>
+
+  <section id="answer" aria-live="polite"></section>
+
+  <section id="sources-section" hidden>
+    <h2>النصوص اللي قرأها قبل ما يجاوب</h2>
+    <p class="body-text">بيطلع هون كل نص رجع من البحث، حتى اللي ما استخدمه الجواب. اللي استشهد فيه الجواب أول، ومعلّم.</p>
+    <ul class="sources" id="source-list"></ul>
+  </section>
+
+  <section id="kb">
+    <h2>شو في قاعدة المعرفة</h2>
+    <p class="body-text">كل قانون مقطّع على حدود المواد، وكل استراتيجية أو دليل خدمة على حدود أقسامه. وكل مقطع بيحمل اسم الوثيقة، ورقم المادة أو القسم، والجهة، والتاريخ، والرابط.</p>
+    <table class="docs">
+      <thead><tr><th scope="col">الوثيقة</th><th scope="col">الجهة</th><th scope="col">مصدر النص</th><th scope="col">المقاطع</th></tr></thead>
+      <tbody id="docs"><tr><td colspan="4" class="hint">عم يحمّل…</td></tr></tbody>
+    </table>
+  </section>
+
+  <section id="bench">
+    <h2>قديش البحث بيجيب المادة الصحيحة</h2>
+    <p class="body-text">بنسأل النظام أسئلة بنعرف جوابها، وبنقيس إذا المادة الصحيحة رجعت.</p>
+    <div class="metrics" id="metrics"></div>
+    <div class="inset" id="caveat"></div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <p>ميسّر بيشرح النص القانوني، وما بيقدّم استشارة قانونية شخصية. كل سؤال بينسجّل في <span class="ltr">logs/web.jsonl</span>.</p>
   </div>
 </footer>
 
 <script>
 const $ = (s, el = document) => el.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-
-// Theme: follows the system until the visitor picks one.
-const root = document.documentElement;
-const store = { get: k => { try { return localStorage.getItem(k); } catch { return null; } },
-                set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
-const saved = store.get("theme");
-if (saved) root.dataset.theme = saved;
-const isDark = () => root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-const syncIcon = () => { $("#theme i").className = isDark() ? "ph ph-sun" : "ph ph-moon-stars"; };
-syncIcon();
-$("#theme").addEventListener("click", () => { root.dataset.theme = isDark() ? "light" : "dark"; store.set("theme", root.dataset.theme); syncIcon(); });
 
 // Questions from the benchmark set, so every suggestion has a known answer.
 const EXAMPLES = [
@@ -324,30 +129,28 @@ const EXAMPLES = [
   "رفضوا يعطوني البطاقة التعريفية، بقدر أعترض وخلال قديش؟",
   "العقد اللي وقعته أونلاين إله نفس قوة الورقة الموقعة قدام المحكمة؟",
 ];
-$("#chips").innerHTML = EXAMPLES.map(q => `<button type="button" class="chip">${esc(q)}</button>`).join("");
-$("#chips").addEventListener("click", e => {
-  const chip = e.target.closest(".chip");
-  if (!chip) return;
-  $("#question").value = chip.textContent;
-  $("#form").requestSubmit();
-});
+$("#examples").innerHTML = EXAMPLES.map(q => `<li><button type="button" class="link" data-example>${esc(q)}</button></li>`).join("");
 
 const shortName = name => String(name).replace(/\s+رقم\s+\d+\s+لسنة\s+\d+$/, "");
+const OFFICIAL = ["official_pdf", "official_site", "official_eu"];
+const sourceLabel = ts => OFFICIAL.includes(ts) ? "نص رسمي"
+  : ts === "official_pdf_translated" ? "ترجمة لنص رسمي"
+  : ts === "official_site_secondary" ? "من موقع الجهة (نسخة قسطاس)"
+  : "مصدر ثانوي، لسا ما انطابق مع الجريدة";
 
 function renderLoading(q) {
-  $("#sheet").innerHTML = `
-    <div class="sheet-head"><strong>ورقة الجواب</strong><span>عم يقرأ</span></div>
-    <div class="q">${esc(q)}</div>
-    <div class="skeleton" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-    <p class="status">عم يدوّر بالقوانين ويكتب الجواب. بياخذ عادة بين 10 و30 ثانية.</p>`;
-  $("#source-list").innerHTML = `<div class="sources-empty">النصوص بتظهر مع الجواب.</div>`;
+  $("#answer").innerHTML = `
+    <h2>الجواب</h2>
+    <p class="answer-q">${esc(q)}</p>
+    <p class="loading">عم يدوّر بالقوانين ويكتب الجواب. بياخذ عادة بين 10 و30 ثانية.</p>`;
+  $("#sources-section").hidden = true;
 }
 
 function renderError(q, msg) {
-  $("#sheet").innerHTML = `
-    <div class="sheet-head"><strong>ورقة الجواب</strong></div>
-    <div class="q">${esc(q)}</div>
-    <div class="notice"><i class="ph ph-warning-circle"></i><div>ما قدرنا نجاوب هالمرة. ${esc(msg)}</div></div>`;
+  $("#answer").innerHTML = `
+    <h2>الجواب</h2>
+    <p class="answer-q">${esc(q)}</p>
+    <div class="notice bad"><strong>ما قدرنا نجاوب هالمرة.</strong> ${esc(msg)}</div>`;
 }
 
 // Turn "المادة 20" in the answer text into a button that jumps to that source.
@@ -365,64 +168,53 @@ function linkify(text, sources, cited) {
 function renderAnswer(r) {
   const paras = r.answer.split(/\n{2,}/).map(p => `<p>${linkify(p, r.sources, r.cited)}</p>`).join("");
   const usedDocs = [...new Set(r.sources.filter(s => r.cited.includes(s.id)).map(s => shortName(s.doc_name)))];
-  $("#sheet").innerHTML = `
-    <div class="reveal">
-      <div class="sheet-head"><strong>ورقة الجواب</strong><span>${(r.ms / 1000).toFixed(1)} ث</span></div>
-      <div class="q">${esc(r.question)}</div>
-      <div class="answer">${paras}</div>
-      ${r.covered ? "" : `<div class="notice"><i class="ph ph-info"></i><div>النصوص اللي عنا ما بتجاوب هالسؤال بشكل كامل. الأفضل تراجع الجهة المختصة.</div></div>`}
-      <div class="meta">
-        <span>${r.cited.length ? `اعتمد على ${r.cited.length} من ${r.sources.length} نصوص` : "ما اعتمد على أي نص"}</span>
-        ${usedDocs.length ? `<span>${usedDocs.map(esc).join("، ")}</span>` : ""}
-        <span class="ltr">${esc(r.model)}</span>
-      </div>
-    </div>`;
+  $("#answer").innerHTML = `
+    <h2>الجواب</h2>
+    <p class="answer-q">${esc(r.question)}</p>
+    <div class="answer">${paras}</div>
+    ${r.covered ? "" : `<div class="notice warn"><strong>الجواب ناقص.</strong> النصوص اللي عنا ما بتجاوب هالسؤال بشكل كامل، والأفضل تراجع الجهة المختصة.</div>`}
+    ${r.cited.length ? "" : `<div class="notice bad"><strong>بدون مصدر.</strong> الجواب ما اعتمد على أي نص رجع من البحث.</div>`}
+    <p class="run-meta">اعتمد على <span class="num">${r.cited.length}</span> من <span class="num">${r.sources.length}</span> نصوص${usedDocs.length ? ` · ${usedDocs.map(esc).join("، ")}` : ""} · النموذج <span class="ltr">${esc(r.model)}</span> · <span class="num">${(r.ms / 1000).toFixed(1)}</span> ث</p>`;
   renderSources(r);
 }
 
 function renderSources(r) {
   const order = [...r.sources].sort((a, b) => r.cited.includes(b.id) - r.cited.includes(a.id));
-  $("#source-list").innerHTML = order.map((s, i) => {
+  $("#source-list").innerHTML = order.map(s => {
     const used = r.cited.includes(s.id);
-    const official = ["official_pdf", "official_site", "official_eu"].includes(s.text_source);
     // Laws are cut by article number; strategies and guides by named section.
-    const unit = /^\d+( مكرر)?$/.test(s.article) ? "المادة" : "القسم";
+    const unit = /^\d+( مكرر)?$/.test(s.article) ? `المادة <span class="num">${esc(s.article)}</span>` : esc(s.article);
     return `
-      <article class="src ${used ? "cited" : "unused"}" id="src-${esc(s.id)}" style="--i:${i}">
-        <span class="stamp" aria-hidden="true">استُشهد بها</span>
-        <div class="num"><small>${unit}</small><b>${esc(s.article)}</b></div>
-        <div>
-          <h3>${esc(s.doc_name)}</h3>
-          <blockquote>${esc(s.text)}</blockquote>
-          <div class="src-foot">
-            ${used ? "" : `<span>رجعت بالبحث، وما استخدمها الجواب</span>`}
-            <span class="tag ${official ? "official" : "secondary"}">
-              <i class="ph ${official ? "ph-seal-check" : "ph-hourglass-medium"}"></i>
-              ${official ? "نص رسمي" : "مصدر ثانوي، بانتظار المطابقة"}
-            </span>
-            ${s.official_ref ? `<span>${esc(s.official_ref)}</span>` : ""}
-            <button type="button" class="link-btn" data-toggle>النص كامل</button>
-            ${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">المصدر <i class="ph ph-arrow-up-left"></i></a>` : ""}
-          </div>
+      <li class="${used ? "cited" : "unused"}" id="src-${esc(s.id)}">
+        <h3>${unit} · ${esc(s.doc_name)}</h3>
+        <p class="hint">${used ? "<strong>استشهد فيها الجواب.</strong>" : "رجعت بالبحث، وما استخدمها الجواب."} ${sourceLabel(s.text_source)}${s.official_ref ? ` · ${esc(s.official_ref)}` : ""}</p>
+        <blockquote>${esc(s.text)}</blockquote>
+        <div class="foot">
+          <button type="button" class="link" data-toggle>النص كامل</button>
+          ${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">المصدر</a>` : ""}
         </div>
-      </article>`;
+      </li>`;
   }).join("");
+  $("#sources-section").hidden = false;
 }
 
 document.addEventListener("click", e => {
+  const ex = e.target.closest("[data-example]");
+  if (ex) { $("#question").value = ex.textContent; $("#form").requestSubmit(); return; }
   const cite = e.target.closest(".cite");
   if (cite) {
     const card = document.getElementById("src-" + cite.dataset.id);
     if (!card) return;
-    const smooth = matchMedia("(prefers-reduced-motion: no-preference)").matches;
-    card.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "center" });
-    card.classList.remove("flash"); void card.offsetWidth; card.classList.add("flash", "open");
+    card.classList.add("open", "flash");
     $("[data-toggle]", card).textContent = "أقل";
+    card.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: no-preference)").matches ? "smooth" : "auto", block: "start" });
+    $("[data-toggle]", card).focus({ preventScroll: true });
     setTimeout(() => card.classList.remove("flash"), 1600);
+    return;
   }
   const toggle = e.target.closest("[data-toggle]");
   if (toggle) {
-    const card = toggle.closest(".src");
+    const card = toggle.closest("li");
     card.classList.toggle("open");
     toggle.textContent = card.classList.contains("open") ? "أقل" : "النص كامل";
   }
@@ -451,35 +243,31 @@ $("#question").addEventListener("keydown", e => {
 });
 
 // Knowledge base and benchmark come from the server, never hardcoded.
-fetch("/api/stats").then(r => r.json()).then(({ documents, benchmark }) => {
-  $("#docs").innerHTML = documents.map(d => {
-    // official_pdf / official_site are the authority's own text; a translation
-    // or a copy hosted elsewhere is not, and the tag says so.
-    const official = ["official_pdf", "official_site", "official_eu"].includes(d.text_source);
-    const label = official ? "نص رسمي" : d.text_source === "official_pdf_translated" ? "ترجمة لنص رسمي" : "مصدر ثانوي";
-    return `
-      <div class="doc">
-        <div>
-          <h3>${esc(d.doc_name)}</h3>
-          <span class="tag ${official ? "official" : "secondary"}"><i class="ph ${official ? "ph-seal-check" : "ph-hourglass-medium"}"></i>${label}</span>
-        </div>
-        <div class="who">${esc(d.entity)}</div>
-        <div class="count">${d.chunks}<small>مقطع</small></div>
-      </div>`;
-  }).join("");
+const LAYER = { law: "قانون", policy: "سياسة", procedure: "دليل إجراء", global: "مثال عالمي" };
+fetch("/api/stats").then(r => r.json()).then(({ documents, benchmark, live }) => {
+  $("#docs").innerHTML = documents.map(d => `
+    <tr>
+      <td data-label="الوثيقة">${esc(d.doc_name)}<span class="layer">${LAYER[d.layer] || esc(d.layer)}</span></td>
+      <td data-label="الجهة">${esc(d.entity)}</td>
+      <td data-label="مصدر النص">${OFFICIAL.includes(d.text_source) ? sourceLabel(d.text_source) : `<span class="tag">${sourceLabel(d.text_source)}</span>`}</td>
+      <td data-label="المقاطع" class="n num">${d.chunks}</td>
+    </tr>`).join("");
 
   const run = k => benchmark.find(b => b.k === k);
   const r1 = run(1), r5 = run(5);
   const pct = (r, k) => r ? Math.round(r[`recall@${k}`] * 100) : "؟";
   const chunks = documents.reduce((n, d) => n + d.chunks, 0);
   const n = (r5 || r1)?.questions ?? "؟";
-  const laws = documents.length === 1 ? "وثيقة وحدة" : documents.length === 2 ? "وثيقتين" : `${documents.length} وثيقة`;
-  $("#bench-grid").innerHTML = `
-    <div class="metric"><b>${pct(r1, 1)}<span>%</span></b><p>المادة الصحيحة طلعت أول نتيجة</p></div>
-    <div class="metric"><b>${pct(r5, 5)}<span>%</span></b><p>المادة الصحيحة طلعت ضمن أول خمس نتائج</p></div>
-    <div class="caveat"><strong>اقرأ الرقم بحذر.</strong> القياس على ${n} سؤال كتبناها نحن، فوق ${laws} و${chunks} مقطع. الرقم رح ينزل لما تكبر القاعدة، والرقم اللي بندخله التقرير هو اللي بيطلع بعد ما تكتمل.</div>`;
+  $("#metrics").innerHTML = `
+    <div class="metric"><b class="num">${pct(r1, 1)}%</b><span>المادة الصحيحة طلعت أول نتيجة</span></div>
+    <div class="metric"><b class="num">${pct(r5, 5)}%</b><span>المادة الصحيحة طلعت ضمن أول خمس نتائج</span></div>`;
+  $("#caveat").innerHTML = `<strong>اقرأ الرقم بحذر.</strong> القياس على <span class="num">${n}</span> سؤال كتبناها نحن، فوق <span class="num">${documents.length}</span> وثيقة و<span class="num">${chunks}</span> مقطع، وهو للبحث بس، مش لجودة الجواب.`;
+  if (live && !live.ready) {
+    $("#ask").disabled = true;
+    $("#form").insertAdjacentHTML("afterbegin", `<div class="notice"><strong>ما في مفتاح للنموذج على هالسيرفر.</strong> الأسئلة بتحتاج مفتاح بـ <span class="ltr">.env</span>. صفحة <a href="/scenarios">السيناريوهات</a> بتعرض التشغيلات المسجّلة بدونه.</div>`);
+  }
 }).catch(() => {
-  $("#docs").innerHTML = `<div class="sources-empty">ما قدرنا نجيب محتوى القاعدة. تأكد إنه السيرفر شغّال.</div>`;
+  $("#docs").innerHTML = `<tr><td colspan="4"><div class="notice bad">ما قدرنا نجيب محتوى القاعدة. تأكد إنه السيرفر شغّال.</div></td></tr>`;
 });
 </script>
 </body>

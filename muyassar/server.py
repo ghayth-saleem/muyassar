@@ -4,6 +4,7 @@
 
 GET  /                              web/index.html
 GET  /scenarios                     web/scenarios.html, the scenario timeline
+GET  /site.css                      shared styles for both pages
 GET  /api/stats                     documents in the knowledge base and the latest benchmark runs
 POST /api/ask                       {"question": "..."} or {"voice_id": "..."} → answer with its cited sources
 POST /api/voice                     raw audio body (webm, ogg, wav, mp3...) → {"voice_id", "text", ...}
@@ -80,6 +81,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(status)
         self.send_header("Content-Type", kind)
         self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-cache")  # a demo server: edits to web/ show on the next load
         self.end_headers()
         self.wfile.write(body)
 
@@ -97,6 +99,8 @@ class Handler(BaseHTTPRequestHandler):
             self._send(200, (WEB / "index.html").read_bytes(), "text/html; charset=utf-8")
         elif path in ("/scenarios", "/scenarios.html"):
             self._send(200, (WEB / "scenarios.html").read_bytes(), "text/html; charset=utf-8")
+        elif path == "/site.css":
+            self._send(200, (WEB / "site.css").read_bytes(), "text/css; charset=utf-8")
         elif path == "/api/stats":
             self._json(200, stats())
         elif path == "/api/scenarios":

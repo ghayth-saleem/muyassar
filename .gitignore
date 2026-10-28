@@ -31,3 +31,6 @@ __pycache__/
 *.wav
 *.webm
 *.mp3
+
+# Playwright MCP working files
+.playwright-mcp/

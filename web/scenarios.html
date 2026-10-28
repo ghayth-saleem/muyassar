@@ -6,300 +6,102 @@
 <title>ميسّر · السيناريوهات</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/site.css">
 <style>
-/* Same tokens and shape system as index.html: surfaces 14px, inputs 12px, pressables are pills. */
-:root {
-  --bg: #f2f4f3; --surface: #fbfcfb; --sunk: #e9eeec;
-  --ink: #10201b; --muted: #4a5a55; --line: #d5ddd9;
-  --accent: #0a7b4b; --accent-ink: #f4fbf7; --accent-soft: #dcefe5;
-  --warn: #8a5200; --warn-soft: #f6e8cf;
-  --danger: #a3262a; --danger-soft: #f7dfdf;
-  --shadow: 0 1px 0 rgb(16 32 27 / .04), 0 12px 32px -12px rgb(16 32 27 / .18);
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-  --r: 14px; --r-input: 12px;
-  color-scheme: light;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0c1311; --surface: #131d1a; --sunk: #0f1815;
-    --ink: #e4ece8; --muted: #9db0a9; --line: #24332e;
-    --accent: #3dcb8a; --accent-ink: #06140e; --accent-soft: #133325;
-    --warn: #e8b25a; --warn-soft: #33260f;
-    --danger: #f08a8a; --danger-soft: #3a1617;
-    --shadow: 0 1px 0 rgb(0 0 0 / .3), 0 16px 40px -16px rgb(0 0 0 / .6);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0c1311; --surface: #131d1a; --sunk: #0f1815;
-  --ink: #e4ece8; --muted: #9db0a9; --line: #24332e;
-  --accent: #3dcb8a; --accent-ink: #06140e; --accent-soft: #133325;
-  --warn: #e8b25a; --warn-soft: #33260f;
-  --danger: #f08a8a; --danger-soft: #3a1617;
-  --shadow: 0 1px 0 rgb(0 0 0 / .3), 0 16px 40px -16px rgb(0 0 0 / .6);
-  color-scheme: dark;
-}
+/* Scenario switcher: a plain list, the current one underlined */
+.scenario-nav { list-style: none; margin: 0 0 32px; padding: 0; display: flex; gap: 0 32px; flex-wrap: wrap; border-bottom: 1px solid var(--line); }
+.scenario-nav a { display: block; padding: 12px 0 10px; text-decoration: none; color: var(--ink); border-bottom: 5px solid transparent; margin-bottom: -1px; }
+.scenario-nav a[aria-current="true"] { border-bottom-color: var(--primary); font-weight: 700; }
+.scenario-nav small { display: block; color: var(--muted); font-size: 16px; font-weight: 400; }
 
-* { box-sizing: border-box; }
-body {
-  margin: 0; direction: rtl; background: var(--bg); color: var(--ink);
-  font: 400 17px/1.85 "IBM Plex Sans Arabic", system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-.wrap { max-width: 1180px; margin-inline: auto; padding-inline: 24px; }
-h1, h2, h3 { font-family: "Readex Pro", "IBM Plex Sans Arabic", sans-serif; line-height: 1.3; margin: 0; }
-.ltr { direction: ltr; unicode-bidi: isolate; font-family: "IBM Plex Mono", monospace; font-size: .86em; }
-a { color: inherit; }
-button, textarea { font: inherit; color: inherit; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.case-q { font-size: 27px; line-height: 1.6; font-weight: 700; margin: 0 0 12px; max-width: 34em; }
+.controls { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: end; margin: 24px 0 8px; }
+.controls .field { margin: 0; }
 
-header { height: 68px; display: flex; align-items: center; justify-content: space-between; }
-.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.mark {
-  width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
-  border: 2px solid var(--accent); color: var(--accent); font: 700 17px/1 "Readex Pro", sans-serif;
-}
-.brand b { font: 700 22px/1 "Readex Pro", sans-serif; }
-nav { display: flex; align-items: center; gap: 4px; }
-nav a { text-decoration: none; color: var(--muted); padding: 6px 12px; border-radius: 999px; font-size: 15px; }
-nav a:hover { color: var(--ink); background: var(--sunk); }
-nav a[aria-current] { color: var(--ink); background: var(--sunk); }
-.icon-btn {
-  width: 38px; height: 38px; border-radius: 999px; border: 1px solid var(--line);
-  background: var(--surface); display: grid; place-items: center; cursor: pointer;
-  transition: transform 140ms var(--ease-out);
-}
-.icon-btn:active { transform: scale(0.95); }
+/* The citizen reply comes first, larger than everything below it */
+.reply { border-inline-start: 5px solid var(--primary); padding: 4px 20px 4px 0; margin: 0 0 12px; }
+.reply p { font-size: 22px; line-height: 1.9; margin: 0 0 12px; max-width: 38em; }
+.reply-status { margin: 0 0 8px; }
+.staff-note { color: var(--muted); max-width: 42em; }
+.staff-note strong { color: var(--ink); }
 
-.intro { padding-block: 32px 28px; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end; }
-.intro h1 { font-size: clamp(30px, 3.6vw, 44px); font-weight: 700; }
-.intro p { color: var(--muted); max-width: 62ch; margin: 12px 0 0; }
-.legend { display: flex; flex-wrap: wrap; gap: 8px; justify-content: end; }
+/* Verdicts: a table on desktop, stacked blocks on a phone */
+.toolbar { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+table.verdicts { width: 100%; border-collapse: collapse; margin: 8px 0 0; }
+.verdicts th { text-align: start; font-size: 16px; color: var(--muted); font-weight: 600; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line); }
+.verdicts td { padding: 14px 12px 14px 0; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+.verdicts tr.step > td:first-child { border-inline-start: 5px solid transparent; padding-inline-start: 12px; }
+.verdicts tr.step.bad > td:first-child { border-inline-start-color: var(--danger); }
+.verdicts tr.step.warn > td:first-child { border-inline-start-color: var(--warn-bar); }
+.verdicts .who { font-weight: 700; }
+.verdicts .who small { display: block; font-weight: 400; color: var(--muted); font-size: 16px; }
+.verdicts .num { white-space: nowrap; }
+.verdicts tr.detail > td { background: var(--panel); padding: 20px 20px 8px; border-bottom: 1px solid var(--line); }
+.verdicts tr.pending td { color: var(--muted); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
 
-/* Scenario picker */
-.picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 28px; }
-.pick {
-  text-align: start; cursor: pointer; border: 1px solid var(--line); background: var(--surface);
-  border-radius: var(--r); padding: 16px 18px; line-height: 1.6;
-  transition: transform 160ms var(--ease-out), border-color 160ms ease;
-}
-.pick:active { transform: scale(0.98); }
-.pick small { display: block; color: var(--muted); font-size: 14px; }
-.pick b { display: block; font: 600 18px/1.5 "Readex Pro", sans-serif; margin-top: 2px; }
-.pick .st { margin-top: 10px; }
-.pick[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.detail h3 { font-size: 19px; margin: 0 0 6px; }
+.detail section { margin: 0 0 20px; }
+.received { list-style: none; margin: 0; padding: 0; }
+.received li { border-inline-start: 3px solid var(--line); padding: 2px 12px 2px 0; margin-bottom: 10px; white-space: pre-line; }
+.received .meta { color: var(--muted); font-size: 16px; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
+.sources { list-style: none; margin: 0; padding: 0; }
+.sources li { padding: 10px 0; border-top: 1px solid var(--line-soft); }
+.sources li.unused { color: var(--muted); }
+.sources blockquote { margin: 6px 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; }
+.sources li.open blockquote { -webkit-line-clamp: unset; }
+.gap-title { font-weight: 700; }
 
-/* The case */
-.case { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 24px 28px; margin-bottom: 28px; }
-.case-q { font: 600 20px/1.6 "Readex Pro", sans-serif; margin: 6px 0 12px; }
-.case p { margin: 0; color: var(--muted); max-width: 80ch; }
-.case-foot { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--line); }
-.expected { font-size: 15px; color: var(--muted); }
-.expected strong { color: var(--ink); }
-.run-btn {
-  display: inline-flex; align-items: center; gap: 10px; border: 0; cursor: pointer;
-  background: var(--accent); color: var(--accent-ink); font-weight: 600; font-size: 16px;
-  padding: 10px 22px; border-radius: 999px; white-space: nowrap;
-  transition: transform 160ms var(--ease-out), opacity 160ms ease;
-}
-.run-btn:active { transform: scale(0.97); }
-.run-btn[disabled] { opacity: .6; cursor: progress; }
-.eyebrow { color: var(--muted); font-size: 14px; }
+.voice { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--line-soft); }
+.voice .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 8px; }
+.heard { margin: 12px 0 0; padding: 12px 16px; background: var(--panel); font-size: 19px; }
 
-/* Live run and replay controls */
-.run-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.run-row select {
-  border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px;
-  padding: 8px 14px; font: inherit; font-size: 15px; max-width: 100%;
-}
-.run-row .btn { display: inline-flex; gap: 6px; align-items: center; }
-.case-foot .hint { flex-basis: 100%; color: var(--muted); font-size: 14px; }
-.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.replay-banner {
-  list-style: none; display: flex; gap: 10px; align-items: flex-start; margin-bottom: 14px;
-  padding: 10px 14px; border-radius: var(--r-input); background: var(--sunk); color: var(--muted); font-size: 14px;
-}
-.replay-banner i { font-size: 19px; margin-top: 2px; }
-.replay-banner strong { color: var(--ink); }
-.replay-banner.on { background: var(--accent-soft); }
-.replay-banner.on strong, .replay-banner.on i { color: var(--accent); }
-.approve .hint { color: var(--warn); font-size: 14px; margin: 0; }
-
-/* Voice request (health-data scenario) */
-.voice { margin-top: 18px; padding-top: 16px; border-top: 1px dashed var(--line); }
-.voice-head { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; }
-.voice-head strong { font-family: "Readex Pro", sans-serif; display: inline-flex; gap: 6px; align-items: center; }
-.voice-head span, .voice-status { color: var(--muted); font-size: 14px; }
-.voice-row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin-top: 10px; }
-.voice .btn { display: inline-flex; gap: 6px; align-items: center; }
-.voice .btn.rec { border-color: var(--danger); color: var(--danger); }
-.voice .btn.off, .voice .btn[disabled] { opacity: .55; pointer-events: none; }
-.heard { margin: 12px 0 0; padding: 10px 14px; border-radius: var(--r-input); background: var(--sunk); font-size: 16px; }
-@media (prefers-reduced-motion: no-preference) {
-  .voice .btn.rec i { animation: pulse 1s ease-in-out infinite alternate; }
-}
-
-/* Tags */
-.tag { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; white-space: nowrap; }
-.tag.ok { background: var(--accent-soft); color: var(--accent); }
-.tag.warn { background: var(--warn-soft); color: var(--warn); }
-.tag.bad { background: var(--danger-soft); color: var(--danger); }
-.tag.plain { background: var(--sunk); color: var(--muted); }
-
-/* Timeline + detail */
-.board { display: grid; grid-template-columns: 5fr 6fr; gap: 32px; align-items: start; padding-bottom: 72px; }
-.timeline { list-style: none; margin: 0; padding: 0; position: relative; }
-.timeline::before { /* the line, on the reading-start side */
-  content: ""; position: absolute; inset-block: 12px; inset-inline-start: 19px; width: 2px; background: var(--line);
-}
-.ev { position: relative; padding-inline-start: 56px; padding-bottom: 14px; }
-.dot {
-  position: absolute; inset-inline-start: 0; inset-block-start: 10px; width: 40px; height: 40px; border-radius: 50%;
-  display: grid; place-items: center; background: var(--surface); border: 2px solid var(--line); color: var(--muted); font-size: 19px;
-}
-.ev.bad .dot { border-color: var(--danger); color: var(--danger); }
-.ev.warn .dot { border-color: var(--warn); color: var(--warn); }
-.ev.final .dot, .ev.human .dot { border-color: var(--accent); color: var(--accent); }
-.card {
-  width: 100%; text-align: start; cursor: pointer; display: block;
-  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; line-height: 1.7;
-  transition: transform 160ms var(--ease-out), border-color 160ms ease;
-}
-.card:active { transform: scale(0.99); }
-@media (hover: hover) and (pointer: fine) { .card:hover { border-color: var(--muted); } }
-.ev.bad .card { border-color: var(--danger); }
-.card[aria-current="true"] { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-.card-top { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; font-size: 14px; color: var(--muted); }
-.card-top strong { color: var(--ink); font: 600 16px/1.5 "Readex Pro", sans-serif; }
-.card .got { font-size: 14px; color: var(--muted); margin-top: 2px; }
-.card .dec { font-weight: 600; margin-top: 6px; }
-.card .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-.conf { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); margin-top: 8px; }
-.conf .bar { flex: 1; max-width: 140px; height: 5px; border-radius: 3px; background: var(--sunk); overflow: hidden; }
-.conf .bar i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
-.ev.pending .card { cursor: default; border-style: dashed; }
-.pulse { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-inline-end: 6px; vertical-align: middle; }
-@media (prefers-reduced-motion: no-preference) {
-  .pulse { animation: pulse 1s ease-in-out infinite alternate; }
-  @keyframes pulse { to { opacity: .25; } }
-  .ev.new { animation: reveal 320ms var(--ease-out) both; }
-  @keyframes reveal { from { opacity: 0; transform: translateY(8px); filter: blur(3px); } }
-}
-
-/* Staff approval: the run waits here */
-.approve { background: var(--warn-soft); color: var(--ink); border-radius: var(--r); padding: 16px 18px; }
-.approve h3 { font-size: 16px; color: var(--warn); display: flex; gap: 8px; align-items: center; }
-.approve p { margin: 6px 0 10px; font-size: 15px; }
-.approve textarea {
-  width: 100%; min-height: 64px; resize: vertical; padding: 10px 12px; border-radius: var(--r-input);
-  border: 1px solid var(--line); background: var(--surface); line-height: 1.7; font-size: 15px;
-}
-.approve .btns { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-.btn {
-  border-radius: 999px; padding: 8px 18px; cursor: pointer; font-weight: 600; font-size: 15px; border: 1px solid var(--line);
-  background: var(--surface); transition: transform 160ms var(--ease-out);
-}
-.btn:active { transform: scale(0.97); }
-.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-
-.detail {
-  position: sticky; top: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
-  box-shadow: var(--shadow); padding: 24px 26px; max-height: calc(100dvh - 32px); overflow-y: auto;
-}
-.detail-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.detail-head h2 { font-size: 22px; }
-.detail-head span { color: var(--muted); font-size: 14px; }
-.role { color: var(--muted); font-size: 15px; margin: 2px 0 0; }
-.block { margin-top: 22px; }
-.block h3 { font-size: 15px; color: var(--muted); font-weight: 600; margin-bottom: 8px; display: flex; gap: 8px; align-items: center; }
-.recv { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
-.recv li { background: var(--sunk); border-radius: var(--r-input); padding: 10px 14px; font-size: 15px; white-space: pre-line; }
-.recv.clamp li { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
-.recv li b { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 14px; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
-.steps { margin: 0; padding-inline-start: 22px; display: grid; gap: 6px; font-size: 16px; }
-.finding { font-size: 17px; margin: 0; }
-.say { border-inline-start: 3px solid var(--accent); padding-inline-start: 14px; font-size: 17px; white-space: pre-line; }
-.say.staff { border-color: var(--line); }
-.alert { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: var(--r-input); font-size: 15px; }
-.alert i { font-size: 19px; margin-top: 3px; }
-.alert.bad { background: var(--danger-soft); color: var(--danger); }
-.alert.warn { background: var(--warn-soft); color: var(--warn); }
-.gapbox { border: 1px solid var(--line); border-radius: var(--r-input); padding: 14px 16px; }
-.gapbox b { font-family: "Readex Pro", sans-serif; display: block; margin-bottom: 4px; }
-.gapbox p { margin: 0; font-size: 15px; }
-.gapbox p + p { margin-top: 8px; color: var(--muted); }
-.srcs { display: grid; gap: 10px; }
-.src { border: 1px solid var(--line); border-radius: var(--r-input); padding: 12px 14px; font-size: 15px; }
-.src.unused { opacity: .62; }
-.src-h { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
-.src-h strong { font-weight: 600; }
-.src blockquote { margin: 6px 0 0; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; white-space: pre-line; }
-.src.open blockquote { -webkit-line-clamp: unset; }
-.src-f { display: flex; gap: 14px; margin-top: 6px; font-size: 14px; }
-.link-btn { border: 0; background: none; padding: 0; cursor: pointer; color: var(--accent); font-weight: 600; font-size: 14px; }
-.src-f a { color: var(--accent); font-weight: 600; text-decoration: none; }
-.empty { color: var(--muted); padding: 28px; border: 1px dashed var(--line); border-radius: var(--r); }
-
-footer { border-top: 1px solid var(--line); padding-block: 32px 48px; color: var(--muted); font-size: 14px; }
-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
-
-@media (max-width: 900px) {
-  .board { grid-template-columns: 1fr; }
-  .detail { position: static; max-height: none; }
-  .intro { grid-template-columns: 1fr; }
-  .legend { justify-content: start; }
-}
 @media (max-width: 640px) {
-  .wrap { padding-inline: 16px; }
-  nav a { display: none; }
-  .picker { grid-template-columns: 1fr; }
-  .case { padding: 20px; }
-  .detail { padding: 20px; }
-  .run-btn { width: 100%; justify-content: center; }
+  .case-q { font-size: 22px; }
+  .reply p { font-size: 20px; }
+  .scenario-nav { flex-direction: column; border-bottom: 0; }
+  .scenario-nav a { border-bottom: 0; border-inline-start: 5px solid transparent; padding: 8px 12px 8px 0; }
+  .scenario-nav a[aria-current="true"] { border-inline-start-color: var(--primary); }
+  table.verdicts, .verdicts tbody, .verdicts tr, .verdicts td { display: block; width: 100%; }
+  .verdicts thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .verdicts tr.step { border-top: 1px solid var(--line); padding: 12px 0 4px; border-inline-start: 5px solid transparent; padding-inline-start: 12px; }
+  .verdicts tr.step.bad { border-inline-start-color: var(--danger); }
+  .verdicts tr.step.warn { border-inline-start-color: var(--warn-bar); }
+  .verdicts tr.step > td:first-child { border-inline-start: 0; padding-inline-start: 0; }
+  .verdicts td { border: 0; padding: 2px 0; }
+  .verdicts td[data-label]::before { content: attr(data-label) ": "; color: var(--muted); font-size: 16px; }
+  .verdicts td.who::before, .verdicts td.act::before { content: none; }
+  .verdicts td.act { padding: 8px 0 8px; }
+  .verdicts tr.detail > td { padding: 16px; }
 }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <a class="brand" href="/" aria-label="ميسّر">
-      <span class="mark" aria-hidden="true">م</span><b>ميسّر</b>
-    </a>
+<a class="skip" href="#main">انتقل للمحتوى</a>
+<aside class="demo-strip" aria-label="عن هالنموذج"><div class="wrap">نموذج تجريبي لمسابقة AI for Good، مش موقع حكومي رسمي. كل البيانات وهمية.</div></aside>
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="/">ميسّر</a>
     <nav aria-label="الصفحات">
       <a href="/">اسأل</a>
       <a href="/scenarios" aria-current="page">السيناريوهات</a>
-      <button class="icon-btn" id="theme" type="button" aria-label="بدّل الوضع الليلي"><i class="ph ph-moon-stars"></i></button>
     </nav>
-  </header>
+  </div>
+</header>
 
-  <main>
-    <div class="intro">
-      <div>
-        <h1>لما المعلومة توصل ناقصة، ومتأخرة، ولأكثر من وكيل.</h1>
-        <p>كل سيناريو بيوصّل المعلومات على دفعات، وكل دفعة لوكيل واحد بس. كل وكيل بيحكم على اللي وصله، والمنسّق بيجمع الأحكام. اكبس على أي خطوة لتشوف شو وصل الوكيل، وكيف فكّر، والمواد اللي اعتمد عليها.</p>
-      </div>
-      <div class="legend" aria-label="دليل الألوان">
-        <span class="tag bad"><i class="ph ph-warning-octagon"></i>بدون مصدر</span>
-        <span class="tag warn"><i class="ph ph-hand-palm"></i>قرار حساس</span>
-        <span class="tag ok"><i class="ph ph-seal-check"></i>مربوط بمادة</span>
-      </div>
-    </div>
+<main id="main" class="wrap">
+  <h1>سيناريوهات الخلل</h1>
+  <p class="lead">كل سيناريو بيوصّل المعلومات على دفعات، وكل دفعة لوكيل واحد بس. كل وكيل بيحكم على اللي وصله، والمنسّق بيجمع الأحكام ويكتب الرد للمواطن.</p>
 
-    <div class="picker" id="picker" role="group" aria-label="اختر سيناريو"></div>
-    <div id="case"></div>
-    <div class="board">
-      <ol class="timeline" id="timeline" aria-label="الخط الزمني"></ol>
-      <aside class="detail" id="detail" aria-live="polite"></aside>
-    </div>
-  </main>
-</div>
+  <ul class="scenario-nav" id="picker" aria-label="اختر سيناريو"></ul>
+  <section id="case" aria-labelledby="case-label"></section>
+  <section id="result" aria-live="polite"></section>
+</main>
 
-<footer>
+<footer class="site">
   <div class="wrap">
-    <span>البيانات في السيناريوهات تجريبية، والأحداث المعلّمة «افتراضي» ما صارت فعلاً.</span>
-    <span>كل خطوة بتنسجّل في <span class="ltr">logs/scenarios.jsonl</span></span>
+    <p>البيانات في السيناريوهات وهمية، والأحداث المعلّمة «افتراضي» ما صارت فعلاً. كل خطوة بتنسجّل في <span class="ltr">logs/scenarios.jsonl</span>.</p>
   </div>
 </footer>
 
@@ -307,132 +109,278 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 const $ = (s, el = document) => el.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
-const root = document.documentElement;
-const store = { get: k => { try { return localStorage.getItem(k); } catch { return null; } },
-                set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
-const saved = store.get("theme");
-if (saved) root.dataset.theme = saved;
-const isDark = () => root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-const syncIcon = () => { $("#theme i").className = isDark() ? "ph ph-sun" : "ph ph-moon-stars"; };
-syncIcon();
-$("#theme").addEventListener("click", () => { root.dataset.theme = isDark() ? "light" : "dark"; store.set("theme", root.dataset.theme); syncIcon(); });
-
 const AGENTS = {
-  procedure:    { name: "مرشد الإجراءات", role: "بيرشد المواطن لخطوات المعاملة", icon: "ph-signpost" },
-  docs_check:   { name: "وكيل فحص الأوراق", role: "بيطابق الوثيقة المرفوعة مع السجل الرسمي", icon: "ph-identification-card" },
-  policy:       { name: "وكيل السياسات", role: "بيقرأ القانون وبيكشف الفجوات", icon: "ph-scales" },
-  entity:       { name: "وكيل الجهة", role: "بيمثّل الجهة الحكومية صاحبة الخدمة", icon: "ph-bank" },
-  orchestrator: { name: "المنسّق", role: "بيجمع أحكام الوكلاء وبيكتب الرد", icon: "ph-share-network" },
-  human:        { name: "الموظف المختص", role: "قرار بشري على اقتراح حساس", icon: "ph-user-check" },
+  procedure:    { name: "مرشد الإجراءات", role: "بيرشد المواطن لخطوات المعاملة" },
+  docs_check:   { name: "وكيل فحص الأوراق", role: "بيطابق الوثيقة المرفوعة مع السجل الرسمي" },
+  policy:       { name: "وكيل السياسات", role: "بيقرأ القانون وبيكشف الفجوات" },
+  entity:       { name: "وكيل الجهة", role: "بيمثّل الجهة الحكومية صاحبة الخدمة" },
+  orchestrator: { name: "المنسّق", role: "بيجمع أحكام الوكلاء وبيكتب الرد" },
+  human:        { name: "الموظف المختص", role: "قرار بشري على اقتراح حساس" },
 };
+// status -> [tag class, label]
 const STATUS = {
-  running:        ["plain", "ph-circle-notch", "عم يشتغل"],
-  awaiting_human: ["warn", "ph-hand-palm", "بانتظار موافقة موظف"],
-  approved:       ["ok", "ph-check-circle", "وافق الموظف"],
-  rejected:       ["bad", "ph-x-circle", "رفض الموظف الاقتراح"],
-  done:           ["ok", "ph-check-circle", "خلص"],
-  error:          ["bad", "ph-warning-circle", "صار خطأ"],
+  running:        ["", "عم يشتغل"],
+  awaiting_human: ["warn", "بانتظار موافقة موظف"],
+  approved:       ["ok", "وافق الموظف"],
+  rejected:       ["bad", "رفض الموظف الاقتراح"],
+  done:           ["ok", "خلص"],
+  error:          ["bad", "صار خطأ"],
 };
 
-let scenarios = [], current = null, run = null, selected = null, poll = null;
+let scenarios = [], current = null, run = null, poll = null;
+let live = { ready: false }, loggedRuns = {}, replayTimer = null;
+const autoReplay = new URLSearchParams(location.search).get("replay");
+let openAll = Boolean(autoReplay);  // a replay for the video shows every step's details
+const open = new Set();
 
 const clock = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
-const statusTag = st => { const [c, i, t] = STATUS[st] || STATUS.done; return `<span class="tag ${c}"><i class="ph ${i}"></i>${t}</span>`; };
+const statusTag = st => { const [c, t] = STATUS[st] || STATUS.done; return `<strong class="tag ${c}">${t}</strong>`; };
 const shortName = name => String(name).replace(/\s+رقم\s+\d+\s+لسنة\s+\d+$/, "");
 const unit = a => /^\d+( مكرر)?$/.test(a) ? "المادة " + a : a;
+// "2026-10-27T20:07:12+00:00" -> "27/10/2026، 20:07 (UTC)"
+const when = iso => {
+  const m = String(iso || "").match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+  return m ? `<span class="ltr num">${m[3]}/${m[2]}/${m[1]}</span>، <span class="ltr num">${m[4]}:${m[5]}</span> (UTC)` : "";
+};
 
 function renderPicker() {
   $("#picker").innerHTML = scenarios.map((s, i) => `
-    <button type="button" class="pick" data-id="${esc(s.id)}" aria-pressed="${s.id === current?.id}">
-      <small>سيناريو ${i + 1} · ${esc(s.service)}</small>
-      <b>${esc(s.title)}</b>
-      <div class="st">${s.latest ? statusTag(s.latest.status) : `<span class="tag plain">ما انشغّل لسا</span>`}</div>
-    </button>`).join("");
+    <li><a href="#${esc(s.id)}" data-id="${esc(s.id)}" aria-current="${s.id === current?.id}">
+      ${i + 1}. ${esc(s.title)}
+      <small>${esc(s.service)} · ${s.latest ? (STATUS[s.latest.status] || STATUS.done)[1] : "ما انشغّل لسا"}</small>
+    </a></li>`).join("");
 }
 
 function renderCase() {
   const s = current, busy = run?.status === "running";
-  const canLive = live.ready;
   const runs = loggedRuns[s.id] || [];
   $("#case").innerHTML = `
-    <div class="case">
-      <span class="eyebrow">سؤال الحالة</span>
-      <div class="case-q">${esc(s.question)}</div>
-      <p>${esc(s.summary)}</p>
-      <div class="case-foot">
-        <span class="expected"><strong>الفجوة اللي صُمّم ليكشفها:</strong> ${esc(s.expected_gap)}</span>
-        <div class="run-row">
-          ${runs.length ? `
-            <label class="sr" for="replay-pick">تشغيلة مسجّلة</label>
-            <select id="replay-pick" ${busy ? "disabled" : ""}>
-              ${runs.map(r => `<option value="${esc(r.run_id)}">${esc(r.started.slice(0, 16).replace("T", " "))}${r.voice ? " · صوت" : ""} · ${esc((STATUS[r.status] || STATUS.done)[2])}</option>`).join("")}
-            </select>
-            <button type="button" class="btn" id="replay" ${busy ? "disabled" : ""}><i class="ph ph-clock-counter-clockwise"></i>إعادة عرض</button>` : ""}
-          <button type="button" class="run-btn" id="run" ${busy || !canLive ? "disabled" : ""} ${canLive ? "" : `title="ما في مفتاح للنموذج على هالسيرفر"`}>
-            <i class="ph ${busy && !run?.replay ? "ph-circle-notch" : "ph-play"}"></i>${busy && !run?.replay ? "عم يشتغل" : "تشغيل مباشر"}
-          </button>
+    <h2 class="caption" id="case-label">سؤال الحالة</h2>
+    <p class="case-q">${esc(s.question)}</p>
+    <p class="body-text">${esc(s.summary)}</p>
+    <div class="inset"><strong>الفجوة اللي صُمّم ليكشفها:</strong> ${esc(s.expected_gap)}</div>
+    <div class="controls">
+      ${runs.length ? `
+        <div class="field">
+          <label for="replay-pick">تشغيلة مسجّلة</label>
+          <select id="replay-pick" ${busy ? "disabled" : ""}>
+            ${runs.map(r => { const m = r.started.match(/^\d{4}-(\d{2})-(\d{2})T(\d{2}:\d{2})/) || []; return `<option value="${esc(r.run_id)}">${m[2]}/${m[1]} ${m[3]}${r.voice ? " · صوت" : ""} · ${esc((STATUS[r.status] || STATUS.done)[1])}</option>`; }).join("")}
+          </select>
         </div>
-        ${canLive ? "" : `<span class="hint">التشغيل المباشر بدو مفتاح للنموذج بـ <span class="ltr">.env</span>. بدونه، إعادة عرض التشغيلات المسجّلة بتشتغل.</span>`}
-      </div>
-      ${s.events.some(e => e.voice_input) && canLive ? voiceBox(busy) : ""}
-    </div>`;
+        <button type="button" class="button secondary" id="replay" ${busy ? "disabled" : ""}>إعادة عرض</button>` : ""}
+      <button type="button" class="button" id="run" ${busy || !live.ready ? "disabled" : ""}>${busy && !run?.replay ? "عم يشتغل…" : "تشغيل مباشر"}</button>
+    </div>
+    ${live.ready ? "" : `<p class="hint">التشغيل المباشر بدو مفتاح للنموذج بـ <span class="ltr">.env</span>. بدونه، إعادة عرض التشغيلات المسجّلة بتشتغل.</p>`}
+    ${s.events.some(e => e.voice_input) && live.ready ? voiceBox(busy) : ""}`;
 }
 
-// Replay: plays a logged run step by step, as it looked live, with no model call.
-// Decisions and the staff step are shown exactly as they were logged.
-let live = { ready: false }, loggedRuns = {}, replayTimer = null;
-const REPLAY_THINK = 1400, REPLAY_READ = 1100;  // ms on the "working" card, then on the new step
+// ---- result: citizen reply first, then the verdicts, then the details ----
 
+function stepTags(st) {
+  const t = [];
+  if (st.input_source === "voice") t.push(`<span class="tag">طلب صوتي</span>`);
+  if (st.unsourced) t.push(`<strong class="tag bad">بدون مصدر</strong>`);
+  else if (st.cited?.length) t.push(`<span class="tag">${st.cited.length} ${st.cited.length === 1 ? "مادة" : "مواد"}</span>`);
+  if (st.sensitive) t.push(`<strong class="tag warn">${st.sensitive_rule ? "حساس بقاعدة التعارض" : "قرار حساس"}</strong>`);
+  if (st.gap) t.push(st.gap_no_global ? `<strong class="tag bad">فجوة بدون مثال عالمي</strong>` : `<span class="tag">فجوة${st.global_example_id ? " + مثال عالمي" : ""}</span>`);
+  if (st.conflicts?.length) t.push(`<span class="tag">${st.conflicts.length} تعارض</span>`);
+  if (st.agent === "human") t.push(st.approved ? `<strong class="tag ok">وافق</strong>` : `<strong class="tag bad">رفض</strong>`);
+  return t.join("");
+}
+
+function globalExample(st) {
+  const src = st.global_example_id && st.retrieved?.find(r => r.id === st.global_example_id);
+  if (src) return `<p><strong>المثال العالمي (${esc(src.jurisdiction || "")}):</strong> ${esc(shortName(src.doc_name))} · ${esc(unit(src.article))}. ${esc(st.global_example)}</p>`;
+  if (st.gap_no_global) return `<div class="notice bad"><strong>ما في مثال عالمي مسترجع لهالفجوة.</strong> ${esc(st.global_example)}</div>`;
+  return "";
+}
+
+function detailHTML(st) {
+  const recv = (st.received || []).map(r => `
+    <li><div class="meta"><span class="ltr num">${clock(r.at)}</span><span>${esc(r.label)}</span>${r.simulated ? `<span class="tag">بيانات تجريبية</span>` : ""}${r.source === "voice" ? `<span class="tag">من صوت</span>` : ""}</div>${esc(r.content)}</li>`).join("");
+  if (st.agent === "human") {
+    return `<section><p>${st.approved ? "وافق الموظف على اقتراح المنسّق، فانرسل الرد للمواطن." : "رفض الموظف اقتراح المنسّق، فما انرسل الرد وبترجع الحالة للمراجعة."}</p>${st.note ? `<p>ملاحظته: ${esc(st.note)}</p>` : ""}</section>`;
+  }
+  const sources = [...(st.retrieved || [])].sort((x, y) => st.cited.includes(y.id) - st.cited.includes(x.id)).map(s => {
+    const used = st.cited.includes(s.id);
+    return `
+      <li class="${used ? "" : "unused"}">
+        <strong>${esc(shortName(s.doc_name))} · ${esc(unit(s.article))}</strong>${used ? ` <span class="tag">اعتمد عليها</span>` : ""}
+        <blockquote>${esc(s.text)}</blockquote>
+        <button type="button" class="link" data-toggle>النص كامل</button>${s.url ? ` · <a href="${esc(s.url)}" target="_blank" rel="noopener">المصدر</a>` : ""}
+      </li>`;
+  }).join("");
+  return `
+    ${st.unsourced ? `<div class="notice bad"><strong>بدون مصدر.</strong> هالحكم مش مربوط بأي مادة رجعت بالبحث، فبيتعامل معه كرأي، مش كحكم.</div>` : ""}
+    ${st.sensitive ? `<div class="notice warn"><strong>قرار حساس.</strong> ${esc(st.sensitive_reason)}</div>` : ""}
+    ${st.agent !== "orchestrator" ? `<section><h3>الحكم</h3><p>${esc(st.finding)}</p></section>` : ""}
+    ${st.gap ? `<section><h3>الفجوة اللي لقاها</h3><p class="gap-title">${esc(st.gap_title)}</p><p>${esc(st.gap)}</p>${globalExample(st)}</section>` : ""}
+    ${st.conflicts?.length ? `<section><h3>تعارض بين الوكلاء</h3><ul>${st.conflicts.map(c => `<li>${esc(c)}</li>`).join("")}</ul></section>` : ""}
+    <section><h3>${st.agent === "orchestrator" ? "أحكام الوكلاء اللي وصلته" : "اللي وصله لحد هالخطوة"}</h3><ul class="received">${recv}</ul></section>
+    <section><h3>كيف وصل للحكم</h3><ol>${(st.steps || []).map(x => `<li>${esc(x)}</li>`).join("")}</ol></section>
+    <section><h3>النصوص اللي رجعت (<span class="num">${st.retrieved?.length || 0}</span>)</h3><ul class="sources">${sources || "<li>ولا نص.</li>"}</ul></section>`;
+}
+
+function replyHTML() {
+  const final = run.steps.find(s => s.agent === "orchestrator");
+  if (!final) {
+    return run.status === "running"
+      ? `<p class="hint">الرد بيطلع لما يخلص المنسّق.</p>`
+      : run.status === "error" ? "" : `<p class="hint">ما في رد.</p>`;
+  }
+  const note = run.status === "awaiting_human" ? "موقوف لحد موافقة الموظف، وما وصل المواطن."
+    : run.status === "rejected" ? "رفضه الموظف، فما انرسل." : run.status === "approved" ? "وافق الموظف وانرسل." : "انرسل للمواطن.";
+  const approve = run.status === "awaiting_human" ? (run.replay
+    ? `<p class="hint">بإعادة العرض، قرار الموظف ما بينسجّل. التشغيلة الأصلية لسا بانتظار موظف.</p>`
+    : `<form class="approve" onsubmit="return false">
+         <div class="field"><label for="note">ملاحظة الموظف (اختياري)</label><textarea id="note" maxlength="500" rows="2"></textarea></div>
+         <div class="button-group">
+           <button type="button" class="button" data-decide="1">وافق وأرسل الرد</button>
+           <button type="button" class="button secondary" data-decide="0">ارفض الاقتراح</button>
+         </div>
+       </form>`) : "";
+  return `
+    <p class="reply-status">${statusTag(run.status)} <span class="hint">${note}</span></p>
+    <div class="reply">${String(final.citizen_reply || "").split(/\n{2,}/).map(p => `<p>${esc(p)}</p>`).join("")}</div>
+    ${final.sensitive ? `<div class="warning-text"><span class="warning-icon" aria-hidden="true">!</span><p><span class="sr">تحذير: </span><strong>قرار حساس.</strong> ${esc(final.sensitive_reason)}</p></div>` : ""}
+    ${final.staff_note ? `<p class="staff-note"><strong>ملاحظة للموظف:</strong> ${esc(final.staff_note)}</p>` : ""}
+    ${approve}`;
+}
+
+function rowsHTML(fresh) {
+  const rows = run.steps.map(st => {
+    const a = AGENTS[st.agent] || { name: st.agent, role: "" };
+    const kind = st.agent === "human" ? "" : st.unsourced || st.gap_no_global ? "bad" : st.sensitive ? "warn" : "";
+    const isOpen = openAll || open.has(st.n);
+    return `
+      <tr class="step ${kind}">
+        <td data-label="الوقت" class="num"><span class="ltr">${clock(st.at)}</span></td>
+        <td class="who">${esc(a.name)}<small>${esc(a.role)}</small></td>
+        <td data-label="الحكم">${esc(st.decision)}</td>
+        <td data-label="الثقة" class="num">${st.confidence != null ? `<span class="ltr">${st.confidence.toFixed(2)}</span>` : "–"}</td>
+        <td data-label="الحالة"><div class="tags">${stepTags(st)}</div></td>
+        <td class="act"><button type="button" class="link" data-step="${st.n}" aria-expanded="${isOpen}" aria-controls="d${st.n}">${isOpen ? "سكّر التفاصيل" : "التفاصيل"}</button></td>
+      </tr>
+      <tr class="detail" id="d${st.n}" ${isOpen ? "" : "hidden"}><td colspan="6"><div class="detail">${isOpen ? detailHTML(st) : ""}</div></td></tr>`;
+  });
+  if (run.status === "running") {
+    const a = AGENTS[run.current] || { name: "الوكيل التالي" };
+    rows.push(`<tr class="pending"><td class="num">…</td><td class="who" colspan="5">${esc(a.name)}: عم يقرأ النصوص ويكتب حكمه</td></tr>`);
+  }
+  return rows.join("");
+}
+
+function renderResult() {
+  if (!run) {
+    $("#result").innerHTML = `<p class="hint">هالسيناريو ما انشغّل لسا.</p>`;
+    return;
+  }
+  const banner = run.replay ? `<div class="notice"><strong>إعادة عرض لتشغيلة مسجّلة، مش تشغيل مباشر.</strong> الخطوات والقرارات زي ما انسجّلت، وما في أي طلب للنموذج.</div>`
+    : run.logged ? `<div class="notice"><strong>تشغيلة مسجّلة.</strong> هاي آخر تشغيلة لهالسيناريو من السجل.</div>` : "";
+  const model = run.steps.find(s => s.model)?.model;
+  $("#result").innerHTML = `
+    ${banner}
+    <h2>الرد للمواطن</h2>
+    ${replyHTML()}
+    <div class="toolbar">
+      <h2>أحكام الوكلاء</h2>
+      ${run.steps.length ? `<button type="button" class="link" id="toggle-all">${openAll ? "سكّر الكل" : "افتح الكل"}</button>` : ""}
+    </div>
+    <table class="verdicts">
+      <thead><tr><th scope="col">الوقت</th><th scope="col">الوكيل</th><th scope="col">الحكم</th><th scope="col">الثقة</th><th scope="col">الحالة</th><th scope="col"><span class="sr">التفاصيل</span></th></tr></thead>
+      <tbody>${rowsHTML()}</tbody>
+    </table>
+    <p class="hint">الوقت بالدقائق والثواني من بداية السيناريو.</p>
+    ${run.status === "error" ? `<div class="notice bad"><strong>وقف التشغيل:</strong> ${esc(run.error)}</div>` : ""}
+    <p class="run-meta">${model ? `النموذج <span class="ltr">${esc(model)}</span> · ` : ""}التشغيلة <span class="ltr">${esc(run.run_id || "")}</span>${run.started ? ` · ${when(run.started)}` : ""}</p>`;
+}
+
+function show(id) {
+  stopReplay();
+  current = scenarios.find(s => s.id === id);
+  run = current.latest;
+  open.clear();
+  renderPicker(); renderCase(); renderResult();
+  history.replaceState(null, "", location.search + "#" + id);
+}
+
+// ---- replay: a logged run, step by step, as it looked live, with no model call ----
+const REPLAY_THINK = 1400, REPLAY_READ = 1100;
 function stopReplay() { clearTimeout(replayTimer); replayTimer = null; }
 
 async function replay(runId) {
   stopReplay(); clearInterval(poll);
   const logged = await fetch(`/api/runs/${runId}`).then(r => r.json());
   run = { ...logged, steps: [], status: "running", replay: true, current: logged.steps[0]?.agent };
-  selected = null;
-  renderCase(); renderTimeline(); renderDetail();
+  renderCase(); renderResult();
   let i = 0;
   const next = () => {
     const st = logged.steps[i++];
     run.steps.push(st);
-    selected = st.n;
     const more = i < logged.steps.length;
     run.current = more ? logged.steps[i].agent : null;
     if (!more) run.status = logged.status;
-    renderTimeline(new Set([st.n])); renderDetail();
-    if (more) replayTimer = setTimeout(() => { renderTimeline(); replayTimer = setTimeout(next, REPLAY_THINK); }, REPLAY_READ);
+    renderResult();
+    if (more) replayTimer = setTimeout(next, REPLAY_READ + REPLAY_THINK);
     else { renderCase(); replayTimer = null; }
   };
   replayTimer = setTimeout(next, REPLAY_THINK);
 }
 
-// Voice request: the audio goes to /api/voice, is transcribed locally and dropped;
-// only the text comes back, and the run marks it source: voice.
-let heard = null, recorder = null, chunks = [];
+// ---- live run ----
+async function start(voiceId) {
+  stopReplay(); clearInterval(poll);
+  const res = await fetch(`/api/scenarios/${current.id}/run`, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(voiceId ? { voice_id: voiceId } : {}),
+  });
+  const { run_id, error } = await res.json();
+  if (!res.ok) { setVoice(error || res.statusText); return; }
+  if (voiceId) heard = null;  // a transcript is used once
+  run = { run_id, status: "running", steps: [] };
+  renderCase(); renderResult();
+  let seen = 0;
+  poll = setInterval(async () => {
+    const r = await fetch(`/api/runs/${run_id}`).then(x => x.json()).catch(() => null);
+    if (!r || (r.status === "running" && r.steps.length === seen && r.current === run.current)) return;
+    seen = r.steps.length;
+    run = r; current.latest = r;
+    renderResult();
+    if (r.status !== "running") { clearInterval(poll); renderCase(); renderPicker(); }
+  }, 1200);
+}
+
+async function decide(approved) {
+  const note = $("#note")?.value.trim() || "";
+  const res = await fetch(`/api/runs/${run.run_id}/decide`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ approved, note }) });
+  const data = await res.json();
+  if (!res.ok) { alert(data.error); return; }
+  run = data; current.latest = data;
+  renderResult(); renderPicker();
+}
+
+// ---- voice: the audio goes to /api/voice, is transcribed locally and dropped ----
+let heard = null, recorder = null, chunks = [], voiceStatus = "";
 function voiceBox(busy) {
   const recording = recorder?.state === "recording";
   return `
     <div class="voice">
-      <div class="voice-head">
-        <strong><i class="ph ph-microphone"></i> الطلب بصوتك</strong>
-        <span>التسجيل ما بينحفظ. بينحفظ النص بس، ومعلّم إنه من صوت.</span>
-      </div>
-      <div class="voice-row">
-        <button type="button" class="btn ${recording ? "rec" : ""}" id="rec" ${busy ? "disabled" : ""}>
-          <i class="ph ${recording ? "ph-stop-circle" : "ph-record"}"></i>${recording ? "وقّف التسجيل" : "سجّل من المايك"}</button>
-        <label class="btn ${busy ? "off" : ""}"><i class="ph ph-upload-simple"></i>ارفع ملف صوت
-          <input type="file" id="audio-file" accept="audio/*" hidden ${busy ? "disabled" : ""}></label>
-        <span class="voice-status" id="voice-status" aria-live="polite">${voiceStatus}</span>
+      <h3>الطلب بصوتك</h3>
+      <p class="hint">التسجيل ما بينحفظ. بينحفظ النص بس، ومعلّم إنه من صوت.</p>
+      <div class="row">
+        <button type="button" class="button secondary" id="rec" ${busy ? "disabled" : ""}>${recording ? "وقّف التسجيل" : "سجّل من المايك"}</button>
+        <label class="button secondary" for="audio-file">ارفع ملف صوت</label>
+        <input type="file" id="audio-file" accept="audio/*" class="sr" ${busy ? "disabled" : ""}>
+        <span class="hint" aria-live="polite">${esc(voiceStatus)}</span>
       </div>
       ${heard ? `
         <blockquote class="heard">${esc(heard.text)}</blockquote>
-        <div class="voice-row">
-          <button type="button" class="btn primary" id="run-voice" ${busy ? "disabled" : ""}><i class="ph ph-play"></i>شغّل السيناريو بهالطلب الصوتي</button>
-          <span class="voice-status">${heard.duration} ث صوت · ${(heard.ms / 1000).toFixed(1)} ث تفريغ · <span class="ltr">${esc(heard.model)}</span></span>
+        <div class="row">
+          <button type="button" class="button" id="run-voice" ${busy ? "disabled" : ""}>شغّل السيناريو بهالطلب الصوتي</button>
+          <span class="hint"><span class="num">${heard.duration}</span> ث صوت · <span class="num">${(heard.ms / 1000).toFixed(1)}</span> ث تفريغ · <span class="ltr">${esc(heard.model)}</span></span>
         </div>` : ""}
     </div>`;
 }
-let voiceStatus = "";
 const setVoice = msg => { voiceStatus = msg; renderCase(); };
 
 async function sendAudio(blob) {
@@ -468,188 +416,21 @@ async function toggleRecord() {
   }
 }
 
-// A gap must be compared with a global-layer article the policy agent retrieved; otherwise it is red.
-function globalExample(st) {
-  const src = st.global_example_id && st.retrieved?.find(r => r.id === st.global_example_id);
-  if (src) return `<p><strong>المثال العالمي (${esc(src.jurisdiction || "")}):</strong> ${esc(shortName(src.doc_name))} · ${esc(unit(src.article))}. ${esc(st.global_example)}</p>`;
-  if (st.gap_no_global) return `<div class="alert bad" style="margin-top:10px"><i class="ph ph-warning-octagon"></i><div>ما في مثال عالمي مسترجع لهالفجوة. ${esc(st.global_example)}</div></div>`;
-  return "";
-}
-
-function cardTags(st) {
-  const t = [];
-  if (st.input_source === "voice") t.push(`<span class="tag plain"><i class="ph ph-microphone"></i>طلب صوتي</span>`);
-  if (st.unsourced) t.push(`<span class="tag bad"><i class="ph ph-warning-octagon"></i>بدون مصدر</span>`);
-  else if (st.cited?.length) t.push(`<span class="tag ok"><i class="ph ph-seal-check"></i>${st.cited.length} ${st.cited.length === 1 ? "مادة" : "مواد"}</span>`);
-  if (st.sensitive) t.push(`<span class="tag warn"><i class="ph ph-hand-palm"></i>${st.sensitive_rule ? "قرار حساس بقاعدة التعارض" : "قرار حساس"}</span>`);
-  if (st.gap) t.push(st.gap_no_global
-    ? `<span class="tag bad"><i class="ph ph-puzzle-piece"></i>فجوة بدون مثال عالمي</span>`
-    : `<span class="tag plain"><i class="ph ph-puzzle-piece"></i>فجوة${st.global_example_id ? " + مثال عالمي" : ""}</span>`);
-  if (st.conflicts?.length) t.push(`<span class="tag plain"><i class="ph ph-arrows-split"></i>${st.conflicts.length} تعارض</span>`);
-  return t.join("");
-}
-
-function renderTimeline(fresh = new Set()) {
-  if (!run) {
-    $("#timeline").innerHTML = `<li class="empty">هالسيناريو ما انشغّل لسا. اكبس «شغّل السيناريو»، بياخذ تقريباً دقيقتين لأنه كل وكيل بيقرأ وبيكتب.</li>`;
-    return;
-  }
-  const banner = run.logged || run.replay ? `
-    <li class="replay-banner ${run.replay ? "on" : ""}">
-      <i class="ph ${run.replay ? "ph-clock-counter-clockwise" : "ph-archive"}"></i>
-      <div><strong>${run.replay ? "إعادة عرض لتشغيلة مسجّلة، مش تشغيل مباشر." : "تشغيلة مسجّلة."}</strong>
-      ${esc(run.started?.slice(0, 16).replace("T", " ") || "")} · <span class="ltr">${esc(run.run_id)}</span>.
-      الخطوات والقرارات زي ما انسجّلت بـ <span class="ltr">logs/scenarios.jsonl</span>، وما في أي طلب للنموذج.</div>
-    </li>` : "";
-  const items = run.steps.map(st => {
-    const a = AGENTS[st.agent] || { name: st.agent, icon: "ph-circle" };
-    const kind = st.agent === "human" ? "human" : st.agent === "orchestrator" ? "final" : st.unsourced || st.gap_no_global ? "bad" : st.sensitive ? "warn" : "";
-    const last = st.received?.[st.received.length - 1];
-    const got = st.agent === "orchestrator" ? `استلم أحكام ${st.received.length} وكلاء` : st.agent === "human" ? (st.note ? `ملاحظة: ${st.note}` : "") : last ? `وصله: ${last.label}` : "";
-    const conf = st.confidence != null ? `<div class="conf"><span>الثقة</span><span class="bar"><i style="width:${Math.round(st.confidence * 100)}%"></i></span><span class="ltr">${st.confidence.toFixed(2)}</span></div>` : "";
-    return `
-      <li class="ev ${kind} ${fresh.has(st.n) ? "new" : ""}">
-        <span class="dot" aria-hidden="true"><i class="ph ${a.icon}"></i></span>
-        <button type="button" class="card" data-n="${st.n}" aria-current="${selected === st.n}">
-          <div class="card-top"><strong>${esc(a.name)}</strong><span class="ltr">t+${clock(st.at)}</span></div>
-          ${got ? `<div class="got">${esc(got)}</div>` : ""}
-          <div class="dec">${esc(st.decision)}</div>
-          ${conf}
-          <div class="tags">${cardTags(st)}</div>
-        </button>
-      </li>`;
-  });
-  if (run.status === "running") {
-    const a = AGENTS[run.current] || { name: "الوكيل التالي", icon: "ph-circle-notch" };
-    items.push(`
-      <li class="ev pending">
-        <span class="dot" aria-hidden="true"><i class="ph ${a.icon}"></i></span>
-        <div class="card"><div class="card-top"><strong>${esc(a.name)}</strong></div>
-        <div class="got"><span class="pulse"></span>عم يدوّر بالنصوص ويكتب حكمه</div></div>
-      </li>`);
-  }
-  if (run.status === "awaiting_human") {
-    // A replayed run shows where it stopped; deciding is for live runs, so the log gets no replayed decision.
-    const replaying = run.replay;
-    items.push(`
-      <li class="ev warn">
-        <span class="dot" aria-hidden="true"><i class="ph ph-hand-palm"></i></span>
-        <div class="approve">
-          <h3><i class="ph ph-hand-palm"></i>النظام وقف هون</h3>
-          <p>المنسّق اقترح قرار حساس، فما بينفّذ ولا بيوصل الرد للمواطن قبل ما يوافق موظف.</p>
-          ${replaying ? `<p class="hint">بإعادة العرض، قرار الموظف ما بينسجّل. التشغيلة الأصلية لسا بانتظار موظف.</p>` : `
-          <textarea id="note" maxlength="500" aria-label="ملاحظة الموظف" placeholder="ملاحظة الموظف (اختياري)"></textarea>
-          <div class="btns">
-            <button type="button" class="btn primary" data-decide="1">وافق وأرسل الرد</button>
-            <button type="button" class="btn" data-decide="0">ارفض الاقتراح</button>
-          </div>`}
-        </div>
-      </li>`);
-  }
-  if (run.status === "error") {
-    items.push(`<li class="ev bad"><span class="dot" aria-hidden="true"><i class="ph ph-warning-circle"></i></span><div class="alert bad"><i class="ph ph-warning-circle"></i><div>وقف التشغيل: ${esc(run.error)}</div></div></li>`);
-  }
-  $("#timeline").innerHTML = banner + items.join("");
-}
-
-function renderDetail() {
-  const st = run?.steps.find(s => s.n === selected);
-  if (!st) {
-    $("#detail").innerHTML = `<div class="detail-head"><h2>تفاصيل الخطوة</h2></div><p class="role">اختار خطوة من الخط الزمني.</p>`;
-    return;
-  }
-  const a = AGENTS[st.agent] || { name: st.agent, role: "" };
-  const recv = (st.received || []).map(r => `
-    <li><b><span class="ltr">t+${clock(r.at)}</span>${esc(r.label)}${r.simulated ? `<span class="tag plain">بيانات تجريبية</span>` : ""}${r.source === "voice" ? `<span class="tag ok"><i class="ph ph-microphone"></i>من صوت</span>` : ""}</b>${esc(r.content)}</li>`).join("");
-  const sources = [...(st.retrieved || [])].sort((x, y) => st.cited.includes(y.id) - st.cited.includes(x.id)).map(s => {
-    const used = st.cited.includes(s.id);
-    return `
-      <div class="src ${used ? "" : "unused"}">
-        <div class="src-h"><strong>${esc(shortName(s.doc_name))} · ${esc(unit(s.article))}</strong>${used ? `<span class="tag ok"><i class="ph ph-seal-check"></i>اعتمد عليها</span>` : ""}</div>
-        <blockquote>${esc(s.text)}</blockquote>
-        <div class="src-f"><button type="button" class="link-btn" data-toggle>النص كامل</button>${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">المصدر <i class="ph ph-arrow-up-left"></i></a>` : ""}</div>
-      </div>`;
-  }).join("");
-
-  // The orchestrator's inputs are the agents' full verdicts: show its reply first, inputs clamped.
-  const recvBlock = recv ? `<div class="block"><h3><i class="ph ph-tray-arrow-down"></i>${st.agent === "orchestrator" ? "أحكام الوكلاء اللي وصلته" : "اللي وصله لحد هالخطوة"}</h3><ul class="recv ${st.agent === "orchestrator" ? "clamp" : ""}">${recv}</ul></div>` : "";
-  let body = "";
-  if (st.agent === "human") {
-    body = `<div class="block"><p class="finding">${st.approved ? "وافق الموظف على اقتراح المنسّق، فانرسل الرد للمواطن." : "رفض الموظف اقتراح المنسّق، فما انرسل الرد وبترجع الحالة للمراجعة."}</p>${st.note ? `<p class="role">ملاحظته: ${esc(st.note)}</p>` : ""}</div>`;
-  } else {
-    body = `
-      ${st.unsourced ? `<div class="block alert bad"><i class="ph ph-warning-octagon"></i><div>هالحكم مش مربوط بأي مادة رجعت بالبحث. لازم يتعامل معه كرأي، مش كحكم.</div></div>` : ""}
-      ${st.sensitive ? `<div class="block alert warn"><i class="ph ph-hand-palm"></i><div><strong>قرار حساس.</strong> ${esc(st.sensitive_reason)}</div></div>` : ""}
-      ${st.citizen_reply ? `<div class="block"><h3><i class="ph ph-chat-text"></i>الرد للمواطن${run.status === "awaiting_human" ? " (موقوف لحد موافقة الموظف)" : run.status === "rejected" ? " (ما انرسل)" : ""}</h3><div class="say">${esc(st.citizen_reply)}</div></div>` : ""}
-      ${st.staff_note ? `<div class="block"><h3><i class="ph ph-briefcase"></i>ملاحظة للموظف</h3><div class="say staff">${esc(st.staff_note)}</div></div>` : ""}
-      ${st.agent !== "orchestrator" ? `<div class="block"><h3><i class="ph ph-gavel"></i>الحكم</h3><p class="finding">${esc(st.finding)}</p></div>` : ""}
-      ${st.conflicts?.length ? `<div class="block"><h3><i class="ph ph-arrows-split"></i>تعارض بين الوكلاء</h3><ul class="steps">${st.conflicts.map(c => `<li>${esc(c)}</li>`).join("")}</ul></div>` : ""}
-      ${st.gap ? `<div class="block"><h3><i class="ph ph-puzzle-piece"></i>الفجوة اللي لقاها</h3><div class="gapbox"><b>${esc(st.gap_title)}</b><p>${esc(st.gap)}</p>${globalExample(st)}</div></div>` : ""}
-      <div class="block"><h3><i class="ph ph-list-numbers"></i>كيف وصل للحكم</h3><ol class="steps">${(st.steps || []).map(x => `<li>${esc(x)}</li>`).join("")}</ol></div>
-      <div class="block"><h3><i class="ph ph-books"></i>النصوص اللي رجعت (${st.retrieved?.length || 0})</h3><div class="srcs">${sources || `<p class="role">ولا نص.</p>`}</div></div>`;
-  }
-  $("#detail").innerHTML = `
-    <div class="detail-head"><h2>${esc(a.name)}</h2><span class="ltr">t+${clock(st.at)} · #${st.n}</span></div>
-    <p class="role">${esc(a.role)}${st.confidence != null ? ` · الثقة <span class="ltr">${st.confidence.toFixed(2)}</span>` : ""}</p>
-    ${st.agent === "orchestrator" ? body + recvBlock : recvBlock + body}`;
-}
-
-function select(n) {
-  selected = n;
-  renderTimeline();
-  renderDetail();
-}
-
-function show(id) {
-  stopReplay();
-  current = scenarios.find(s => s.id === id);
-  run = current.latest;
-  const final = run?.steps.find(s => s.agent === "orchestrator");
-  selected = final?.n ?? run?.steps[0]?.n ?? null;
-  renderPicker(); renderCase(); renderTimeline(); renderDetail();
-  history.replaceState(null, "", "#" + id);
-}
-
-async function start(voiceId) {
-  stopReplay(); clearInterval(poll);
-  const res = await fetch(`/api/scenarios/${current.id}/run`, {
-    method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(voiceId ? { voice_id: voiceId } : {}),
-  });
-  const { run_id, error } = await res.json();
-  if (!res.ok) { setVoice(error || res.statusText); return; }
-  if (voiceId) heard = null;  // a transcript is used once
-  run = { run_id, status: "running", steps: [] };
-  selected = null;
-  renderCase(); renderTimeline(); renderDetail();
-  let seen = 0;
-  poll = setInterval(async () => {
-    const r = await fetch(`/api/runs/${run_id}`).then(x => x.json()).catch(() => null);
-    if (!r || (r.status === "running" && r.steps.length === seen && r.current === run.current)) return;
-    const fresh = new Set(r.steps.slice(seen).map(s => s.n));
-    seen = r.steps.length;
-    run = r; current.latest = r;
-    if (fresh.size) selected = r.steps[r.steps.length - 1].n;
-    renderTimeline(fresh); renderDetail();
-    if (r.status !== "running") { clearInterval(poll); renderCase(); renderPicker(); }
-  }, 1200);
-}
-
-async function decide(approved) {
-  const note = $("#note")?.value.trim() || "";
-  const res = await fetch(`/api/runs/${run.run_id}/decide`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ approved, note }) });
-  const data = await res.json();
-  if (!res.ok) { alert(data.error); return; }
-  run = data; current.latest = data;
-  select(data.steps[data.steps.length - 1].n);
-  renderPicker();
-}
-
+// ---- events ----
 document.addEventListener("click", e => {
-  const pick = e.target.closest(".pick");
-  if (pick && pick.dataset.id !== current?.id) { clearInterval(poll); show(pick.dataset.id); return; }
-  const card = e.target.closest("button.card");
-  if (card) { select(Number(card.dataset.n)); if (matchMedia("(max-width: 900px)").matches) $("#detail").scrollIntoView({ block: "start" }); return; }
+  const pick = e.target.closest("#picker a");
+  if (pick) { e.preventDefault(); if (pick.dataset.id !== current?.id) { clearInterval(poll); show(pick.dataset.id); } return; }
+  const step = e.target.closest("[data-step]");
+  if (step) {
+    const n = Number(step.dataset.step);
+    const isOpen = openAll || open.has(n);
+    if (isOpen) { open.delete(n); if (openAll) { openAll = false; run.steps.forEach(s => s.n !== n && open.add(s.n)); } }
+    else open.add(n);
+    renderResult();
+    document.querySelector(`[data-step="${n}"]`)?.focus();
+    return;
+  }
+  if (e.target.closest("#toggle-all")) { openAll = !openAll; open.clear(); renderResult(); $("#toggle-all")?.focus(); return; }
   if (e.target.closest("#run")) { start(); return; }
   if (e.target.closest("#replay")) { replay($("#replay-pick").value); return; }
   if (e.target.closest("#rec")) { toggleRecord(); return; }
@@ -658,9 +439,9 @@ document.addEventListener("click", e => {
   if (d) { decide(d.dataset.decide === "1"); return; }
   const toggle = e.target.closest("[data-toggle]");
   if (toggle) {
-    const src = toggle.closest(".src");
-    src.classList.toggle("open");
-    toggle.textContent = src.classList.contains("open") ? "أقل" : "النص كامل";
+    const li = toggle.closest("li");
+    li.classList.toggle("open");
+    toggle.textContent = li.classList.contains("open") ? "أقل" : "النص كامل";
   }
 });
 
@@ -673,7 +454,7 @@ addEventListener("hashchange", () => {
   if (id !== current?.id && scenarios.some(s => s.id === id)) { clearInterval(poll); show(id); }
 });
 
-// ?replay=<run_id>#<scenario> starts a replay on load (for recording the video).
+// ?replay=<run_id>#<scenario> starts a replay on load, with details open (for the video).
 Promise.all([
   fetch("/api/scenarios").then(r => r.json()),
   fetch("/api/stats").then(r => r.json()).catch(() => ({})),
@@ -684,13 +465,12 @@ Promise.all([
   list.forEach((s, i) => { loggedRuns[s.id] = runs[i]; });
   const want = location.hash.slice(1);
   show(list.some(s => s.id === want) ? want : list[0].id);
-  const auto = new URLSearchParams(location.search).get("replay");
-  if (auto && (loggedRuns[current.id] || []).some(r => r.run_id === auto)) {
-    $("#replay-pick").value = auto;
-    replay(auto);
+  if (autoReplay && (loggedRuns[current.id] || []).some(r => r.run_id === autoReplay)) {
+    $("#replay-pick").value = autoReplay;
+    replay(autoReplay);
   }
 }).catch(() => {
-  $("#timeline").innerHTML = `<li class="empty">ما قدرنا نجيب السيناريوهات. شغّل السيرفر بـ <span class="ltr">python -m muyassar.server</span></li>`;
+  $("#result").innerHTML = `<div class="notice bad">ما قدرنا نجيب السيناريوهات. شغّل السيرفر بـ <span class="ltr">python -m muyassar.server</span></div>`;
 });
 </script>
 </body>
