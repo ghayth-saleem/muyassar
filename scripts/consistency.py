@@ -85,7 +85,7 @@ def report(logs: list[Path]) -> str:
     weak = []
     for sc in scenarios.all_scenarios():
         r = score(runs.get(sc["id"], []), sc)
-        n = r["runs"]
+        n = r["runs"] - r["errors"]  # a run cut short (e.g. out of API credit) is counted under errors, not scored
         lines.append(f"| {sc['title']} | {r['gap']}/{n} | {r['human']}/{n} | {r['rule']}/{n} | {r['unsourced']}/{n} | {r['global']}/{n} | {r['errors']} | `{source.get(sc['id'], '')}` |")
         if n and r["gap"] < 4 * n / 5:
             weak.append(sc["title"])

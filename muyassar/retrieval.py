@@ -6,7 +6,7 @@ Two retrievers, fused with reciprocal rank fusion:
   reference code). Catches dialect and paraphrase: "بدي أمسح بياناتي"
   against "محو البيانات".
 
-By default ("rerank") the top 20 fused candidates are then re-scored by a
+By default ("rerank") the top 30 fused candidates are then re-scored by a
 cross-encoder (bge-reranker-v2-m3), which reads query and article together
 instead of comparing two separate vectors. That is what decides rank 1:
 on the 30-question set it took recall@1 from 0.733 to 0.933.
@@ -34,7 +34,10 @@ EMBED_MODEL = os.environ.get("MUYASSAR_EMBED_MODEL", "intfloat/multilingual-e5-l
 RERANK_MODEL = os.environ.get("MUYASSAR_RERANK_MODEL", "BAAI/bge-reranker-v2-m3")
 RRF_K = 60
 CANDIDATES = 50
-RERANK_CANDIDATES = 20
+# 30, not 20: with the Civil Status Law in the base, q32's article fused at rank
+# 30 and never reached the reranker. 30 brought it back and lost nothing on the
+# 84 questions; 40 and 50 lost q37. Median search time 398 -> 596 ms.
+RERANK_CANDIDATES = 30
 
 
 def load_chunks() -> list[dict]:

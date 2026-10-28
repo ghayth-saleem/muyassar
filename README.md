@@ -33,7 +33,7 @@ Laws are chunked at article boundaries, never by word count, so an answer can ci
 
 ## Retrieval
 
-Hybrid BM25 (custom Arabic normalisation and light stemming) plus dense `intfloat/multilingual-e5-large` in ChromaDB, fused with reciprocal rank fusion, then the top 20 reranked by `BAAI/bge-reranker-v2-m3`.
+Hybrid BM25 (custom Arabic normalisation and light stemming) plus dense `intfloat/multilingual-e5-large` in ChromaDB, fused with reciprocal rank fusion, then the top 30 reranked by `BAAI/bge-reranker-v2-m3` (30 rather than 20 since the Civil Status Law was added: it recovered q32 and cost about 200 ms per search, median 398 to 596 ms on the dev laptop).
 
 ## Benchmark
 
@@ -41,12 +41,14 @@ Hybrid BM25 (custom Arabic normalisation and light stemming) plus dense `intfloa
 
 | Mode | recall@5 | recall@1 |
 |---|---|---|
-| hybrid + reranker | **0.976** (82/84) | **0.857** (72/84) |
+| hybrid + reranker (window 30) | **0.988** (83/84) | **0.857** (72/84) |
 | hybrid (76 questions, before the global layer) | 0.908 | 0.658 |
 
-Adding the Civil Status Law pushed q32 (ETL art. 6) out of the top 5 and took rank 1 on q67 with its art. 14, which states the same rule as the birth-registration guide the question expects. Most recall@1 misses are a neighbouring article or the same rule in another document (for example the EU AI Act's right to explanation ranking above the Jordanian ethics charter). The questions were written by the KB owner and still need review by the team.
+Adding the Civil Status Law pushed q32 (ETL art. 6) out of the top 5 until the rerank window was widened to 30, and took rank 1 on q67 with its art. 14, which states the same rule as the birth-registration guide the question expects. Most recall@1 misses are a neighbouring article or the same rule in another document (for example the EU AI Act's right to explanation ranking above the Jordanian ethics charter). The questions were written by the KB owner and still need review by the team.
 
 ## Agents and scenarios
+
+All personal data in the scenarios and in the voice test recording is fictitious, written for testing: names, ages, diagnoses, medication, ID numbers and registry records.
 
 An orchestrator and four agents, one per role the competition asks for (`muyassar/agents.py`):
 
@@ -72,7 +74,7 @@ Three failure scenarios in `scenarios/*.json`, each an ordered list of events wi
 
 `muyassar/voice.py` transcribes Arabic speech locally with faster-whisper `large-v3-turbo` (int8). On the scenarios page, the health-data scenario has a record button (MediaRecorder) and an audio upload; `POST /api/voice` returns the transcript and a `voice_id`, and running the scenario with it replaces the father's request with what was heard. The audio is decoded in memory and never written or logged; only the text is kept, and every step that acted on it records `input_source: voice`.
 
-It runs on the CPU by default. On a 4 GB RTX 3050 the retrieval models already hold 3.2–3.8 GB, and next to them Whisper took 17–22 s for a 13.9 s clip; on the CPU it took 14.6 s, alone on the GPU 1.3 s (`large-v3`: 2.8 s). A real 12.1 s recording in Jordanian dialect took 9.0 s on the CPU once the model was loaded (18 s on the first request). `MUYASSAR_WHISPER_DEVICE=cuda` uses the GPU where there is room. The model downloads into `models/whisper/` (git-ignored) on first use.
+It runs on the CPU by default. On a 4 GB RTX 3050 the retrieval models already hold 3.2–3.8 GB, and next to them Whisper took 17–22 s for a 13.9 s clip; on the CPU it took 14.6 s, alone on the GPU 1.3 s (`large-v3`: 2.8 s). A real 12.1 s recording in Jordanian dialect took 9.0 s on the CPU once the model was loaded (18 s on the first request). Whisper misspelled a few dialect words in it («تعرفية» for «تعريفية», «لابن» for «لابني», «السن الماضي» for «السنة الماضية»); the policy agent still found the spoken-consent gap. `MUYASSAR_WHISPER_DEVICE=cuda` uses the GPU where there is room. The model downloads into `models/whisper/` (git-ignored) on first use.
 
 ## ITU-T Y.3172 mapping
 
