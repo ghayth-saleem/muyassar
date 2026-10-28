@@ -7,13 +7,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Noto+Kufi+Arabic:wght@700&display=swap" rel="stylesheet">
-<link rel="icon" href="/brand/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/brand/favicon.png" type="image/png">
 <link rel="stylesheet" href="/site.css">
 <style>
 .directions { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 16px; }
 .direction { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
 .direction.chosen { border: 2px solid var(--accent); }
 .direction svg { width: 72px; height: 72px; color: var(--text); display: block; margin-bottom: 12px; }
+.big .lockup img { width: 70px; height: 72px; }
+.stacked img { width: 54px; height: 56px; }
 .direction h3 { margin-bottom: 4px; }
 .direction p { font-size: 17px; margin: 0; }
 .wordmark-c { font-family: "Noto Kufi Arabic", sans-serif; font-weight: 700; font-size: 46px; line-height: 72px; height: 72px; margin-bottom: 12px; }
@@ -56,7 +58,7 @@ pre { background: var(--surface-2); padding: 14px 16px; overflow-x: auto; font-s
 <aside class="demo-strip" aria-label="عن هالنموذج"><div class="wrap">نموذج تجريبي لمسابقة AI for Good، مش موقع حكومي رسمي. كل البيانات وهمية.</div></aside>
 <header class="site">
   <div class="wrap">
-    <a class="lockup" href="/" aria-label="ميسّر، الصفحة الرئيسية"><svg viewBox="3 9 26 14" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M6 18H16V14A4 4 0 0 1 20 10H24A4 4 0 0 1 28 14V18A4 4 0 0 1 24 22H6A2 2 0 0 1 6 18ZM21 14H23A1 1 0 0 1 24 15V17A1 1 0 0 1 23 18H21A1 1 0 0 1 20 17V15A1 1 0 0 1 21 14ZM8 19L9 20L8 21L7 20ZM12 19L13 20L12 21L11 20ZM18 15L19 16L18 17L17 16ZM22 11L23 12L22 13L21 12ZM26 15L27 16L26 17L25 16ZM22 19L23 20L22 21L21 20Z"/></svg><span><span class="ar">ميسّر</span><span class="lat">Muyassar</span></span></a>
+    <a class="lockup" href="/" aria-label="ميسّر، الصفحة الرئيسية"><img src="/brand/logo-keffiyeh.png" alt="" width="43" height="44"><span><span class="ar">ميسّر</span><span class="lat">Muyassar</span></span></a>
     <nav aria-label="الصفحات">
       <a href="/">اسأل</a>
       <a href="/scenarios">السيناريوهات</a>
@@ -72,9 +74,9 @@ pre { background: var(--surface-2); padding: 14px 16px; overflow-x: auto; font-s
   <h2>ثلاث اتجاهات للعلامة</h2>
   <div class="directions">
     <div class="direction chosen">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M6 18H16V14A4 4 0 0 1 20 10H24A4 4 0 0 1 28 14V18A4 4 0 0 1 24 22H6A2 2 0 0 1 6 18ZM21 14H23A1 1 0 0 1 24 15V17A1 1 0 0 1 23 18H21A1 1 0 0 1 20 17V15A1 1 0 0 1 21 14ZM8 19L9 20L8 21L7 20ZM12 19L13 20L12 21L11 20ZM18 15L19 16L18 17L17 16ZM22 11L23 12L22 13L21 12ZM26 15L27 16L26 17L25 16ZM22 19L23 20L22 21L21 20Z"/></svg>
+      <img src="/brand/logo-keffiyeh.png" alt="" width="71" height="72" style="display:block;margin-bottom:12px">
       <h3>ميم الكوفية (المختارة)</h3>
-      <p>ميم «ميسّر» على شبكة، بزوايا مدوّرة: حلقة مسكّرة، عقدة المعاملة، وبيطلع منها خط مستقيم، الطريق السالك. والفتحات جوا الخط شبك الكوفية الأردنية. حرف حقيقي من الاسم.</p>
+      <p>تصميم غيث: حرف «م» من قماش الكوفية الحمرا، والحلقة ملفوفة زي الشماغ. حرف حقيقي من الاسم ومن لبس أهل البلد. الأحمر هون لون الكوفية، مش حالة بالواجهة، فما بيطلع جنب أي حكم.</p>
     </div>
     <div class="direction">
       <svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M6 6H26V26H6ZM10 10V22H22V10Z"/><rect x="13" y="14" width="6" height="4" fill="currentColor"/></svg>
@@ -91,29 +93,29 @@ pre { background: var(--surface-2); padding: 14px 16px; overflow-x: auto; font-s
   <h2>العلامة بأحجامها الحقيقية</h2>
   <div class="sizes">
     <div class="on-light">
-      <span><svg width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M6 18H16V14A4 4 0 0 1 20 10H24A4 4 0 0 1 28 14V18A4 4 0 0 1 24 22H6A2 2 0 0 1 6 18ZM21 14H23A1 1 0 0 1 24 15V17A1 1 0 0 1 23 18H21A1 1 0 0 1 20 17V15A1 1 0 0 1 21 14Z"/></svg><small>16px</small></span>
-      <span><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M6 18H16V14A4 4 0 0 1 20 10H24A4 4 0 0 1 28 14V18A4 4 0 0 1 24 22H6A2 2 0 0 1 6 18ZM21 14H23A1 1 0 0 1 24 15V17A1 1 0 0 1 23 18H21A1 1 0 0 1 20 17V15A1 1 0 0 1 21 14ZM8 19L9 20L8 21L7 20ZM12 19L13 20L12 21L11 20ZM18 15L19 16L18 17L17 16ZM22 11L23 12L22 13L21 12ZM26 15L27 16L26 17L25 16ZM22 19L23 20L22 21L21 20Z"/></svg><small>32px</small></span>
-      <span><svg width="96" height="96" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M6 18H16V14A4 4 0 0 1 20 10H24A4 4 0 0 1 28 14V18A4 4 0 0 1 24 22H6A2 2 0 0 1 6 18ZM21 14H23A1 1 0 0 1 24 15V17A1 1 0 0 1 23 18H21A1 1 0 0 1 20 17V15A1 1 0 0 1 21 14ZM8 19L9 20L8 21L7 20ZM12 19L13 20L12 21L11 20ZM18 15L19 16L18 17L17 16ZM22 11L23 12L22 13L21 12ZM26 15L27 16L26 17L25 16ZM22 19L23 20L22 21L21 20Z"/></svg><small>96px، على فاتح</small></span>
+      <span><img src="/brand/logo-keffiyeh.png" alt="" width="16" height="16" style="display:block"><small>16px</small></span>
+      <span><img src="/brand/logo-keffiyeh.png" alt="" width="31" height="32" style="display:block"><small>32px</small></span>
+      <span><img src="/brand/logo-keffiyeh.png" alt="" width="94" height="96" style="display:block"><small>96px، على فاتح</small></span>
     </div>
     <div class="on-dark">
-      <span><svg width="16" height="16" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M6 18H16V14A4 4 0 0 1 20 10H24A4 4 0 0 1 28 14V18A4 4 0 0 1 24 22H6A2 2 0 0 1 6 18ZM21 14H23A1 1 0 0 1 24 15V17A1 1 0 0 1 23 18H21A1 1 0 0 1 20 17V15A1 1 0 0 1 21 14Z"/></svg><small>16px</small></span>
-      <span><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M6 18H16V14A4 4 0 0 1 20 10H24A4 4 0 0 1 28 14V18A4 4 0 0 1 24 22H6A2 2 0 0 1 6 18ZM21 14H23A1 1 0 0 1 24 15V17A1 1 0 0 1 23 18H21A1 1 0 0 1 20 17V15A1 1 0 0 1 21 14ZM8 19L9 20L8 21L7 20ZM12 19L13 20L12 21L11 20ZM18 15L19 16L18 17L17 16ZM22 11L23 12L22 13L21 12ZM26 15L27 16L26 17L25 16ZM22 19L23 20L22 21L21 20Z"/></svg><small>32px</small></span>
-      <span><svg width="96" height="96" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M6 18H16V14A4 4 0 0 1 20 10H24A4 4 0 0 1 28 14V18A4 4 0 0 1 24 22H6A2 2 0 0 1 6 18ZM21 14H23A1 1 0 0 1 24 15V17A1 1 0 0 1 23 18H21A1 1 0 0 1 20 17V15A1 1 0 0 1 21 14ZM8 19L9 20L8 21L7 20ZM12 19L13 20L12 21L11 20ZM18 15L19 16L18 17L17 16ZM22 11L23 12L22 13L21 12ZM26 15L27 16L26 17L25 16ZM22 19L23 20L22 21L21 20Z"/></svg><small>96px، على غامق</small></span>
+      <span><img src="/brand/logo-keffiyeh.png" alt="" width="16" height="16" style="display:block"><small>16px</small></span>
+      <span><img src="/brand/logo-keffiyeh.png" alt="" width="31" height="32" style="display:block"><small>32px</small></span>
+      <span><img src="/brand/logo-keffiyeh.png" alt="" width="94" height="96" style="display:block"><small>96px، على غامق</small></span>
     </div>
     <div class="mono-black">
-      <span><svg width="64" height="64" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M6 18H16V14A4 4 0 0 1 20 10H24A4 4 0 0 1 28 14V18A4 4 0 0 1 24 22H6A2 2 0 0 1 6 18ZM21 14H23A1 1 0 0 1 24 15V17A1 1 0 0 1 23 18H21A1 1 0 0 1 20 17V15A1 1 0 0 1 21 14ZM8 19L9 20L8 21L7 20ZM12 19L13 20L12 21L11 20ZM18 15L19 16L18 17L17 16ZM22 11L23 12L22 13L21 12ZM26 15L27 16L26 17L25 16ZM22 19L23 20L22 21L21 20Z"/></svg><small>أسود فقط</small></span>
+      <span><svg width="64" height="64" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M6 18H16V14A4 4 0 0 1 20 10H24A4 4 0 0 1 28 14V18A4 4 0 0 1 24 22H6A2 2 0 0 1 6 18ZM21 14H23A1 1 0 0 1 24 15V17A1 1 0 0 1 23 18H21A1 1 0 0 1 20 17V15A1 1 0 0 1 21 14ZM8 19L9 20L8 21L7 20ZM12 19L13 20L12 21L11 20ZM18 15L19 16L18 17L17 16ZM22 11L23 12L22 13L21 12ZM26 15L27 16L26 17L25 16ZM22 19L23 20L22 21L21 20Z"/></svg><small>النسخة المرسومة، أسود فقط</small></span>
       <span><svg width="64" height="64" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M6 18H16V14A4 4 0 0 1 20 10H24A4 4 0 0 1 28 14V18A4 4 0 0 1 24 22H6A2 2 0 0 1 6 18Z"/></svg><small>الظل مصمت</small></span>
     </div>
     <div class="on-accent">
-      <span><svg width="64" height="64" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M6 18H16V14A4 4 0 0 1 20 10H24A4 4 0 0 1 28 14V18A4 4 0 0 1 24 22H6A2 2 0 0 1 6 18ZM21 14H23A1 1 0 0 1 24 15V17A1 1 0 0 1 23 18H21A1 1 0 0 1 20 17V15A1 1 0 0 1 21 14ZM8 19L9 20L8 21L7 20ZM12 19L13 20L12 21L11 20ZM18 15L19 16L18 17L17 16ZM22 11L23 12L22 13L21 12ZM26 15L27 16L26 17L25 16ZM22 19L23 20L22 21L21 20Z"/></svg><small>معكوسة على لون الهوية</small></span>
+      <span><svg width="64" height="64" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M6 18H16V14A4 4 0 0 1 20 10H24A4 4 0 0 1 28 14V18A4 4 0 0 1 24 22H6A2 2 0 0 1 6 18ZM21 14H23A1 1 0 0 1 24 15V17A1 1 0 0 1 23 18H21A1 1 0 0 1 20 17V15A1 1 0 0 1 21 14ZM8 19L9 20L8 21L7 20ZM12 19L13 20L12 21L11 20ZM18 15L19 16L18 17L17 16ZM22 11L23 12L22 13L21 12ZM26 15L27 16L26 17L25 16ZM22 19L23 20L22 21L21 20Z"/></svg><small>النسخة المرسومة، معكوسة</small></span>
     </div>
   </div>
-  <p class="hint">الشبكة 32 وحدة وسماكة وحدة واحدة (4)، والزوايا مدوّرة بنصف قطر 4 برا و1 جوا. الفتحات ستة معينات على خط منتصف الخط. تحت 24px الفتحات بتنسد، فبنستعمل الميم بدونها (<span class="ltr code">mark-small.svg</span>)، ومنها أيقونة المتصفح. المساحة الفاضية حولها أقلها 8 وحدات، وأصغر حجم 16px.</p>
+  <p class="hint">الشعار صورة ملونة (<span class="ltr code">web/brand/logo-keffiyeh.png</span>، 106×108 بكسل)، فبيضل واضح لحد 96px تقريباً، وأكبر من هيك بدها الملف الأصلي. للاستعمالات بلون واحد، زي الطباعة بالأبيض والأسود أو الختم، في نسخة مرسومة على شبكة (<span class="ltr code">mark.svg</span>). أصغر حجم 16px.</p>
 
   <h2>الشعار مع الاسم</h2>
   <div class="lockups">
-    <div class="big"><span class="lockup"><svg viewBox="3 9 26 14" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M6 18H16V14A4 4 0 0 1 20 10H24A4 4 0 0 1 28 14V18A4 4 0 0 1 24 22H6A2 2 0 0 1 6 18ZM21 14H23A1 1 0 0 1 24 15V17A1 1 0 0 1 23 18H21A1 1 0 0 1 20 17V15A1 1 0 0 1 21 14ZM8 19L9 20L8 21L7 20ZM12 19L13 20L12 21L11 20ZM18 15L19 16L18 17L17 16ZM22 11L23 12L22 13L21 12ZM26 15L27 16L26 17L25 16ZM22 19L23 20L22 21L21 20Z"/></svg><span><span class="ar">ميسّر</span><span class="lat">Muyassar</span></span></span></div>
-    <div class="stacked"><svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M6 18H16V14A4 4 0 0 1 20 10H24A4 4 0 0 1 28 14V18A4 4 0 0 1 24 22H6A2 2 0 0 1 6 18ZM21 14H23A1 1 0 0 1 24 15V17A1 1 0 0 1 23 18H21A1 1 0 0 1 20 17V15A1 1 0 0 1 21 14ZM8 19L9 20L8 21L7 20ZM12 19L13 20L12 21L11 20ZM18 15L19 16L18 17L17 16ZM22 11L23 12L22 13L21 12ZM26 15L27 16L26 17L25 16ZM22 19L23 20L22 21L21 20Z"/></svg><span class="ar">ميسّر</span><span class="lat">Muyassar</span></div>
+    <div class="big"><span class="lockup"><img src="/brand/logo-keffiyeh.png" alt="" width="70" height="72"><span><span class="ar">ميسّر</span><span class="lat">Muyassar</span></span></span></div>
+    <div class="stacked"><img src="/brand/logo-keffiyeh.png" alt="" width="54" height="56"><span class="ar">ميسّر</span><span class="lat">Muyassar</span></div>
   </div>
   <p class="hint">الأفقي: الاسم العربي على نفس خط قاعدة ذيل الميم، واللاتيني تحته بحجم أصغر. العمودي: العلامة بالنص وفوق الاسمين. الاسم العربي مكتوب بخط عربي، مش مقلوب عن اللاتيني.</p>
 
@@ -162,8 +164,8 @@ pre { background: var(--surface-2); padding: 14px 16px; overflow-x: auto; font-s
 
 <footer class="site">
   <div class="wrap">
-    <svg viewBox="3 9 26 14" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" d="M6 18H16V14A4 4 0 0 1 20 10H24A4 4 0 0 1 28 14V18A4 4 0 0 1 24 22H6A2 2 0 0 1 6 18ZM21 14H23A1 1 0 0 1 24 15V17A1 1 0 0 1 23 18H21A1 1 0 0 1 20 17V15A1 1 0 0 1 21 14ZM8 19L9 20L8 21L7 20ZM12 19L13 20L12 21L11 20ZM18 15L19 16L18 17L17 16ZM22 11L23 12L22 13L21 12ZM26 15L27 16L26 17L25 16ZM22 19L23 20L22 21L21 20Z"/></svg>
-    <p>العلامة مرسومة كـ SVG على شبكة. الملفات بـ <span class="ltr code">web/brand/</span>.</p>
+    <img src="/brand/logo-keffiyeh.png" alt="" width="24" height="24">
+    <p>الشعار من تصميم غيث، والنسخة أحادية اللون مرسومة كـ SVG. الملفات بـ <span class="ltr code">web/brand/</span>.</p>
   </div>
 </footer>
 </body>

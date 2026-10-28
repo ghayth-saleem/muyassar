@@ -1,6 +1,7 @@
 /* Muyassar identity. Brand sheet: /brand
-   Mark: the meem of «ميسّر», rounded: a closed loop with a stroke that leaves it level. Six
-   diamond openings in the stroke are the keffiyeh's net; mark-small.svg drops them below 24px.
+   Mark: Ghayth's meem in keffiyeh cloth (web/brand/logo-keffiyeh.png). Its red is the
+   keffiyeh's, not a UI state: it never sits next to a verdict. The drawn SVG meem
+   (mark.svg) stays for one-colour uses.
    Type: Noto Kufi Arabic for headings (it shares the mark's square geometry), IBM Plex Sans
    Arabic for reading, IBM Plex Mono for ids. One identity colour, ink teal; red, amber and
    green keep their meanings apart from it: no source, sensitive decision, approved.
@@ -96,8 +97,8 @@ header.site { background: var(--surface); border-bottom: 1px solid var(--border)
 header.site .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 72px; flex-wrap: wrap; }
 .lockup { display: inline-flex; align-items: center; gap: 12px; color: var(--text); text-decoration: none; }
 .lockup:hover { color: var(--text); }
-.lockup svg { width: 52px; height: 28px; color: var(--accent); flex: none; margin-top: 6px; } /* frame cropped to the letter: 26x14 units */
-.lockup .ar { font-family: "Noto Kufi Arabic", sans-serif; font-weight: 700; font-size: 28px; line-height: 1; }
+.lockup img { width: 43px; height: 44px; flex: none; } /* Ghayth's keffiyeh meem, a raster image */
+.lockup .ar { font-family: "Noto Kufi Arabic", sans-serif; font-weight: 700; font-size: 28px; line-height: 1; color: var(--accent); }
 .lockup .lat { display: block; font-family: "IBM Plex Sans Arabic", sans-serif; font-size: 15px; font-weight: 600; color: var(--text-muted); line-height: 1.2; margin-top: 4px; direction: ltr; text-align: end; }
 header.site nav { display: flex; gap: 28px; }
 header.site nav a { color: var(--text); font-weight: 600; text-decoration: none; padding: 6px 0; border-bottom: 3px solid transparent; }
@@ -164,7 +165,7 @@ textarea { line-height: 1.8; resize: vertical; }
 
 footer.site { background: var(--surface); border-top: 1px solid var(--border); padding: 28px 0 44px; color: var(--text-muted); font-size: 17px; }
 footer.site .wrap { display: flex; gap: 16px; align-items: flex-start; }
-footer.site svg { width: 34px; height: 18px; color: var(--text-muted); flex: none; margin-top: 8px; }
+footer.site img { width: 24px; height: 24px; flex: none; margin-top: 4px; }
 footer.site p { margin: 0; max-width: 46em; }
 
 /* Motion: only feedback and arrival, short, and none for people who ask for none */
@@ -183,7 +184,7 @@ footer.site p { margin: 0; max-width: 46em; }
   h2 { font-size: 23px; margin-top: 32px; }
   .lead { font-size: 19px; }
   .panel { padding: 18px 16px; }
-  .lockup svg { width: 44px; height: 24px; }
+  .lockup img { width: 36px; height: 37px; }
   .lockup .ar { font-size: 24px; }
   header.site nav { gap: 18px; }
   .button { width: 100%; text-align: center; }

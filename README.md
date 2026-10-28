@@ -72,7 +72,7 @@ Three failure scenarios in `scenarios/*.json`, each an ordered list of events wi
 
 ## Identity
 
-The mark is the square-kufic meem of «ميسّر», drawn as SVG on a 32-unit grid (`web/brand/`). One identity colour, ink teal `#0e5e6f` (`#6cc3d1` in dark mode); red, amber and green each keep one meaning (no source, sensitive decision, approved), and every state also has a word. Noto Kufi Arabic for headings, IBM Plex Sans Arabic for reading. All tokens live in `web/site.css`; `/brand` on the demo server is the brand sheet, with the three directions considered, the mark at real sizes and the contrast of every colour pair. A demo strip on every page says the site is a test prototype with fictitious data.
+The logo is Ghayth's meem of «ميسّر» in red-and-white keffiyeh cloth, a raster image (`web/brand/logo-keffiyeh.png`, 106×108 px, with `favicon.png`); its red is the keffiyeh's and never sits next to a verdict. A drawn SVG meem (`web/brand/mark.svg`) stays for one-colour uses. One identity colour, ink teal `#0e5e6f` (`#6cc3d1` in dark mode); red, amber and green each keep one meaning (no source, sensitive decision, approved), and every state also has a word. Noto Kufi Arabic for headings, IBM Plex Sans Arabic for reading. All tokens live in `web/site.css`; `/brand` on the demo server is the brand sheet, with the three directions considered, the mark at real sizes and the contrast of every colour pair. A demo strip on every page says the site is a test prototype with fictitious data.
 
 ## Model providers, replay and tests
 
