@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-labelledby="t"><title id="t">ميسّر</title>
-  <!-- Square-kufic initial meem on a 4-unit grid: a closed loop (the procedure's knot)
-       and the stroke that leaves it level (the way through). One stroke weight: 4. -->
-  <path fill="currentColor" fill-rule="evenodd" d="M16 10H28V22H4V18H16ZM20 14V18H24V14Z"/>
+  <!-- The meem of «ميسّر» on a 32-unit grid, stroke 4, corners rounded. The six diamond openings on the
+       stroke's centre line are the keffiyeh's net. Below 24px use mark-small.svg: the openings fill in. -->
+  <path fill="currentColor" fill-rule="evenodd" d="M6 18H16V14A4 4 0 0 1 20 10H24A4 4 0 0 1 28 14V18A4 4 0 0 1 24 22H6A2 2 0 0 1 6 18ZM21 14H23A1 1 0 0 1 24 15V17A1 1 0 0 1 23 18H21A1 1 0 0 1 20 17V15A1 1 0 0 1 21 14ZM8 19L9 20L8 21L7 20ZM12 19L13 20L12 21L11 20ZM18 15L19 16L18 17L17 16ZM22 11L23 12L22 13L21 12ZM26 15L27 16L26 17L25 16ZM22 19L23 20L22 21L21 20Z"/>
 </svg>

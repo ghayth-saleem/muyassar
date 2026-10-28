@@ -1,5 +1,6 @@
 /* Muyassar identity. Brand sheet: /brand
-   Mark: the square-kufic meem of «ميسّر», a closed loop with a stroke that leaves it level.
+   Mark: the meem of «ميسّر», rounded: a closed loop with a stroke that leaves it level. Six
+   diamond openings in the stroke are the keffiyeh's net; mark-small.svg drops them below 24px.
    Type: Noto Kufi Arabic for headings (it shares the mark's square geometry), IBM Plex Sans
    Arabic for reading, IBM Plex Mono for ids. One identity colour, ink teal; red, amber and
    green keep their meanings apart from it: no source, sensitive decision, approved.
@@ -109,7 +110,7 @@ main { padding-bottom: 64px; }
 .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 28px; }
 
 /* The signature: an article number drawn like the mark's loop. It only ever marks a cited article. */
-.art { display: inline-flex; align-items: center; justify-content: center; min-width: 1.9em; height: 1.6em; padding: 0 .35em; border: 2px solid currentColor; border-radius: 2px; font-weight: 700; font-size: .82em; line-height: 1; vertical-align: .08em; font-variant-numeric: tabular-nums; }
+.art { display: inline-flex; align-items: center; justify-content: center; min-width: 1.9em; height: 1.6em; padding: 0 .35em; border: 2px solid currentColor; border-radius: 5px; font-weight: 700; font-size: .82em; line-height: 1; vertical-align: .08em; font-variant-numeric: tabular-nums; }
 
 /* Buttons */
 .button {
