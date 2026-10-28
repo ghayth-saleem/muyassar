@@ -26,6 +26,36 @@ Two parts of shot 4 need thought:
 - **Shot 4a needs the API.** The ask page answers live. Record it in one session when a key is allowed, or use only 4b, which replays a logged run with no model call.
 - **The article in 4a must match the answer.** Check that the chip shows the article the answer actually cites (for an ID renewal, the Civil Status Law) before recording.
 
+## What is ready (`docs/video/`)
+
+| File | What | Used in |
+|---|---|---|
+| `keyframe-desk.png` | The character seated at the desk with the phone, 2752×1536 (Nano Banana Pro from the source image). The wall screen is left blank on purpose. | First frame of shots 1, 2, 3, 5 |
+| `keyframe-phone.png` | Over-the-shoulder close-up on the phone, blank white screen, 2752×1536. | Last frame of shot 3; the frame to place the recording on in shot 4 |
+| `phone-doubtful-id.mp4` | Real screen recording of the doubtful-document replay at 375×812 (2x, 750×1624), 20 s. The view follows each agent's card, ends on the citizen reply «بانتظار موافقة موظف». | Shot 4b |
+| `endcard.png`, `endcard.html` | The end card at 1920×1080. | Shot 6 |
+
+The recording was made from screenshots of the replay at about 10 per second, so motion is slightly stepped; that is invisible at the size of a phone in frame. To record again: start the server, then `/scenarios?replay=15fb1470#doubtful_id` at 375×812.
+
+## Making the clips in a free tool
+
+Kling (klingai.com, daily free credits) and Google Flow (labs.google/flow, Veo, monthly free credits) both take a start frame and, for some models, an end frame. Generate each shot at 16:9, 5–8 s, and download it.
+
+| Shot | Start frame | End frame | Prompt |
+|---|---|---|---|
+| 1 | `keyframe-desk.png` | – | Shot 1 below |
+| 2 | `keyframe-desk.png` | – | Shot 2 below |
+| 3 | `keyframe-desk.png` | `keyframe-phone.png` | Shot 3 below |
+| 5 | `keyframe-desk.png` | – | Shot 5 below |
+
+Voice: record the lines yourself in Jordanian dialect, or use a voice tool with an Arabic voice; a real dialect voice will sound far more natural than a generated one. Then lip-sync shots 1, 2 and 5 (Kling has a lip-sync tool that takes the clip and the audio).
+
+Edit in CapCut or DaVinci Resolve (both free):
+1. Shots 1–3 in order; at the end of shot 3 hold `keyframe-phone.png` for half a second.
+2. Shot 4: either cut to `phone-doubtful-id.mp4` full height in the middle of the frame, or pin it onto the phone screen in `keyframe-phone.png` (corner pin in Resolve, or scale and place in CapCut; the screen is flat and upright, so it fits without tracking).
+3. Shot 5, then `endcard.png` for 8 s.
+4. Put the logo on the blank wall screen in shots 1, 2 and 5 if you want it there, Arabic subtitles for every line, and quiet music.
+
 ## Producing it
 
 1. **Character shots (1, 2, 3, 5).** Use an image-to-video model with the source image as the first frame, one clip per shot, 5–8 s each. Generate the voice separately (shot 5 of the script is the clearest line to test first), then lip-sync shots 1, 2 and 5. Shot 3 needs no lip-sync: he looks at the phone.
