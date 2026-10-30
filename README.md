@@ -4,6 +4,23 @@
 
 Muyassar is a multi-agent assistant for Jordanian government services, built for the ITU AI for Good hackathon. Every answer is grounded in a published Jordanian law, policy or service guide and cites the article it relies on. This repository holds the knowledge base, the retrieval pipeline, the benchmark and a demo page.
 
+## Submission
+
+AI for Good Lab Hackathon: United Arab Emirates (ITU). Domain: public services. Team: Ghayth Saleem (ghayth1216@gmail.com), one person.
+
+| What | Where |
+|---|---|
+| Technical report, 5 pages | `reports/technical-report.pdf` |
+| Code | this repository, MIT licence |
+| Knowledge base | `kb/chunks/`, from the documents in `sources/`; see [Knowledge base](#knowledge-base) |
+| Evaluation scenarios | `scenarios/`; see [Reproduce the scenarios](#reproduce-the-scenarios) |
+| Policy gaps | `reports/gaps.md` |
+| Stability of the results | `eval/consistency.md` |
+| Audit logs | `logs/`, one line per step, append-only |
+| Y.3172 and Readiness 2.0 mapping | below, and section 3 of the report |
+
+Roles covered: innovative solution (procedure guide), policy and legal adviser (policy agent), institutional participant (entity agent), multi-agent coordination (orchestrator). The model is Claude through its API; a local Ollama model is a supported fallback. The ITU sandbox is optional and is not used. Policy documents are real and public; scenario events and personal data are fictitious.
+
 ## Knowledge base
 
 16 documents, 375 chunks, in three layers. Every chunk carries `doc_name`, `article`, `entity`, `date` and `url` (enforced by a hook on `kb/`).
