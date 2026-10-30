@@ -1,4 +1,6 @@
-# Muyassar – demo video script (draft, 7 minutes)
+# Muyassar – demo video script (draft, 5 minutes)
+
+The limit is 7 minutes, but the mentors asked for short: "nothing more than, say, 5 to 7 minutes", showing that the demo works, why it is agentic and what problem it solves.
 
 Recorded entirely in **replay mode**: every scenario is a logged run played back step by step from `logs/scenarios.jsonl`, with no model call. The page says so in a banner on every replay; keep it in frame. All personal data shown is fictitious.
 
@@ -6,38 +8,38 @@ Open the server with `python -m muyassar.server`, then use the replay links belo
 
 | Part | Time | Competition section |
 |---|---|---|
-| 1. The problem and the setup | 0:00–1:00 | Setup |
-| 2. What the system does | 1:00–2:15 | Functions |
-| 3. Scenario 1, doubtful document | 2:15–3:45 | Expected / actual |
-| 4. Scenario 2, health data by voice | 3:45–5:15 | Expected / actual |
-| 5. Scenario 3, procedure changed | 5:15–6:30 | Expected / actual |
-| 6. Results and limits | 6:30–7:00 | Actual result |
+| 1. The problem and the setup | 0:00–0:40 | Setup |
+| 2. What the system does | 0:40–1:30 | Functions |
+| 3. Scenario 1, doubtful document | 1:30–2:30 | Expected / actual |
+| 4. Scenario 2, health data by voice | 2:30–3:30 | Expected / actual |
+| 5. Scenario 3, procedure changed | 3:30–4:20 | Expected / actual |
+| 6. Results and limits | 4:20–5:00 | Actual result |
 
 ---
 
-## 1. The problem and the setup (0:00–1:00)
+## 1. The problem and the setup (0:00–0:40)
 
 **On screen:** the home page (`/`), then the knowledge-base section scrolled into view.
 
 **Voice-over:**
 "A citizen in Jordan who renews an ID, registers a birth or applies for a disability card learns the steps from scattered pages, and rarely knows which law governs a decision about them. Muyassar is a multi-agent assistant that answers in plain Arabic, including Jordanian dialect, and ties every statement to the article it comes from.
 
-It runs on a laptop: sixteen documents in three layers. Jordanian laws and policies, the service guides of the Civil Status Department and the Higher Council for the Rights of Persons with Disabilities, and a global layer with the GDPR, the EU AI Act, the EU Single Digital Gateway Regulation, the OECD principles and Estonia's X-Road. Search is hybrid, BM25 plus multilingual vectors with a reranker, and on 87 questions with known answers the right article is in the top five 97.7 percent of the time (85 of 87)."
+It runs on a laptop, on sixteen documents: Jordanian laws and policies, service guides, and a global layer such as the GDPR. On 87 questions with known answers, the right article is in the top five 97.7 percent of the time."
 
 **On screen at the end:** the benchmark numbers on the home page.
 
-## 2. What the system does (1:00–2:15)
+## 2. What the system does (0:40–1:30)
 
 **On screen:** the scenarios page (`/scenarios`), the three scenario cards, then the legend (red = no source, amber = sensitive decision, green = tied to an article).
 
 **Voice-over:**
-"Four agents and an orchestrator cover the roles the competition asks for. The procedure guide tells the citizen what to do. The document checker compares an uploaded document with the official record. The policy agent is the legal adviser: it says what the law allows, who is responsible, and where the law is silent. The entity agent speaks for the government body. The orchestrator never sees the raw events, only what the agents concluded.
+"It is agentic because no single agent sees everything. Four agents each receive different information at different times: the procedure guide, the document checker, the legal adviser and the government body. An orchestrator weighs only what they concluded.
 
 Three rules are enforced in code, not left to the model. A verdict that cites no article the agent actually retrieved is shown in red. A gap must be compared with a global article the policy agent retrieved, or it is red too. And a sensitive decision, rejecting a request or keeping health data, stops the run until a staff member approves it. Every step is one line in an append-only audit log."
 
 **On screen:** click any card to show the detail panel: what the agent received, its steps, its decision and confidence, the articles it retrieved with the cited ones marked.
 
-## 3. Scenario 1 – doubtful document (2:15–3:45)
+## 3. Scenario 1 – doubtful document (1:30–2:30)
 
 **Replay:** `/scenarios?replay=15fb1470#doubtful_id`
 
@@ -52,7 +54,7 @@ Three rules are enforced in code, not left to the model. A verdict that cites no
 
 [TODO: when the API key is back, record a fresh doubtful_id run on the main log so the replay shows the document checker citing its sources, and replace the run id above.]
 
-## 4. Scenario 2 – health data by voice (3:45–5:15)
+## 4. Scenario 2 – health data by voice (2:30–3:30)
 
 **Replay:** `/scenarios?replay=c6fe953b#health_data`
 
@@ -66,7 +68,7 @@ Three rules are enforced in code, not left to the model. A verdict that cites no
 
 **Mention:** Whisper misspelled three dialect words in the recording; the result did not change.
 
-## 5. Scenario 3 – procedure changed suddenly (5:15–6:30)
+## 5. Scenario 3 – procedure changed suddenly (3:30–4:20)
 
 **Replay:** `/scenarios?replay=bba8c8ab#procedure_change`
 
@@ -79,7 +81,7 @@ Three rules are enforced in code, not left to the model. A verdict that cites no
 - The policy agent reports the gap and compares it with the **EU Single Digital Gateway Regulation, art. 9**: information must be kept up to date and dated, but no deadline is set. We found no official source that sets one.
 - The final card is amber with the tag **قرار حساس بقاعدة التعارض**: the stop was made by the conflict rule in code, not by the model.
 
-## 6. Results and limits (6:30–7:00)
+## 6. Results and limits (4:20–5:00)
 
 **On screen:** `eval/consistency.md` (or its table in the report), then the replay banner.
 

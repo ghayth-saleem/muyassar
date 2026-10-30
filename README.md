@@ -103,7 +103,7 @@ From *AI Ready – Analysis Towards a Standardized Readiness Framework, Report 2
 | Policy | the policy agent, the unsourced rule and the human-approval stop for sensitive decisions |
 | ML Function Orchestrator | the orchestrator agent and the scenario engine `muyassar/scenarios.py` |
 | Sink / Distributor | `muyassar/server.py` and `web/`: the citizen reply, the staff note, the audit logs |
-| ML Sandbox | local for now; the ITU cloud environment is not set up yet |
+| ML Sandbox | local, plus replay of logged runs without a key; the ITU sandbox is optional for the hackathon and is not used |
 
 ## Run it
 
@@ -145,3 +145,23 @@ web/           index.html (ask), scenarios.html (timeline)
 - Disability law: Gazette issue and page not found yet. Article 14/b was corrected from the HCD's official copy (read from the page image: its font has no text layer); the other articles have not been compared with that copy.
 - The 2025 disability card instructions have no fee article, and the new classification list is not included.
 - Service-guide fees are copied from CSPD as of 27/10/2026 and can change.
+
+## Reproduce the scenarios
+
+No key and no model call: start the server and open a logged run. The page says it is a replay.
+
+```bash
+python -m muyassar.server
+```
+
+- http://localhost:8765/scenarios?replay=15fb1470#doubtful_id
+- http://localhost:8765/scenarios?replay=c6fe953b#health_data
+- http://localhost:8765/scenarios?replay=bba8c8ab#procedure_change
+
+Live runs need a key in `.env`; every step is logged to `logs/scenarios.jsonl`. `python -m unittest discover -s tests` runs the offline tests.
+
+`python scripts/baseline.py` runs the same scenarios with the governance removed (one assistant, no knowledge base, no rules, no stop for staff), for comparison with `eval/consistency.md`. It uses credit.
+
+## Licence
+
+The code is MIT (`LICENSE`). The laws, policies and guides in `sources/` belong to their publishers and keep their own terms; `sources/registry.json` gives the origin of each.
