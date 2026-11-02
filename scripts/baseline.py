@@ -94,6 +94,8 @@ def report(log: Path) -> str:
         "",
         "«مادة مش موجودة بقاعدة المعرفة»: ما لقيناها عندنا، وهذا لا يثبت أنها مختلقة. لازم تنقرأ بالسجل قبل ما نحكي عنها أي شي.",
         "",
+        "النموذج: " + "، ".join(sorted({r.get("model", "") for r in runs})) + ". لازم يكون نفس نموذج `eval/consistency.md`، وإلا المقارنة ما إلها معنى.",
+        "",
         f"السجل: `{log.resolve().relative_to(ROOT.resolve()).as_posix()}`",
         "",
     ]

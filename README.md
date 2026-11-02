@@ -93,7 +93,7 @@ The logo is Ghayth's meem of «ميسّر» in red-and-white keffiyeh cloth, a r
 
 ## Model providers, replay and tests
 
-Every model call goes through one interface (`muyassar/providers.py`); `MUYASSAR_LLM` in `.env` picks `anthropic` (default), `gemini` (written against the google-genai SDK docs, not yet run against the API; needs `pip install google-genai` and `GEMINI_API_KEY`) or `ollama`.
+Every model call goes through one interface (`muyassar/providers.py`); `MUYASSAR_LLM` in `.env` picks `anthropic` (default), `gemini` (written against the google-genai SDK docs, not yet run against the API; needs `pip install google-genai` and `GEMINI_API_KEY`) or `ollama`. `MUYASSAR_LLM_FALLBACK` names a second provider, used when the first fails (credit, network, API error); a refusal does not fall through, and the audit log records which model wrote each step.
 
 **Replay mode:** the scenarios page replays any logged run step by step, as it looked live, with a banner saying it is a replay and no model call; a replay never logs a staff decision. `/scenarios?replay=<run_id>#<scenario>` starts one on load (used for the demo video). Without a model key the page disables live runs and offers replay only.
 

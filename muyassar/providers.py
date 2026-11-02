@@ -11,10 +11,20 @@ MUYASSAR_LLM picks one:
 - ollama: a local model, for when the network or credit is out. Weaker Arabic.
 - replay: answers from a logged run instead of a model; for tests and demos
   without a key. See ReplayProvider.
+
+MUYASSAR_LLM_FALLBACK (gemini or ollama) names a second provider, used when
+the first fails: credit out, network down, API error. A refusal is the model's
+answer and does not fall through. `name` follows the provider that answered,
+so the audit log says which model wrote each step.
 """
 import json
 import os
+import sys
 from typing import Protocol
+
+
+class ModelRefused(RuntimeError):
+    """The model declined to answer; another model must not be asked instead."""
 
 
 class Provider(Protocol):
@@ -57,9 +67,27 @@ class AnthropicProvider:
             fallbacks="default",
         )
         if response.stop_reason == "refusal":
-            raise RuntimeError(f"النموذج رفض الطلب: {response.stop_details}")
+            raise ModelRefused(f"النموذج رفض الطلب: {response.stop_details}")
         text = "".join(b.text for b in response.content if b.type == "text")
         return json.loads(text) if schema else text
+
+
+class FallbackProvider:
+    def __init__(self, primary: Provider, backup: Provider):
+        self.primary, self.backup = primary, backup
+        self.name = primary.name
+
+    def ask(self, system, user, max_tokens=16000, schema=None):
+        try:
+            reply = self.primary.ask(system, user, max_tokens=max_tokens, schema=schema)
+            self.name = self.primary.name
+        except ModelRefused:
+            raise
+        except Exception as e:
+            print(f"{self.primary.name} ما رد ({type(e).__name__})، بنكمل على {self.backup.name}", file=sys.stderr)
+            reply = self.backup.ask(system, user, max_tokens=max_tokens, schema=schema)
+            self.name = self.backup.name
+        return reply
 
 
 class GeminiProvider:
@@ -172,12 +200,17 @@ class ReplayProvider:
         }
 
 
-def from_env() -> Provider:
-    name = os.environ.get("MUYASSAR_LLM", "anthropic")
+def _named(name: str) -> Provider:
     if name == "anthropic":
         return AnthropicProvider()
     if name == "gemini":
         return GeminiProvider()
     if name == "ollama":
         return OllamaProvider()
-    raise ValueError(f"MUYASSAR_LLM={name!r} مش معروف (anthropic أو gemini أو ollama)")
+    raise ValueError(f"المزوّد {name!r} مش معروف (anthropic أو gemini أو ollama)")
+
+
+def from_env() -> Provider:
+    main = _named(os.environ.get("MUYASSAR_LLM", "anthropic"))
+    backup = os.environ.get("MUYASSAR_LLM_FALLBACK")
+    return FallbackProvider(main, _named(backup)) if backup else main
