@@ -35,7 +35,7 @@ Two parts of shot 4 need thought:
 | `phone-doubtful-id.mp4` | Real screen recording of the doubtful-document replay at 375×812 (2x, 750×1624), 20 s. The view follows each agent's card, ends on the citizen reply «بانتظار موافقة موظف». | Shot 4b |
 | `endcard.png`, `endcard.html` | The end card at 1920×1080. | Shot 6 |
 
-The recording was made from screenshots of the replay at about 10 per second, so motion is slightly stepped; that is invisible at the size of a phone in frame. To record again: start the server, then `/scenarios?replay=15fb1470#doubtful_id` at 375×812.
+The recording was made from screenshots of the replay at about 10 per second, so motion is slightly stepped; that is invisible at the size of a phone in frame. To record again: start the server, then `/scenarios?replay=6347f7eb#doubtful_id` at 375×812.
 
 ## Making the clips in a free tool
 
@@ -59,7 +59,7 @@ Edit in CapCut or DaVinci Resolve (both free):
 ## Producing it
 
 1. **Character shots (1, 2, 3, 5).** Use an image-to-video model with the source image as the first frame, one clip per shot, 5–8 s each. Generate the voice separately (shot 5 of the script is the clearest line to test first), then lip-sync shots 1, 2 and 5. Shot 3 needs no lip-sync: he looks at the phone.
-2. **Phone recording (shot 4).** Record the real site at 375×812 with the replay link `/scenarios?replay=15fb1470#doubtful_id`, at 2x scale so it stays sharp when shown full frame.
+2. **Phone recording (shot 4).** Record the real site at 375×812 with the replay link `/scenarios?replay=6347f7eb#doubtful_id`, at 2x scale so it stays sharp when shown full frame.
 3. **Edit.** Cut from the push-in of shot 3 straight to the recording in a phone frame. This is more reliable than tracking a screen onto a generated phone, which tends to wobble. Add music low under the voice, and burn in Arabic subtitles.
 
 Prompts for the image-to-video model (English works best):

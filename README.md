@@ -16,6 +16,7 @@ AI for Good Lab Hackathon: United Arab Emirates (ITU). Domain: public services. 
 | Evaluation scenarios | `scenarios/`; see [Reproduce the scenarios](#reproduce-the-scenarios) |
 | Policy gaps | `reports/gaps.md` |
 | Stability of the results | `eval/consistency.md` |
+| The same scenarios without governance | `eval/baseline.md` |
 | Audit logs | `logs/`, one line per step, append-only |
 | Y.3172 and Readiness 2.0 mapping | below, and section 3 of the report |
 
@@ -171,7 +172,7 @@ No key and no model call: start the server and open a logged run. The page says 
 python -m muyassar.server
 ```
 
-- http://localhost:8765/scenarios?replay=15fb1470#doubtful_id
+- http://localhost:8765/scenarios?replay=6347f7eb#doubtful_id
 - http://localhost:8765/scenarios?replay=c6fe953b#health_data
 - http://localhost:8765/scenarios?replay=bba8c8ab#procedure_change
 

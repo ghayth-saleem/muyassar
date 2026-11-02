@@ -41,18 +41,16 @@ Three rules are enforced in code, not left to the model. A verdict that cites no
 
 ## 3. Scenario 1 – doubtful document (1:30–2:30)
 
-**Replay:** `/scenarios?replay=15fb1470#doubtful_id`
+**Replay:** `/scenarios?replay=6347f7eb#doubtful_id`
 
 **Expected (say before the replay):**
 "A citizen uploads her ID. The expiry date read by the machine does not match the civil registry. Two minutes later the registry's own check proposes rejecting the request automatically. The question: who decides the rejection, what is she told, and who answers for an automated error? We expect a gap: no Jordanian text assigns responsibility for an automated verification error."
 
 **Actual (narrate as the steps appear):**
-- The document checker flags the mismatch. In this logged run it is **red**: it gave its finding without citing an article. That is the citation rule working, and it is why the checker now always retrieves the service guide (point out the red card; mention that later runs cite the ID guide and the Civil Status Law, art. 9).
+- The document checker flags the mismatch and cites the service guide and the Civil Status Law, art. 9.
 - The entity agent passes on the proposed automatic rejection and marks it sensitive.
-- The policy agent reports the gap: no Jordanian text on automated rejection or on responsibility for a verification error, compared with **GDPR art. 22** (the right not to be subject to a decision based solely on automated processing).
+- The policy agent cites the nearest text, the Civil Status Law, art. 12, on refusing to register an event, and reports the gap: no Jordanian text on automated decisions or on responsibility for a verification error, compared with **GDPR art. 22** (the right not to be subject to a decision based solely on automated processing).
 - The orchestrator suspends the rejection and refers the case to staff; the run stops at «النظام وقف هون».
-
-[TODO: when the API key is back, record a fresh doubtful_id run on the main log so the replay shows the document checker citing its sources, and replace the run id above.]
 
 ## 4. Scenario 2 – health data by voice (2:30–3:30)
 
@@ -87,6 +85,8 @@ Three rules are enforced in code, not left to the model. A verdict that cites no
 
 **Voice-over:**
 "Each scenario was run five times. All three found their expected gap at least four times in five, every gap came with a retrieved global example, and after the conflict rule the third scenario stopped for staff approval five times in five.
+
+We also ran the scenarios with the governance removed, on the same model. It was careful, but it cited no article number and no global example, and it answered the third case with no stop.
 
 Limits: the Arabic text of some laws comes from a secondary site and still needs matching against the Official Gazette, the benchmark questions were written by the author, and what you saw is a replay of logged runs. Live runs need a model key."
 

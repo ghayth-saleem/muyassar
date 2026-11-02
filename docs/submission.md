@@ -4,9 +4,9 @@ Deadline: 10 November 2026. Send to aiforgoodlab@itu.int and say so in the Whats
 
 ## Before sending
 
-- [ ] Credit topped up, or a Gemini key in `.env`
-- [ ] `python scripts/baseline.py` run on Claude, the model in `eval/consistency.md`; result in the report, still five pages
-- [ ] Fresh `doubtful_id` run on the main log; its run id replaced in `README.md` and `docs/video-script.md`
+- [x] Credit topped up, or a Gemini key in `.env`
+- [x] `python scripts/baseline.py` run on Claude, the model in `eval/consistency.md`; result in the report, still five pages
+- [x] Fresh `doubtful_id` run on the main log; its run id replaced in `README.md` and `docs/video-script.md`
 - [ ] Demo video recorded, five minutes, link in `README.md` and in the report
 - [ ] Repository public, or the judges added to it
 - [ ] Open the links below in a private window

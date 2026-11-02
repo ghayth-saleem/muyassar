@@ -67,7 +67,7 @@ class Baseline(unittest.TestCase):
                 text = baseline.report(log)
             finally:
                 baseline.ROOT = ROOT
-        self.assertIn("| وثيقة مشكوك فيها | 0/1 | 0/1 | 0/1 | 0/1 |", text)
+        self.assertIn("| وثيقة مشكوك فيها | 0/1 | 0/1 | 0/1 | 0/1 | 0/1 |", text)
 
 
 if __name__ == "__main__":
