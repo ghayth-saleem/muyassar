@@ -4,6 +4,8 @@ The limit is 7 minutes, but the mentors asked for short: "nothing more than, say
 
 Recorded entirely in **replay mode**: every scenario is a logged run played back step by step from `logs/scenarios.jsonl`, with no model call. The page says so in a banner on every replay; keep it in frame. All personal data shown is fictitious.
 
+The screens are recorded in `docs/video/screens/` (not in git): `1-home.mp4` for part 1, `2-overview.mp4` for part 2, `3-doubtful-id.mp4`, `4-health-data.mp4` and `5-procedure-change.mp4` for parts 3 to 5 (replays slowed so each step can be read), and `6-results.png` for part 6. To record again:
+
 Open the server with `python -m muyassar.server`, then use the replay links below. A link like `/scenarios?replay=<run_id>#<scenario>` starts the replay on load.
 
 | Part | Time | Competition section |

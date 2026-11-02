@@ -38,3 +38,4 @@ __pycache__/
 # Video media stays local (large); the plan and end card are tracked
 docs/video/keyframe-*.png
 docs/video/*.mp4
+docs/video/screens/
