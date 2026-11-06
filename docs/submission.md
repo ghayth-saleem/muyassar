@@ -8,7 +8,7 @@ Deadline: 10 November 2026. Send to aiforgoodlab@itu.int and say so in the Whats
 - [x] `python scripts/baseline.py` run on Claude, the model in `eval/consistency.md`; result in the report, still five pages
 - [x] Fresh `doubtful_id` run on the main log; its run id replaced in `README.md` and `docs/video-script.md`
 - [x] Demo video made: `docs/video/muyassar-demo.mp4` (not in git), 3:41
-- [ ] Video uploaded, link in `README.md`, the report and the email below
+- [x] Video uploaded, link in `README.md` and the email
 - [x] Repository public
 - [ ] Open the links below in a private window
 - [ ] `reports/technical-report.pdf` exported from the final Word file
@@ -34,7 +34,7 @@ Team: Ghayth Saleem (team leader, single-person team), ghayth1216@gmail.com
 | Policy gaps | `reports/gaps.md` |
 | Evaluation scenarios and how to reproduce them | `scenarios/`, and "Reproduce the scenarios" in `README.md` |
 | Audit logs | `logs/` |
-| Demo video | [link] |
+| Demo video | https://drive.google.com/file/d/1bAAeAAbmkCKG5JylS8pex-Inu-yNS0A-/view?usp=sharing |
 
 Every policy document is public, and all scenario data is fictitious.
 

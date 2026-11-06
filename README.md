@@ -11,6 +11,7 @@ AI for Good Lab Hackathon: United Arab Emirates (ITU). Domain: public services. 
 | What | Where |
 |---|---|
 | Technical report, 5 pages | `reports/technical-report.pdf` |
+| Demo video, 3:41 | https://drive.google.com/file/d/1bAAeAAbmkCKG5JylS8pex-Inu-yNS0A-/view?usp=sharing |
 | Code | this repository, MIT licence |
 | Knowledge base | `kb/chunks/`, from the documents in `sources/`; see [Knowledge base](#knowledge-base) |
 | Evaluation scenarios | `scenarios/`; see [Reproduce the scenarios](#reproduce-the-scenarios) |
